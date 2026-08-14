@@ -1,0 +1,247 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>CriFsV2Lib.Definitions</name>
+    </assembly>
+    <members>
+        <member name="T:CriFsV2Lib.Definitions.IBatchFileExtractor`1">
+            <summary>
+            Interface for the batch file extractor utility.
+            </summary>
+        </member>
+        <member name="P:CriFsV2Lib.Definitions.IBatchFileExtractor`1.ItemsProcessed">
+            <summary>
+            Number of items processed.
+            </summary>
+        </member>
+        <member name="M:CriFsV2Lib.Definitions.IBatchFileExtractor`1.QueueItem(`0)">
+            <summary>
+            Queues an item for extracting.
+            </summary>
+            <param name="item">The item to queue.</param>
+        </member>
+        <member name="M:CriFsV2Lib.Definitions.IBatchFileExtractor`1.WaitForCompletion(System.Int32,System.Action)">
+            <summary>
+            Waits for completion of current items in a blocking fashion.
+            </summary>
+            <param name="timeBetweenCallbacks">Minimum time taken between individual callbacks.</param>
+            <param name="callback">Action to be executed between each wait period.</param>
+        </member>
+        <member name="M:CriFsV2Lib.Definitions.IBatchFileExtractor`1.WaitForCompletionAsync(System.Int32,System.Action)">
+            <summary>
+            Waits for completion of current items in a non-blocking fashion.
+            </summary>
+            <param name="timeBetweenCallbacks">Minimum time taken between individual callbacks.</param>
+            <param name="callback">Action to be executed between each wait period.</param>
+        </member>
+        <member name="T:CriFsV2Lib.Definitions.ICpkReader">
+            <summary>
+            API for the reader of CPKs.
+            </summary>
+        </member>
+        <member name="P:CriFsV2Lib.Definitions.ICpkReader.Decrypt">
+            <summary>
+            The decryption function to use.
+            </summary>
+        </member>
+        <member name="M:CriFsV2Lib.Definitions.ICpkReader.ExtractFileNoDecompression(CriFsV2Lib.Definitions.Structs.CpkFile@,System.Boolean@)">
+            <summary>
+            Extracts the file from the CPK without decompressing it using CRILAYLA.
+            </summary>
+            <param name="file">The file to extract from the archive.</param>
+            <param name="needsDecompression">
+               True if the file will need to be decompressed with <see cref="!:CriLayla.DecompressToArrayPool"/>.
+            </param>
+            <returns>Extracted data.</returns>
+        </member>
+        <member name="M:CriFsV2Lib.Definitions.ICpkReader.ExtractFile(CriFsV2Lib.Definitions.Structs.CpkFile@)">
+            <summary>
+            Gets all of the file data info within a CPK file from a stream.
+            Use when CPK file is big, e.g. reading 2GB+ file.
+            </summary>
+            <param name="file">The file to extract from the archive.</param>
+            <returns>Extracted data.</returns>
+        </member>
+        <member name="M:CriFsV2Lib.Definitions.ICpkReader.GetFiles">
+            <summary>
+            Gets all of the file data info within a CPK file from a stream.
+            Use when CPK file is big, e.g. reading 2GB+ file.
+            </summary>
+        </member>
+        <member name="T:CriFsV2Lib.Definitions.ICriFsLib">
+            <summary>
+            Provides an API for the entire library.
+            </summary>
+        </member>
+        <member name="P:CriFsV2Lib.Definitions.ICriFsLib.Utilities">
+            <summary>
+            Gets the utility functions that don't fit into any specific category.
+            </summary>
+        </member>
+        <member name="M:CriFsV2Lib.Definitions.ICriFsLib.SetDefaultEncryptionFunction(CriFsV2Lib.Definitions.InPlaceDecryptionFunction)">
+            <summary>
+            Sets the default in place decryption function to be used when one isn't supplied.
+            </summary>
+            <param name="function">The function to use.</param>
+        </member>
+        <member name="M:CriFsV2Lib.Definitions.ICriFsLib.CreateCpkReader(System.IO.Stream,System.Boolean,CriFsV2Lib.Definitions.InPlaceDecryptionFunction)">
+            <summary>
+            Creates a reader that can be used to read a CPK file.
+            </summary>
+            <param name="cpkStream">Stream which starts at the beginning of a CPK file.</param>
+            <param name="ownsStream">True to dispose the stream alongside the reader, else false.</param>
+            <param name="decrypt">Decryption function to use.</param>
+            <returns>Reader which can be used to read a CPK file.</returns>
+        </member>
+        <member name="M:CriFsV2Lib.Definitions.ICriFsLib.GetKnownDecryptionFunction(CriFsV2Lib.Definitions.KnownDecryptionFunction)">
+            <summary>
+            Obtains a known decryption function.
+            </summary>
+            <param name="decryptFunc">The known decryption function to obtain.</param>
+        </member>
+        <member name="M:CriFsV2Lib.Definitions.ICriFsLib.CreateBatchExtractor``1(System.String,CriFsV2Lib.Definitions.InPlaceDecryptionFunction)">
+            <summary>
+            Creates a helper for Batch Extraction of files.
+            </summary>
+            <param name="sourceCpkPath">Full path to the source CPK where files are extracted from.</param>
+            <param name="decrypt">The decryption function to use.</param>
+        </member>
+        <member name="T:CriFsV2Lib.Definitions.KnownDecryptionFunction">
+            <summary>
+            List of known decryption functions.
+            </summary>
+        </member>
+        <member name="F:CriFsV2Lib.Definitions.KnownDecryptionFunction.P5R">
+            <summary>
+            Persona 5 Royal
+            </summary>
+        </member>
+        <member name="T:CriFsV2Lib.Definitions.InPlaceDecryptionFunction">
+            <summary>
+            Defines a function that will perform encryption in place.
+            </summary>
+            <param name="file">The file which will be decrypted.</param>
+            <param name="dataPtr">Pointer to the data to decrypt.</param>
+            <param name="dataLength">Length of the data to decrypt.</param>
+        </member>
+        <member name="T:CriFsV2Lib.Definitions.ICriFsLibUtilities">
+            <summary>
+            Utility functions that don't belong in any sort of category.
+            </summary>
+        </member>
+        <member name="M:CriFsV2Lib.Definitions.ICriFsLibUtilities.GetFiles(System.Byte*)">
+            <summary>
+            Gets all of the files present within a CPK file from a byte array.  
+            Use when entire CPK is in memory.  
+            </summary>
+            <param name="dataPtr">Pointer to the start of the CPK data in memory.</param>
+        </member>
+        <member name="T:CriFsV2Lib.Definitions.Interfaces.IBatchFileExtractorItem">
+            <summary>
+            Base interface used by items that can be queued to batch extractor.
+            </summary>
+        </member>
+        <member name="P:CriFsV2Lib.Definitions.Interfaces.IBatchFileExtractorItem.FullPath">
+            <summary>
+            Full path to where the file should be extracted to.
+            </summary>
+        </member>
+        <member name="P:CriFsV2Lib.Definitions.Interfaces.IBatchFileExtractorItem.File">
+            <summary>
+            Details of the file to be extracted.
+            </summary>
+        </member>
+        <member name="T:CriFsV2Lib.Definitions.Structs.CpkFile">
+            <summary>
+            Encapsulates all known information about a file.
+            </summary>
+        </member>
+        <member name="P:CriFsV2Lib.Definitions.Structs.CpkFile.UserString">
+            <summary>
+            String some developers attach to provide more info on file, e.g. encrypt this file.
+            </summary>
+        </member>
+        <member name="P:CriFsV2Lib.Definitions.Structs.CpkFile.Directory">
+            <summary>
+            Directory in which the file is contained.
+            </summary>
+        </member>
+        <member name="P:CriFsV2Lib.Definitions.Structs.CpkFile.FileName">
+            <summary>
+            Name of the file inside the directory.
+            </summary>
+        </member>
+        <member name="P:CriFsV2Lib.Definitions.Structs.CpkFile.FileOffset">
+            <summary>
+            Offset of the file inside the CPK.
+            </summary>
+        </member>
+        <member name="P:CriFsV2Lib.Definitions.Structs.CpkFile.FileSize">
+            <summary>
+            Size of the file inside the CPK.
+            </summary>
+        </member>
+        <member name="P:CriFsV2Lib.Definitions.Structs.CpkFile.ExtractSize">
+            <summary>
+            Size of the file after it's extracted.
+            </summary>
+        </member>
+        <member name="T:CriFsV2Lib.Definitions.Utilities.ArrayRental">
+            <summary>
+            Represents an individual borrowed array from the runtime.
+            </summary>
+            <summary>
+            Represents a temporary array rental from the runtime's ArrayPool.
+            </summary>
+        </member>
+        <member name="F:CriFsV2Lib.Definitions.Utilities.ArrayRental.Max32BitItemsPerBucket">
+            <summary>
+            Max Arrays for 32-bit item.
+            </summary>
+        </member>
+        <member name="F:CriFsV2Lib.Definitions.Utilities.ArrayRental.Empty">
+            <summary>
+            Empty rental.
+            </summary>
+        </member>
+        <member name="M:CriFsV2Lib.Definitions.Utilities.ArrayRental.Reset">
+            <summary>
+            Resets the data pool allowing memory to be reclaimed.
+            </summary>
+        </member>
+        <member name="M:CriFsV2Lib.Definitions.Utilities.ArrayRental.#ctor(System.Int32)">
+            <summary>
+            Rents an array of bytes from the arraypool.
+            </summary>
+            <param name="count">Needed amount of bytes.</param>
+        </member>
+        <member name="M:CriFsV2Lib.Definitions.Utilities.ArrayRental.#ctor(System.Int32,System.Boolean)">
+            <summary>
+            Rents an array of bytes from the arraypool.
+            </summary>
+            <param name="count">Needed amount of bytes.</param>
+            <param name="canDispose">True if this rental can be disposed, set false for internal use only.</param>
+        </member>
+        <member name="P:CriFsV2Lib.Definitions.Utilities.ArrayRental.RawArray">
+            <summary>
+            Exposes the raw underlying array, which will likely
+            be bigger than the number of elements.
+            </summary>
+        </member>
+        <member name="P:CriFsV2Lib.Definitions.Utilities.ArrayRental.Span">
+            <summary>
+            Returns the rented array as a span.
+            </summary>
+        </member>
+        <member name="P:CriFsV2Lib.Definitions.Utilities.ArrayRental.Count">
+            <summary>
+            Exposes the number of elements stored by this structure.
+            </summary>
+        </member>
+        <member name="M:CriFsV2Lib.Definitions.Utilities.ArrayRental.Dispose">
+            <summary>
+            Returns the array to the pool.
+            </summary>
+        </member>
+    </members>
+</doc>

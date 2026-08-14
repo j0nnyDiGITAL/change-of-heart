@@ -1,0 +1,20 @@
+// Decompiled by Atlus Script Tools
+const int e259_310_mes011                  = 0;
+const int e259_310_mes012                  = 1;
+const int e259_310_selA                    = 2;
+const int e259_310_selA_0_mes01            = 3;
+const int e259_310_selA_0_mes021           = 4;
+const int e259_310_selA_0_mes022           = 5;
+const int e259_310_selA_0_mes03            = 6;
+const int e259_310_selA_0_mes04            = 7;
+const int e259_310_selA_0_mes051           = 8;
+const int e259_310_selA_0_mes052           = 9;
+const int e259_310_selA_1_mes01            = 10;
+const int e259_311_mes01                   = 11;
+const int e259_311_mes02                   = 12;
+const int e259_311_mes03                   = 13;
+const int e259_311_mes04                   = 14;
+const int e259_311_mes05                   = 15;
+const int e259_311_mes06                   = 16;
+const int e259_311_mes07                   = 17;
+const int e259_311_mes8                    = 18;

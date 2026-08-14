@@ -1,0 +1,624 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>CriFsV2Lib</name>
+    </assembly>
+    <members>
+        <member name="T:CriFsV2Lib.Compression.CriLayla">
+            <summary>
+            Code for dealing with CRI Layla Compression.
+            </summary>
+        </member>
+        <member name="F:CriFsV2Lib.Compression.CriLayla.UncompressedDataSize">
+            <summary>
+            Size of uncompressed data under CRILAYLA.
+            </summary>
+        </member>
+        <member name="F:CriFsV2Lib.Compression.CriLayla.MinCopyLength">
+            <summary>
+            Minimum length of LZ77 copy command. 
+            </summary>
+        </member>
+        <member name="M:CriFsV2Lib.Compression.CriLayla.IsCompressed(System.Byte*,System.Int32@)">
+            <summary>
+            Checks if a file is compressed by checking the signature at the start of it.
+            </summary>
+            <param name="data">Pointer to start of the file data.</param>
+            <param name="compressedDataSize">Size of compressed data.</param>
+            <returns>True if compressed, else false.</returns>
+        </member>
+        <member name="M:CriFsV2Lib.Compression.CriLayla.DecompressToArray(System.Byte*)">
+            <summary>
+            Decompresses a compressed file to a byte array.
+            </summary>
+            <param name="input">Pointer to start of compressed data (CRILAYLA header).</param>
+            <returns>Byte array of the file after decompression.</returns>
+        </member>
+        <member name="M:CriFsV2Lib.Compression.CriLayla.DecompressToArrayPool(System.Byte*)">
+            <summary>
+            Decompresses a compressed file to a pooled byte array.
+            </summary>
+            <param name="input">Pointer to start of compressed data (CRILAYLA header).</param>
+            <returns>Pooled array of the file after decompression, please dispose after you're done with it.</returns>
+        </member>
+        <member name="T:CriFsV2Lib.Constants">
+            <summary>
+            Various constant values for faster reading.
+            </summary>
+        </member>
+        <member name="T:CriFsV2Lib.Constants.Fields">
+            <summary>
+            Names of fields. (Prevents unnecessary string conversion)
+            </summary>
+        </member>
+        <member name="M:CriFsV2Lib.Constants.Fields.IsDirName(System.Byte*)">
+            <summary>
+            'DirName', stores directory name for file.
+            </summary>
+        </member>
+        <member name="M:CriFsV2Lib.Constants.Fields.IsFileName(System.Byte*)">
+            <summary>
+            'FileName', stores name of file.
+            </summary>
+        </member>
+        <member name="M:CriFsV2Lib.Constants.Fields.IsFileSize(System.Byte*)">
+            <summary>
+            'FileSize', stores size of file in CPK (i.e. compressed).
+            </summary>
+        </member>
+        <member name="M:CriFsV2Lib.Constants.Fields.IsExtractSize(System.Byte*)">
+            <summary>
+            'ExtractSize', stores size of file after extracting (i.e. uncompressed).
+            </summary>
+        </member>
+        <member name="M:CriFsV2Lib.Constants.Fields.IsFileOffset(System.Byte*)">
+            <summary>
+            'FileOffset', offset of file data in CPK file.  
+            </summary>
+        </member>
+        <member name="M:CriFsV2Lib.Constants.Fields.IsUserString(System.Byte*)">
+            <summary>
+            'UserString', custom string assigned to file by devs. Sometimes used for custom encryption.
+            </summary>
+        </member>
+        <member name="M:CriFsV2Lib.Constants.Fields.IsContentOffset(System.Byte*)">
+            <summary>
+            'ContentOffset', offset of custom file data in CPK.
+            </summary>
+        </member>
+        <member name="M:CriFsV2Lib.Constants.Fields.IsTocOffset(System.Byte*)">
+            <summary>
+            'TocOffset', offset of table of contents relative to start of file.
+            </summary>
+        </member>
+        <member name="T:CriFsV2Lib.CpkReader">
+            <inheritdoc />
+        </member>
+        <member name="P:CriFsV2Lib.CpkReader.Decrypt">
+            <inheritdoc />
+        </member>
+        <member name="F:CriFsV2Lib.CpkReader._stream">
+            <summary>
+            The underlying stream.
+            </summary>
+        </member>
+        <member name="F:CriFsV2Lib.CpkReader._initialStreamPosition">
+            <summary>
+            Position stream was when instance was created.
+            </summary>
+        </member>
+        <member name="M:CriFsV2Lib.CpkReader.#ctor(System.IO.Stream,System.Boolean,CriFsV2Lib.Definitions.InPlaceDecryptionFunction)">
+            <summary>
+            Creates a CPK reader used for decryption of data.
+            </summary>
+            <param name="decrypt">The function used to decrypt game files.</param>
+            <param name="stream">The stream to read data from.</param>
+            <param name="ownsStream">True to dispose stream along with reader, else false.</param>
+        </member>
+        <member name="M:CriFsV2Lib.CpkReader.Dispose">
+            <inheritdoc />
+        </member>
+        <member name="M:CriFsV2Lib.CpkReader.ExtractFileNoDecompression(CriFsV2Lib.Definitions.Structs.CpkFile@,System.Boolean@)">
+            <inheritdoc />
+        </member>
+        <member name="M:CriFsV2Lib.CpkReader.ExtractFile(CriFsV2Lib.Definitions.Structs.CpkFile@)">
+            <inheritdoc />
+        </member>
+        <member name="M:CriFsV2Lib.CpkReader.GetFiles">
+            <inheritdoc />
+        </member>
+        <member name="T:CriFsV2Lib.CriFsLib">
+            <inheritdoc />
+        </member>
+        <member name="F:CriFsV2Lib.CriFsLib.Instance">
+            <summary>
+            Singleton instance of this class.
+            </summary>
+        </member>
+        <member name="P:CriFsV2Lib.CriFsLib.Utilities">
+            <inheritdoc />
+        </member>
+        <member name="M:CriFsV2Lib.CriFsLib.SetDefaultEncryptionFunction(CriFsV2Lib.Definitions.InPlaceDecryptionFunction)">
+            <inheritdoc />
+        </member>
+        <member name="M:CriFsV2Lib.CriFsLib.CreateCpkReader(System.IO.Stream,System.Boolean,CriFsV2Lib.Definitions.InPlaceDecryptionFunction)">
+            <inheritdoc />
+        </member>
+        <member name="M:CriFsV2Lib.CriFsLib.GetKnownDecryptionFunction(CriFsV2Lib.Definitions.KnownDecryptionFunction)">
+            <inheritdoc />
+        </member>
+        <member name="M:CriFsV2Lib.CriFsLib.CreateBatchExtractor``1(System.String,CriFsV2Lib.Definitions.InPlaceDecryptionFunction)">
+            <inheritdoc />
+        </member>
+        <member name="T:CriFsV2Lib.CriFsLibUtilities">
+            <inheritdoc />
+        </member>
+        <member name="M:CriFsV2Lib.CriFsLibUtilities.GetFiles(System.Byte*)">
+            <inheritdoc />
+        </member>
+        <member name="T:CriFsV2Lib.Encryption.Game.P5RCrypto">
+            <summary>
+            Provides decryption support in 
+            - Persona 5 Royal (PS4 JPN and PC)
+            </summary>
+        </member>
+        <member name="F:CriFsV2Lib.Encryption.Game.P5RCrypto.EncryptedDataOffset">
+            <summary>
+            Offset of encrypted data.
+            </summary>
+        </member>
+        <member name="F:CriFsV2Lib.Encryption.Game.P5RCrypto.NumBytesToDecrypt">
+            <summary>
+            Number of bytes to decrypt.
+            </summary>
+        </member>
+        <member name="M:CriFsV2Lib.Encryption.Game.P5RCrypto.IsEncrypted(System.String)">
+            <summary>
+            Checks if the file ie encrypted using the user string.
+            </summary>
+            <param name="userString">The user/attribute string tied to the file entry in CPK. i.e. <see cref="P:CriFsV2Lib.Definitions.Structs.CpkFile.UserString"/></param>
+        </member>
+        <member name="P:CriFsV2Lib.Encryption.Game.P5RCrypto.DecryptionFunction">
+            <summary>
+            Returns the decryption function for this crypto scheme.
+            </summary>
+        </member>
+        <member name="M:CriFsV2Lib.Encryption.Game.P5RCrypto.DecryptInPlace(System.Byte*,System.Int32)">
+            <summary>
+            Decrypts the input file using the XOR based algorithm used in Persona 5 Royal.
+            The decryption is done in place.  
+            </summary>
+            <param name="dataPtr">Pointer to start of data to decrypt.</param>
+            <param name="dataLength">Length of data to decrypt.</param>
+        </member>
+        <member name="M:CriFsV2Lib.Encryption.Game.P5RCrypto.DecryptInPlaceAvx(System.Byte*)">
+            <summary>
+            Do not use this API directly, public for benchmarking only.
+            Use <see cref="M:CriFsV2Lib.Encryption.Game.P5RCrypto.DecryptInPlace(System.Byte*,System.Int32)"/>, it will run this if supported.
+            </summary>
+            <param name="dataPtr">Pointer to start of encrypted data, i.e. start of file + <see cref="F:CriFsV2Lib.Encryption.Game.P5RCrypto.EncryptedDataOffset"/>.</param>
+        </member>
+        <member name="M:CriFsV2Lib.Encryption.Game.P5RCrypto.DecryptInPlaceSse(System.Byte*)">
+            <summary>
+            Do not use this API directly, public for benchmarking only.
+            Use <see cref="M:CriFsV2Lib.Encryption.Game.P5RCrypto.DecryptInPlace(System.Byte*,System.Int32)"/>, it will run this if supported.
+            </summary>
+            <param name="dataPtr">Pointer to start of encrypted data, i.e. start of file + <see cref="F:CriFsV2Lib.Encryption.Game.P5RCrypto.EncryptedDataOffset"/>.</param>
+        </member>
+        <member name="M:CriFsV2Lib.Encryption.Game.P5RCrypto.DecryptInPlaceLong(System.Byte*)">
+            <summary>
+            Do not use this API directly, public for benchmarking only.
+            Use <see cref="M:CriFsV2Lib.Encryption.Game.P5RCrypto.DecryptInPlace(System.Byte*,System.Int32)"/>, it will run this if supported.
+            </summary>
+            <param name="dataPtrByte">Pointer to start of encrypted data, i.e. start of file + <see cref="F:CriFsV2Lib.Encryption.Game.P5RCrypto.EncryptedDataOffset"/>.</param>
+            <remarks>Custom unrolled loop.</remarks>
+        </member>
+        <member name="T:CriFsV2Lib.Encryption.TableDecryptor">
+            <summary>
+            Class for fast decrypting of CRI Tables.
+            </summary>
+        </member>
+        <member name="M:CriFsV2Lib.Encryption.TableDecryptor.IsEncrypted(System.Byte*)">
+            <summary>
+            Checks if this table is encrypted.
+            </summary>
+            <param name="input">Pointer to first byte in table.</param>
+        </member>
+        <member name="M:CriFsV2Lib.Encryption.TableDecryptor.DecryptUTF(System.Byte*,System.Int32)">
+            <summary>
+            Decrypts the CRI table (usually starts with 'UTF'), creating a copy of the data so original is unmodified.
+            </summary>
+            <param name="input">Table data.</param>
+            <param name="length">Length of th e given byte pointer.</param>
+            <returns>The decrypted table data (original is unmodified)</returns>
+        </member>
+        <member name="M:CriFsV2Lib.Encryption.TableDecryptor.DecryptUTFInPlace(System.Byte*,System.Int32)">
+            <summary>
+            Decrypts the CRI table (usually starts with 'UTF') in place.
+            </summary>
+            <param name="input">Table data.</param>
+            <param name="length">Length of th e given byte pointer.</param>
+            <returns></returns>
+        </member>
+        <member name="T:CriFsV2Lib.Structs.CriColumnFlagsUnion">
+            <summary>
+            Union between all valid flags for the CRI Field.
+            </summary>
+        </member>
+        <member name="M:CriFsV2Lib.Structs.CriColumnFlagsUnion.AsFlags">
+            <summary>
+            Returns the field flags from this union.
+            </summary>
+        </member>
+        <member name="M:CriFsV2Lib.Structs.CriColumnFlagsUnion.AsType">
+            <summary>
+            Returns the field type from this union.
+            </summary>
+        </member>
+        <member name="M:CriFsV2Lib.Structs.CriColumnFlagsUnion.HasFlag(CriFsV2Lib.Structs.CriColumnFlags)">
+            <summary>
+            Returns true if the flag is present.
+            </summary>
+            <param name="flag">The flag to test.</param>
+        </member>
+        <member name="M:CriFsV2Lib.Structs.CriColumnFlagsUnion.GetStringAddress(CriFsV2Lib.Structs.CriColumnFlagsUnion*,System.Byte*)">
+            <summary>
+            Gets the address of the string contained here.
+            Assumes <see cref="M:CriFsV2Lib.Structs.CriColumnFlagsUnion.HasFlag(CriFsV2Lib.Structs.CriColumnFlags)"/>(Name) == true.
+            </summary>
+            <param name="thisPtr">Pointer to the 'this' instance.</param>
+            <param name="stringPoolPtr">Pointer to the address of the first character in the string section/pool.</param>
+        </member>
+        <member name="M:CriFsV2Lib.Structs.CriColumnFlagsUnion.GetValueLength">
+            <summary>
+            Gets the length of the value in bytes (if present).
+            </summary>
+        </member>
+        <member name="M:CriFsV2Lib.Structs.CriColumnFlagsUnion.ReadNumberLong(System.Byte*)">
+            <summary>
+            Reads the data value for this column and casts it into a long.
+            </summary>
+            <param name="currentRowPtr">Pointer to the data value.</param>
+        </member>
+        <member name="M:CriFsV2Lib.Structs.CriColumnFlagsUnion.ReadNumberInt(System.Byte*)">
+            <summary>
+            Reads the data value for this column and casts it into an int.
+            </summary>
+            <param name="currentRowPtr">Pointer to the data value.</param>
+        </member>
+        <member name="T:CriFsV2Lib.Structs.CriColumnFlags">
+            <summary>
+            Flags for CRI Table columns. This is an union with <see cref="T:CriFsV2Lib.Structs.CriColumnType"/>
+            </summary>
+        </member>
+        <member name="F:CriFsV2Lib.Structs.CriColumnFlags.HasName">
+            <summary>
+            This field contains a string with field name.
+            </summary>
+        </member>
+        <member name="F:CriFsV2Lib.Structs.CriColumnFlags.HasDefaultValue">
+            <summary>
+            This field contains a default value.
+            </summary>
+        </member>
+        <member name="F:CriFsV2Lib.Structs.CriColumnFlags.IsRowStorage">
+            <summary>
+            Row contains data for this field.
+            </summary>
+        </member>
+        <member name="T:CriFsV2Lib.Structs.CriColumnType">
+            <summary>
+            Type of data stored in this field. This is an union with <see cref="T:CriFsV2Lib.Structs.CriColumnFlags"/>
+            </summary>
+        </member>
+        <member name="T:CriFsV2Lib.Structs.CriString">
+            <summary>
+            Represents an individual string in the CRI Table.
+            A string is simply an offset to the actual string data in the string pool.
+            </summary>
+        </member>
+        <member name="F:CriFsV2Lib.Structs.CriString.Offset">
+            <summary>
+            Offset of this string.
+            </summary>
+        </member>
+        <member name="M:CriFsV2Lib.Structs.CriString.GetStringAddress(System.Byte*)">
+            <summary>
+            Gets the address of the string contained here.
+            Assumes <see cref="F:CriFsV2Lib.Structs.CriColumnFlags.HasName"/> == true.
+            </summary>
+            <param name="stringPoolPtr">Pointer to the address of the first character in the string section/pool.</param>
+        </member>
+        <member name="T:CriFsV2Lib.Structs.CriTableMetadata">
+            <summary>
+            Minimal metadata needed for parsing CRI tables.
+            </summary>
+        </member>
+        <member name="F:CriFsV2Lib.Structs.CriTableMetadata.BaseOffset">
+            <summary>
+            Base offset from which other offsets are relative to.
+            </summary>
+        </member>
+        <member name="F:CriFsV2Lib.Structs.CriTableMetadata.ColumnOffset">
+            <summary>
+            Offset to column data in header.
+            </summary>
+        </member>
+        <member name="F:CriFsV2Lib.Structs.CriTableMetadata.RowsOffset">
+            <summary>
+            Offset of row data relative to start of table.
+            </summary>
+        </member>
+        <member name="F:CriFsV2Lib.Structs.CriTableMetadata.StringPoolOffset">
+            <summary>
+            Offset of string data relative to start of table.
+            </summary>
+        </member>
+        <member name="F:CriFsV2Lib.Structs.CriTableMetadata.DataPoolOffset">
+            <summary>
+            Offset of raw data relative to start of table.
+            </summary>
+        </member>
+        <member name="F:CriFsV2Lib.Structs.CriTableMetadata.ColumnCount">
+            <summary>
+            Number of columns present in this table. (sometimes referred to as fields in other parsers)
+            </summary>
+        </member>
+        <member name="F:CriFsV2Lib.Structs.CriTableMetadata.RowSizeBytes">
+            <summary>
+            Size of an individual row in bytes.
+            </summary>
+        </member>
+        <member name="F:CriFsV2Lib.Structs.CriTableMetadata.RowCount">
+            <summary>
+            Number of rows in this table.
+            </summary>
+        </member>
+        <member name="M:CriFsV2Lib.Structs.CriTableMetadata.#ctor(System.Byte*)">
+            <summary>
+            Gets the metadata of a table.
+            </summary>
+            <param name="header">Pointer to header of table.</param>
+        </member>
+        <member name="M:CriFsV2Lib.Structs.CriTableMetadata.GetEncoding(System.Byte*)">
+            <summary>
+            Gets the encoding for this file.
+            </summary>
+            <param name="header">Header of the file.</param>
+        </member>
+        <member name="M:CriFsV2Lib.Structs.CriTableMetadata.GetFirstColumnPtr(System.Byte*)">
+            <summary>
+            Returns the pointer to the first column.
+            </summary>
+            <param name="headerPtr">Header pointer.</param>
+        </member>
+        <member name="M:CriFsV2Lib.Structs.CriTableMetadata.GetFirstRowPtr(System.Byte*)">
+            <summary>
+            Returns the pointer to the first row.
+            </summary>
+            <param name="headerPtr">Header pointer.</param>
+        </member>
+        <member name="T:CriFsV2Lib.Utilities.BatchFileExtractor`1">
+            <summary>
+            Utility for efficient batch extracting of items.
+            </summary>
+        </member>
+        <member name="P:CriFsV2Lib.Utilities.BatchFileExtractor`1.ItemsProcessed">
+            <summary>
+            Number of items processed.
+            </summary>
+        </member>
+        <member name="M:CriFsV2Lib.Utilities.BatchFileExtractor`1.#ctor(System.String,CriFsV2Lib.Definitions.InPlaceDecryptionFunction)">
+            <summary/>
+            <param name="sourceCpkPath">Full path to the source CPK where files are extracted from.</param>
+            <param name="decrypt">The decryption function to use.</param>
+        </member>
+        <member name="M:CriFsV2Lib.Utilities.BatchFileExtractor`1.Finalize">
+            <summary/>
+        </member>
+        <member name="M:CriFsV2Lib.Utilities.BatchFileExtractor`1.Dispose">
+            <summary>
+            Shuts down the batch extractor.
+            </summary>
+        </member>
+        <member name="M:CriFsV2Lib.Utilities.BatchFileExtractor`1.QueueItem(`0)">
+            <summary>
+            Queues an item for extracting.
+            </summary>
+            <param name="item">The item to queue.</param>
+        </member>
+        <member name="M:CriFsV2Lib.Utilities.BatchFileExtractor`1.WaitForCompletion(System.Int32,System.Action)">
+            <summary>
+            Waits for completion of current items in a blocking fashion.
+            </summary>
+            <param name="timeBetweenCallbacks">Minimum time taken between individual callbacks.</param>
+            <param name="callback">Action to be executed between each wait period.</param>
+        </member>
+        <member name="M:CriFsV2Lib.Utilities.BatchFileExtractor`1.WaitForCompletionAsync(System.Int32,System.Action)">
+            <summary>
+            Waits for completion of current items in a non-blocking fashion.
+            </summary>
+            <param name="timeBetweenCallbacks">Minimum time taken between individual callbacks.</param>
+            <param name="callback">Action to be executed between each wait period.</param>
+        </member>
+        <member name="T:CriFsV2Lib.Utilities.CriStringPool">
+            <summary>
+            Pools strings from CRI files into managed strings.
+            </summary>
+        </member>
+        <member name="M:CriFsV2Lib.Utilities.CriStringPool.#ctor">
+            <summary/>
+        </member>
+        <member name="M:CriFsV2Lib.Utilities.CriStringPool.Get(System.Byte*,CriFsV2Lib.Structs.CriString*,System.Text.Encoding)">
+            <summary>
+            Gets a string from the string pool.
+            </summary>
+            <param name="stringPoolAddr">Address of the first byte of the string pool in CPK.</param>
+            <param name="stringPtr">Pointer to the CRI String.</param>
+            <param name="encoding">The encoding used for the string conversion.</param>
+            <returns>Managed string at that position.</returns>
+        </member>
+        <member name="M:CriFsV2Lib.Utilities.CriStringPool.Get(System.Byte*,System.Int32,System.Text.Encoding)">
+            <summary>
+            Gets a string from the string pool.
+            Use if string is expected to be non-unique.
+            </summary>
+            <param name="stringPoolAddr">Address of the first byte of the string pool in CPK.</param>
+            <param name="offset">Offset of the string.</param>
+            <param name="encoding">The encoding used for the string conversion.</param>
+            <returns>Managed string at that position.</returns>
+        </member>
+        <member name="M:CriFsV2Lib.Utilities.CriStringPool.GetWithoutPooling(System.Byte*,CriFsV2Lib.Structs.CriString*,System.Text.Encoding)">
+            <summary>
+            Gets a string without adding it to the string cache.
+            Use if string is expected to be unique.
+            </summary>
+            <param name="stringPoolAddr">Address of the first byte of the string pool in CPK.</param>
+            <param name="stringPtr">Pointer to the CRI String.</param>
+            <param name="encoding">The encoding used for the string conversion.</param>
+            <returns>Managed string at that position.</returns>
+        </member>
+        <member name="M:CriFsV2Lib.Utilities.CriStringPool.GetWithoutPooling(System.Byte*,System.Int32,System.Text.Encoding)">
+            <summary>
+            Gets a string without adding it to the string cache.
+            Use if string is expected to be unique.
+            </summary>
+            <param name="stringPoolAddr">Address of the first byte of the string pool in CPK.</param>
+            <param name="offset">Offset of the string.</param>
+            <param name="encoding">The encoding used for the string conversion.</param>
+            <returns>Managed string at that position.</returns>
+        </member>
+        <member name="T:CriFsV2Lib.Utilities.Intrinsics">
+            <summary>
+            Provides native intrinsics support.
+            </summary>
+        </member>
+        <member name="M:CriFsV2Lib.Utilities.Intrinsics.CopyNative(System.Byte*,System.Byte*,System.Int32)">
+            <summary>
+            Copies data between source and destination using SSE3.
+            </summary>
+            <param name="src">Source.</param>
+            <param name="dst">Destination.</param>
+            <param name="len">Length.</param>
+        </member>
+        <member name="M:CriFsV2Lib.Utilities.Intrinsics.MultiplyBytesAvx(System.Runtime.Intrinsics.Vector256{System.Int16},System.Runtime.Intrinsics.Vector256{System.Int16})">
+            <summary>
+            Multiplies individual bytes for AVX registers.
+            </summary>
+        </member>
+        <member name="M:CriFsV2Lib.Utilities.Intrinsics.MultiplyBytesSse(System.Runtime.Intrinsics.Vector128{System.Int16},System.Runtime.Intrinsics.Vector128{System.Int16})">
+            <summary>
+            Multiplies individual bytes for SSE registers.
+            </summary>
+        </member>
+        <member name="T:CriFsV2Lib.Utilities.Parsing.CpkHelper">
+            <summary>
+            High level APIs for reading data from CPKs.
+            </summary>
+        </member>
+        <member name="M:CriFsV2Lib.Utilities.Parsing.CpkHelper.ExtractFileNoDecompression(CriFsV2Lib.Definitions.Structs.CpkFile@,System.IO.Stream,System.Boolean@,CriFsV2Lib.Definitions.InPlaceDecryptionFunction)">
+            <summary>
+            Extracts the file from the CPK without decompressing it using CRILAYLA.
+            </summary>
+            <param name="file">The file to extract from the archive.</param>
+            <param name="stream">
+                A stream which should start at the beginning of the CPK file.
+            </param>
+            <param name="decrypt">
+               Optional function for decrypting the data.
+               The CRI SDK allows for users to encrypt files in-place, so if your game has some custom encryption, pass it here.
+            </param>
+            <param name="needsDecompression">
+               True if the file will need to be decompressed with <see cref="M:CriFsV2Lib.Compression.CriLayla.DecompressToArrayPool(System.Byte*)"/>.
+            </param>
+            <returns>Extracted data.</returns>
+        </member>
+        <member name="M:CriFsV2Lib.Utilities.Parsing.CpkHelper.ExtractFile(CriFsV2Lib.Definitions.Structs.CpkFile@,System.IO.Stream,CriFsV2Lib.Definitions.InPlaceDecryptionFunction)">
+            <summary>
+            Gets all of the file data info within a CPK file from a stream.
+            Use when CPK file is big, e.g. reading 2GB+ file.
+            </summary>
+            <param name="file">The file to extract from the archive.</param>
+            <param name="stream">
+                A stream which should start at the beginning of the CPK file.
+            </param>
+            <param name="decrypt">
+               Optional function for decrypting the data.
+               The CRI SDK allows for users to encrypt files in-place, so if your game has some custom encryption, pass it here.
+            </param>
+            <returns>Extracted data.</returns>
+        </member>
+        <member name="M:CriFsV2Lib.Utilities.Parsing.CpkHelper.GetFilesFromStream(System.IO.Stream)">
+            <summary>
+            Gets all of the file data info within a CPK file from a stream.
+            Use when CPK file is big, e.g. reading 2GB+ file.
+            </summary>
+            <param name="stream">A stream which should start at the beginning of the CPK file.</param>
+        </member>
+        <member name="M:CriFsV2Lib.Utilities.Parsing.CpkHelper.GetFilesFromFile(System.Byte*)">
+            <summary>
+            Reads all of the files present within a CPK file from a byte array.  
+            Use when entire CPK is in memory.  
+            </summary>
+            <param name="dataPtr">Pointer to the start of the CPK data in memory.</param>
+        </member>
+        <member name="T:CriFsV2Lib.Utilities.Parsing.TableContainerReader">
+            <summary>
+            Class that reads the table of contents.
+            </summary>
+        </member>
+        <member name="F:CriFsV2Lib.Utilities.Parsing.TableContainerReader.TableContainerSize">
+            <summary>
+            Size of the table container.
+            </summary>
+        </member>
+        <member name="M:CriFsV2Lib.Utilities.Parsing.TableContainerReader.ReadTable(System.IO.Stream)">
+            <summary>
+            Reads a CRI table from a given a stream that starts at the table container.
+            </summary>
+            <param name="str">
+                Stream containing the data for the table.
+                This stream should start with a signature such as 'CPK', 'TOC' or 'ETOC'.</param>
+            <returns>Data containing the table.</returns>
+        </member>
+        <member name="T:CriFsV2Lib.Utilities.Parsing.TocFinder">
+            <summary>
+            Class that can be used to parse the CPK's main CRI Table to find the table of contents CRI Table.
+            </summary>
+        </member>
+        <member name="M:CriFsV2Lib.Utilities.Parsing.TocFinder.FindToc(System.Byte*,System.Int64@,System.Int64@)">
+            <summary>
+            Finds the table of content
+            </summary>
+            <param name="header">Pointer to CRI Table header.</param>
+            <param name="tocOffset">Offset of the table of contents inside the archive.</param>
+            <param name="contentOffset">Offset from which file offsets are offset from.</param>
+            <returns>Offset of the TOC inside the CPK file.</returns>
+        </member>
+        <member name="T:CriFsV2Lib.Utilities.Parsing.TocReader">
+            <summary>
+            Reader of the CRI Table of Contents.
+            </summary>
+        </member>
+        <member name="M:CriFsV2Lib.Utilities.Parsing.TocReader.ReadToc(System.Byte*,System.Int64)">
+            <summary>
+            Finds the table of content from a CPK file.
+            </summary>
+            <param name="header">Pointer to CRI Table header.</param>
+            <param name="contentOffset">Offset of the raw data inside the TOC. This is used to get final file pointer inside file.</param>
+            <returns>List of all files inside table of contents.</returns>
+        </member>
+        <member name="T:CriFsV2Lib.Utilities.StreamExtensions">
+            <summary>
+            Extensions to the 'Stream' class.
+            </summary>
+        </member>
+        <member name="M:CriFsV2Lib.Utilities.StreamExtensions.TryReadSafe(System.IO.Stream,System.Byte[])">
+            <summary>
+            Reads a given number of bytes from a stream.
+            </summary>
+            <param name="stream">The stream to read the value from.</param>
+            <param name="result">The buffer to receive the bytes.</param>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,669 @@
+
+// 
+// FlowScript decompiled using Atlus Script Tools
+// 
+
+
+// 
+// Imports
+// 
+
+import("FIELDFSCR0153_001_010.BF.msg");
+
+// 
+// Script-level variable definitions
+// 
+
+int sVar1;
+int sVar2;
+int sVar3;
+int sVar8;
+int sVar9;
+int sVar10;
+int sVar19;
+int sVar18;
+int sVar24;
+int sVar29;
+int sVar30;
+
+// 
+// Procedure declarations
+// 
+
+// Procedure Index: 0
+void General_0153_001_010()
+{
+    D02_01_MONA_SAFE_ROOM();
+}
+
+
+// Procedure Index: 1
+void D02_01_MONA_SAFE_ROOM()
+{
+    int var0;
+    int var4;
+    FADEOUT(0, 10);
+    FADE_SYNC();
+    FLD_PANEL_DISP(0);
+    var0 = FLD_PC_GET_RESHND(0);
+    sVar1 = 3;
+    sVar2 = -1;
+    sVar3 = -1;
+    event_member_setup();
+    
+    if (var0 >= 0)
+    {
+        FLD_MODEL_SET_TRANSLATE(var0, -274.9994f, -300.00f, 5099.996f, 0);
+        FLD_MODEL_SET_ROTATE(var0, 0, 115, 0, 0);
+        FLD_UNIT_SET_WAIT(var0);
+    }
+
+    FLD_MODEL_SET_TRANSLATE(sVar1, -74.9994f, -300.00f, 4899.996f, 0);
+    FLD_MODEL_SET_ROTATE(sVar1, 0, -45, 0, 0);
+    FLD_UNIT_SET_WAIT(sVar1);
+    
+    if (sVar2 >= 0)
+    {
+        MDL_VISIBLE(sVar2, 0);
+    }
+
+    
+    if (sVar3 >= 0)
+    {
+        MDL_VISIBLE(sVar3, 0);
+    }
+
+    var4 = FLD_NPC_MODEL_LOAD_BASE(100, 51, 1, 51);
+    FLD_MODEL_LOADSYNC(var4);
+    MDL_VISIBLE(var4, 0);
+    MDL_SET_SCALE(var4, 1.30f);
+    FLD_MODEL_SET_TRANSLATE(var4, 425.0005f, 700.00f, 4849.996f, 0);
+    FLD_MODEL_SET_ROTATE(var4, 0, 90, 0, 0);
+    MDL_ANIM(var4, 0, 1, 0, 1.00f);
+    FLD_CAMERA_LOCK();
+    FLD_CAMERA_LOCK_INTERP(-337.3015f, -65.6999f, 5327.253f, -0.2071f, -0.2566f, -0.0564f, 0.9424f, 0);
+    WAIT(10);
+    FADEIN(0, 10);
+    FADE_SYNC();
+    WAIT(10);
+    FLD_MODEL_UNIT_TRANSLATE(sVar1, 275.0005f, -200.00f, 4849.996f, 1);
+    FLD_CAMERA_LOCK_SYNC_INTERP();
+    FLD_CAMERA_LOCK_INTERP(-337.3032f, -65.7007f, 5327.251f, -0.1344f, -0.4406f, -0.0669f, 0.885f, 37);
+    FLD_MODEL_SYNC_TRANSLATE(sVar1);
+    FLD_UNIT_SET_WAIT(sVar1);
+    WAIT(10);
+    FLD_PC_COVER_RUN(sVar1, 425.0005f, 700.00f, 4849.996f);
+    FLD_CAMERA_LOCK_SYNC_INTERP();
+    FLD_CAMERA_LOCK_INTERP(-337.3058f, -65.7009f, 5327.252f, -0.0899f, -0.4434f, -0.0447f, 0.8907f, 15);
+    FLD_PC_SYNC_COVER_RUN(sVar1);
+    MDL_VISIBLE(sVar1, 0);
+    WAIT(9);
+    MDL_ANIM(var4, 28, 1, 0, 1.00f);
+    FLD_MODEL_SET_TRANSLATE(var4, 425.0005f, -300.00f, 4849.996f, 20);
+    MDL_VISIBLE(var4, 1);
+    FLD_CAMERA_LOCK_SYNC_INTERP();
+    FLD_CAMERA_LOCK_INTERP(-337.3046f, -65.7009f, 5327.253f, -0.1072f, -0.4425f, -0.0533f, 0.8888f, 20);
+    WAIT(20);
+    MDL_ANIM(var4, 29, 0, 0, 1.00f);
+    MDL_ANIM_SYNC(var4);
+    MDL_ANIM(var4, 0, 1, 8, 1.00f);
+    
+    if (var0 >= 0)
+    {
+        FLD_MODEL_UNIT_TRANSLATE(var0, 85.0042f, -300.00f, 4800.00f, 0);
+    }
+
+    FLD_CAMERA_LOCK_SYNC_INTERP();
+    FLD_CAMERA_LOCK_INTERP(-337.3057f, -65.7005f, 5327.253f, -0.1007f, -0.4429f, -0.0501f, 0.8895f, 30);
+    WAIT(20);
+    FADEOUT(0, 10);
+    FADE_SYNC();
+    FLD_MODEL_SYNC_TRANSLATE(var4);
+    FLD_MODEL_FREE(var4);
+    FLD_PANEL_DISP(1);
+    MDL_VISIBLE(sVar1, 1);
+    
+    if (sVar2 >= 0)
+    {
+        MDL_VISIBLE(sVar2, 1);
+    }
+
+    
+    if (sVar3 >= 0)
+    {
+        MDL_VISIBLE(sVar3, 1);
+    }
+
+    event_member_release();
+    FLD_MODEL_SYNC_TRANSLATE(var0);
+    FLD_CAMERA_SYNC_INTERP();
+    FLD_CAMERA_UNLOCK();
+    return;
+}
+
+
+// Procedure Index: 2
+void event_member_setup()
+{
+    int var5;
+    int var6;
+    int var7;
+    int var11;
+    int var12;
+    var5 = sVar1;
+    var6 = sVar2;
+    var7 = sVar3;
+    _choice_member();
+    var11 = 1;
+    _13:
+    
+    if (var11 < 4)
+    {
+        var12 = FLD_PC_GET_RESHND(var11);
+        
+        if (var12 > 0)
+        {
+            FLD_MODEL_SET_VISIBLE(var12, 0, 0);
+        }
+
+        var11 = (var11 + 1);
+        goto _13;
+    }
+
+    _make_handle();
+    sVar1 = sVar8;
+    sVar2 = sVar9;
+    sVar3 = sVar10;
+}
+
+
+// Procedure Index: 3
+void event_member_release()
+{
+    int var13;
+    int var14;
+    FLD_PTY_RESET_BUF();
+    sVar24 = sVar8;
+    _release_handle();
+    sVar24 = sVar9;
+    _release_handle();
+    sVar24 = sVar10;
+    _release_handle();
+    var13 = 1;
+    _17:
+    
+    if (var13 < 4)
+    {
+        var14 = FLD_PC_GET_RESHND(var13);
+        
+        if (var14 > 0)
+        {
+            FLD_MODEL_SET_VISIBLE(var14, 1, 0);
+        }
+
+        var13 = (var13 + 1);
+        goto _17;
+    }
+
+}
+
+
+// Procedure Index: 4
+void _choice_member()
+{
+    int var15;
+    int var16;
+    
+    if (sVar1 == -1)
+    {
+        sVar1 = 0;
+        var15 = 1;
+        _21:
+        
+        if (var15 < 4)
+        {
+            var16 = FLD_PC_GET_ID(var15);
+            
+            if (var16 != 0)
+            {
+                sVar18 = var16;
+                _check_fix_member();
+                
+                if (sVar19 == 0)
+                {
+                    sVar1 = sVar18;
+                    goto _22;
+                }
+
+            }
+
+            var15 = (var15 + 1);
+            goto _21;
+        }
+
+        _22:
+    }
+
+    
+    if (sVar2 == -1)
+    {
+        sVar2 = 0;
+        var15 = 1;
+        _29:
+        
+        if (var15 < 4)
+        {
+            var16 = FLD_PC_GET_ID(var15);
+            
+            if (var16 != 0)
+            {
+                sVar18 = var16;
+                _check_fix_member();
+                
+                if (sVar19 == 0)
+                {
+                    sVar2 = sVar18;
+                    goto _30;
+                }
+
+            }
+
+            var15 = (var15 + 1);
+            goto _29;
+        }
+
+        _30:
+    }
+
+    
+    if (sVar3 == -1)
+    {
+        sVar3 = 0;
+        var15 = 1;
+        _37:
+        
+        if (var15 < 4)
+        {
+            var16 = FLD_PC_GET_ID(var15);
+            
+            if (var16 != 0)
+            {
+                sVar18 = var16;
+                _check_fix_member();
+                
+                if (sVar19 == 0)
+                {
+                    sVar3 = sVar18;
+                    goto _38;
+                }
+
+            }
+
+            var15 = (var15 + 1);
+            goto _37;
+        }
+
+        _38:
+    }
+
+    return;
+}
+
+
+// Procedure Index: 5
+void _check_fix_member()
+{
+    sVar19 = 0;
+    
+    if ((sVar18 <= 1) || (sVar18 >= 11))
+    {
+        return;
+    }
+
+    
+    if (sVar18 == sVar1)
+    {
+        sVar19 = 1;
+        return;
+    }
+
+    
+    if (sVar18 == sVar2)
+    {
+        sVar19 = 1;
+        return;
+    }
+
+    
+    if (sVar18 == sVar3)
+    {
+        sVar19 = 1;
+        return;
+    }
+
+    return;
+}
+
+
+// Procedure Index: 6
+void _make_handle()
+{
+    int var21;
+    int var22;
+    int var23;
+    int var20;
+    var21 = 50;
+    var22 = 0;
+    var23 = 51;
+    
+    if (FLD_CHECK_MOUSE())
+    {
+        var21 = 99;
+        var23 = 99;
+    }
+
+    sVar8 = -1;
+    
+    if (sVar1 != 0)
+    {
+        var20 = FLD_PC_ID_GET_RESHND(sVar1);
+        sVar8 = var20;
+        
+        if (var20 == -1)
+        {
+            sVar8 = FLD_NPC_MODEL_LOAD_BASE(sVar1, var21, 0, var23);
+            FLD_MODEL_LOADSYNC(sVar8);
+            var22 = (var22 + 1);
+        }
+
+        FLD_MODEL_SET_VISIBLE(sVar8, 1, 0);
+        FLD_PTY_ADD_BUF(sVar8, 0);
+    }
+
+    sVar9 = -1;
+    
+    if (sVar2 != 0)
+    {
+        var20 = FLD_PC_ID_GET_RESHND(sVar2);
+        sVar9 = var20;
+        
+        if (var20 == -1)
+        {
+            sVar9 = FLD_NPC_MODEL_LOAD_BASE(sVar2, var21, 0, var23);
+            FLD_MODEL_LOADSYNC(sVar9);
+            var22 = (var22 + 1);
+        }
+
+        FLD_MODEL_SET_VISIBLE(sVar9, 1, 0);
+        FLD_PTY_ADD_BUF(sVar9, 1);
+    }
+
+    sVar10 = -1;
+    
+    if (sVar3 != 0)
+    {
+        var20 = FLD_PC_ID_GET_RESHND(sVar3);
+        sVar10 = var20;
+        
+        if (var20 == -1)
+        {
+            sVar10 = FLD_NPC_MODEL_LOAD_BASE(sVar3, var21, 0, var23);
+            FLD_MODEL_LOADSYNC(sVar10);
+            var22 = (var22 + 1);
+        }
+
+        FLD_MODEL_SET_VISIBLE(sVar10, 1, 0);
+        FLD_PTY_ADD_BUF(sVar10, 2);
+    }
+
+}
+
+
+// Procedure Index: 7
+void _release_handle()
+{
+    int var25;
+    int var26;
+    
+    if (sVar24 > 0)
+    {
+        var25 = 1;
+        _67:
+        
+        if (var25 < 4)
+        {
+            var26 = FLD_PC_GET_RESHND(var25);
+            
+            if (var26 == sVar24)
+            {
+                goto _68;
+            }
+
+            var25 = (var25 + 1);
+            goto _67;
+        }
+
+        _68:
+        
+        if (var25 == 4)
+        {
+            FLD_MODEL_SET_VISIBLE(sVar24, 0, 0);
+            FLD_MODEL_FREE(sVar24);
+        }
+
+    }
+
+    sVar24 = 0;
+}
+
+
+// Procedure Index: 8
+void motion_wait()
+{
+    int var27;
+    var27 = FLD_PC_GET_RESHND(0);
+    
+    if (MDL_GET_ANIM(var27) != 0)
+    {
+        FLD_MODEL_ANIM(var27, 0, 0, 5, 1.00f);
+    }
+
+}
+
+
+// Procedure Index: 9
+void motion_event_wait()
+{
+    int var28;
+    var28 = FLD_PC_GET_RESHND(0);
+    
+    if (MDL_GET_ANIM(var28) != 58)
+    {
+        FLD_MODEL_ANIM(var28, 58, 0, 5, 1.00f);
+    }
+
+}
+
+
+// Procedure Index: 10
+void add_motion_CONSOLE()
+{
+    int var31;
+    var31 = FLD_PC_GET_RESHND(0);
+    sVar29 = FLD_MODEL_CLONE_ADDMOTION(var31, 57);
+    FLD_MODEL_ANIM(sVar29, (60 + 0), 0, 3, 1.00f);
+    sVar30 = 2;
+    return;
+}
+
+
+// Procedure Index: 11
+void add_motion_TAKE()
+{
+    int var32;
+    var32 = FLD_PC_GET_RESHND(0);
+    sVar29 = FLD_MODEL_CLONE_ADDMOTION(var32, 84);
+    FLD_MODEL_ANIM(sVar29, (60 + 0), 0, 3, 1.00f);
+    sVar30 = 2;
+    return;
+}
+
+
+// Procedure Index: 12
+void add_motion_GIMMICK_TAKE()
+{
+    int var33;
+    var33 = FLD_PC_GET_RESHND(0);
+    sVar29 = FLD_MODEL_CLONE_ADDMOTION(var33, 86);
+    FLD_MODEL_ANIM(sVar29, (60 + 0), 0, 3, 1.00f);
+    sVar30 = 1;
+    return;
+}
+
+
+// Procedure Index: 13
+void add_motion_GIMMICK_PUT()
+{
+    int var34;
+    var34 = FLD_PC_GET_RESHND(0);
+    sVar29 = FLD_MODEL_CLONE_ADDMOTION(var34, 87);
+    FLD_MODEL_ANIM(sVar29, (60 + 0), 0, 3, 1.00f);
+    sVar30 = 1;
+    return;
+}
+
+
+// Procedure Index: 14
+void add_motion_DOOR_OPEN()
+{
+    int var35;
+    var35 = FLD_PC_GET_RESHND(0);
+    sVar29 = FLD_MODEL_CLONE_ADDMOTION(var35, 90);
+    FLD_MODEL_ANIM(sVar29, (60 + 0), 0, 3, 0.70f);
+    sVar30 = 1;
+    return;
+}
+
+
+// Procedure Index: 15
+void add_motion_DOOR_NOT_OPEN()
+{
+    int var36;
+    var36 = FLD_PC_GET_RESHND(0);
+    sVar29 = FLD_MODEL_CLONE_ADDMOTION(var36, 91);
+    FLD_MODEL_ANIM(sVar29, (60 + 0), 0, 3, 0.70f);
+    sVar30 = 1;
+    return;
+}
+
+
+// Procedure Index: 16
+void add_motion_DOOR_KICK()
+{
+    int var37;
+    var37 = FLD_PC_GET_RESHND(0);
+    sVar29 = FLD_MODEL_CLONE_ADDMOTION(var37, 92);
+    FLD_MODEL_ANIM(sVar29, (60 + 0), 0, 3, 0.70f);
+    sVar30 = 1;
+    return;
+}
+
+
+// Procedure Index: 17
+void add_motion_SWITCH()
+{
+    int var38;
+    var38 = FLD_PC_GET_RESHND(0);
+    sVar29 = FLD_MODEL_CLONE_ADDMOTION(var38, 93);
+    FLD_MODEL_ANIM(sVar29, (60 + 0), 0, 3, 1.00f);
+    sVar30 = 1;
+    return;
+}
+
+
+// Procedure Index: 18
+void add_motion_SWITCH_NONE()
+{
+    int var39;
+    var39 = FLD_PC_GET_RESHND(0);
+    sVar29 = FLD_MODEL_CLONE_ADDMOTION(var39, 94);
+    FLD_MODEL_ANIM(sVar29, (60 + 0), 0, 3, 1.00f);
+    sVar30 = 1;
+    return;
+}
+
+
+// Procedure Index: 19
+void add_motion_SWITCH_L()
+{
+    int var40;
+    var40 = FLD_PC_GET_RESHND(0);
+    sVar29 = FLD_MODEL_CLONE_ADDMOTION(var40, 96);
+    FLD_MODEL_ANIM(sVar29, (60 + 0), 0, 3, 0.70f);
+    sVar30 = 1;
+    return;
+}
+
+
+// Procedure Index: 20
+void add_motion_SWITCH_L_NONE()
+{
+    int var41;
+    var41 = FLD_PC_GET_RESHND(0);
+    sVar29 = FLD_MODEL_CLONE_ADDMOTION(var41, 97);
+    FLD_MODEL_ANIM(sVar29, (60 + 0), 0, 3, 0.70f);
+    sVar30 = 1;
+    return;
+}
+
+
+// Procedure Index: 21
+void add_motion_CARD_IN()
+{
+    int var42;
+    var42 = FLD_PC_GET_RESHND(0);
+    sVar29 = FLD_MODEL_CLONE_ADDMOTION(var42, 81);
+    FLD_MODEL_ANIM(sVar29, (60 + 0), 0, 3, 0.70f);
+    sVar30 = 2;
+    return;
+}
+
+
+// Procedure Index: 22
+void add_motion_wait()
+{
+    int var43;
+    var43 = FLD_PC_GET_RESHND(0);
+    FLD_MODEL_ANIM_SYNC(sVar29);
+    
+    if (sVar30 == 1)
+    {
+        FLD_MODEL_ANIM(sVar29, 0, 1, 5, 1.00f);
+    }
+    else if (sVar30 == 2)
+    {
+        FLD_MODEL_ANIM(sVar29, 58, 1, 5, 1.00f);
+    }
+
+    FLD_MODEL_REVERT_ADDMOTION(var43, sVar29);
+    sVar29 = 0;
+    sVar30 = 0;
+    return;
+}
+
+
+// Procedure Index: 23
+void talk_motion()
+{
+    int var44;
+    int var45;
+    var45 = FLD_PC_ID_GET_RESHND(var44);
+    
+    if (var45 != -1)
+    {
+        FLD_MODEL_TALK_ANIM(var45);
+    }
+
+    return;
+}
+

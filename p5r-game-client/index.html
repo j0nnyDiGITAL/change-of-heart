@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PERSONA 5 ROYAL — Camp Menu Save Engine</title>
+  <link rel="stylesheet" href="/game/p5r_game.css?v=2">
+  <link rel="icon" type="image/jpeg" href="/assets/joker_avatar.jpg">
+</head>
+<body>
+
+  <!-- TOP IN-GAME CALENDAR & HUD STRIP -->
+  <header class="p5-game-hud">
+    <div class="hud-date-card">
+      <div class="hud-date-stamp" id="hudDate">CALENDAR SCAN...</div>
+      <div class="hud-weather-icon" id="hudWeather">☀️</div>
+      <div style="font-size:12px; font-weight:800; color:var(--p5-muted);" id="hudPlaytime">PLAYTIME: --:--</div>
+    </div>
+
+    <!-- Save Selector & Direct Loader -->
+    <div style="display:flex; align-items:center; gap:12px; max-width:600px; flex:1; justify-content:center;">
+      <select id="saveDropdown" class="p5-select" style="background:#181824; border:2px solid #000; color:#FFF; padding:8px 14px; font-weight:700; font-size:13px; transform:skew(-8deg);">
+        <option value="">-- Scanning Steam Saves... --</option>
+      </select>
+      <button class="p5-btn-action" style="padding:6px 16px; font-size:16px;" onclick="loadGameSave()"><span>LOAD SAVE</span></button>
+    </div>
+
+    <!-- Yen Counter -->
+    <div class="hud-wallet-counter">
+      <span class="hud-yen-symbol">¥</span>
+      <span class="hud-yen-amount" id="hudYen">0</span>
+    </div>
+  </header>
+
+  <!-- 3D KINETIC VIEWPORT -->
+  <main class="p5-screen-viewport" id="viewport">
+
+    <!-- SCREEN 0: 3D FULL-BLEED CAMP MENU -->
+    <section class="p5-camp-menu" id="screen-camp">
+      <div class="camp-stage-background"></div>
+
+      <!-- Giant 3D Slanted Command Wheel -->
+      <div class="camp-commands-container">
+        <button class="camp-cmd-blade" onclick="openGameScreen('confidants')">
+          <span class="cmd-num">01</span>
+          <span class="cmd-text">CONFIDANT</span>
+        </button>
+        <button class="camp-cmd-blade" onclick="openGameScreen('personas')">
+          <span class="cmd-num">02</span>
+          <span class="cmd-text">PERSONA</span>
+        </button>
+        <button class="camp-cmd-blade" onclick="openGameScreen('stats')">
+          <span class="cmd-num">03</span>
+          <span class="cmd-text">STATS</span>
+        </button>
+        <button class="camp-cmd-blade" onclick="openGameScreen('items')">
+          <span class="cmd-num">04</span>
+          <span class="cmd-text">ITEM</span>
+        </button>
+        <button class="camp-cmd-blade" onclick="openGameScreen('system')">
+          <span class="cmd-num">05</span>
+          <span class="cmd-text">SYSTEM</span>
+        </button>
+      </div>
+
+      <!-- Joker Character Splash Tag -->
+      <div class="camp-calling-tag">
+        <div class="tag-title">TAKE YOUR HEART</div>
+        <div class="tag-sub" id="campGroupName">PHANTOM THIEVES</div>
+      </div>
+    </section>
+
+    <!-- SCREEN 1: 1:1 CONFIDANT CO-OP HUB -->
+    <section class="p5-subscreen" id="screen-confidants">
+      <div class="subscreen-nav-bar">
+        <button class="btn-back-camp" onclick="returnToCampMenu()"><span>◄ RETURN TO CAMP</span></button>
+        <div style="font-family:var(--font-p5); font-size:36px; color:var(--p5-yellow); text-shadow:3px 3px 0 #000;">
+          ★ CONFIDANTS / CO-OP BROWSER ★
+        </div>
+        <button class="p5-btn-action" onclick="maxAllConfidantsGame()"><span>★ MAX ALL (RANK 10)</span></button>
+      </div>
+
+      <div class="coop-screen-layout">
+        <!-- Left Tarot Placards Deck -->
+        <div class="coop-deck-scroll" id="coopTarotDeck">
+          <!-- Dynamically populated -->
+        </div>
+
+        <!-- Right Hero Spotlight Dossier -->
+        <div class="coop-hero-canvas" id="coopHeroCanvas">
+          <!-- Spotlight rendered live -->
+        </div>
+      </div>
+    </section>
+
+    <!-- SCREEN 2: VELVET ROOM & PERSONAS -->
+    <section class="p5-subscreen" id="screen-personas">
+      <div class="subscreen-nav-bar">
+        <button class="btn-back-camp" onclick="returnToCampMenu()"><span>◄ RETURN TO CAMP</span></button>
+        <div style="font-family:var(--font-p5); font-size:36px; color:var(--p5-yellow); text-shadow:3px 3px 0 #000;">
+          ★ VELVET ROOM / PERSONA STOCK ★
+        </div>
+        <div></div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1.5fr; gap:30px;">
+        <!-- 12 Slot Stock Selector -->
+        <div style="background:#12121A; border:3px solid #000; padding:20px; box-shadow:8px 8px 0 #000;">
+          <div style="font-family:var(--font-p5); font-size:24px; color:var(--p5-yellow); margin-bottom:15px;">
+            12-SLOT PERSONA STOCK
+          </div>
+          <div id="gameStockGrid" style="display:grid; grid-template-columns:repeat(2, 1fr); gap:10px;">
+            <!-- Stock chips -->
+          </div>
+        </div>
+
+        <!-- Active Persona Studio -->
+        <div style="background:#141420; border:4px solid var(--p5-crimson); padding:25px; box-shadow:10px 10px 0 #000;" id="gamePersonaStudio">
+          <!-- Active persona editor -->
+        </div>
+      </div>
+    </section>
+
+    <!-- SCREEN 3: STATS & DAILY LIFE -->
+    <section class="p5-subscreen" id="screen-stats">
+      <div class="subscreen-nav-bar">
+        <button class="btn-back-camp" onclick="returnToCampMenu()"><span>◄ RETURN TO CAMP</span></button>
+        <div style="font-family:var(--font-p5); font-size:36px; color:var(--p5-yellow); text-shadow:3px 3px 0 #000;">
+          ★ PHANTOM IDENTITY & SOCIAL STATS ★
+        </div>
+        <button class="p5-btn-action" onclick="maxAllSocialStatsGame()"><span>★ MAX ALL (RANK 5)</span></button>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:30px;">
+        <!-- Identity -->
+        <div style="background:#141420; border:3px solid #000; border-left:8px solid var(--p5-crimson); padding:25px; box-shadow:8px 8px 0 #000;">
+          <div style="font-family:var(--font-p5); font-size:26px; color:var(--p5-yellow); margin-bottom:18px;">
+            LEADER PROFILE
+          </div>
+          <div style="display:flex; flex-direction:column; gap:14px;">
+            <div>
+              <label style="font-size:11px; font-weight:900; color:var(--p5-muted);">FIRST NAME</label>
+              <input type="text" id="gameFname" class="p5-input" style="width:100%; margin-top:4px;">
+            </div>
+            <div>
+              <label style="font-size:11px; font-weight:900; color:var(--p5-muted);">LAST NAME</label>
+              <input type="text" id="gameLname" class="p5-input" style="width:100%; margin-top:4px;">
+            </div>
+            <div>
+              <label style="font-size:11px; font-weight:900; color:var(--p5-muted);">PHANTOM THIEF GROUP NAME</label>
+              <input type="text" id="gameGroupName" class="p5-input" style="width:100%; margin-top:4px;">
+            </div>
+            <div>
+              <label style="font-size:11px; font-weight:900; color:var(--p5-muted);">YEN / MONEY (¥)</label>
+              <input type="number" id="gameMoney" class="p5-input" style="width:100%; margin-top:4px;" min="0" max="9999999">
+            </div>
+          </div>
+        </div>
+
+        <!-- 5-Point Social Stats -->
+        <div style="background:#141420; border:3px solid #000; border-left:8px solid var(--p5-yellow); padding:25px; box-shadow:8px 8px 0 #000;">
+          <div style="font-family:var(--font-p5); font-size:26px; color:var(--p5-yellow); margin-bottom:18px;">
+            5-POINT SOCIAL STATS
+          </div>
+          <div id="gameSocialStatsList" style="display:flex; flex-direction:column; gap:14px;">
+            <!-- Social stat nodes -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCREEN 4: ITEM POUCH & HIDEOUT -->
+    <section class="p5-subscreen" id="screen-items">
+      <div class="subscreen-nav-bar">
+        <button class="btn-back-camp" onclick="returnToCampMenu()"><span>◄ RETURN TO CAMP</span></button>
+        <div style="font-family:var(--font-p5); font-size:36px; color:var(--p5-yellow); text-shadow:3px 3px 0 #000;">
+          ★ HIDEOUT INVENTORY & TOOLS ★
+        </div>
+        <div></div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:20px;">
+        <div style="background:#12121A; border:3px solid #000; padding:20px; box-shadow:6px 6px 0 #000;">
+          <div style="font-family:var(--font-p5); font-size:22px; color:var(--p5-yellow); margin-bottom:10px;">☕ LEBLANC MASTER BATCH</div>
+          <p style="font-size:12px; color:var(--p5-muted); margin-bottom:14px;">Stock unlimited SP items: 99x Master Curry & 99x Master Coffee.</p>
+          <button class="p5-btn-action" style="width:100%; font-size:16px;" onclick="stockLeblancGame()"><span>STOCK 99x CURRY & COFFEE</span></button>
+        </div>
+
+        <div style="background:#12121A; border:3px solid #000; padding:20px; box-shadow:6px 6px 0 #000;">
+          <div style="font-family:var(--font-p5); font-size:22px; color:var(--p5-yellow); margin-bottom:10px;">🔑 INFILTRATION TOOLS</div>
+          <p style="font-size:12px; color:var(--p5-muted); margin-bottom:14px;">Grants Eternal Lockpick, 99x Smokes, and 99x Goho-Ms.</p>
+          <button class="p5-btn-action" style="width:100%; font-size:16px;" onclick="stockInfiltrationGame()"><span>STOCK INFILTRATION KIT</span></button>
+        </div>
+
+        <div style="background:#12121A; border:3px solid #000; padding:20px; box-shadow:6px 6px 0 #000;">
+          <div style="font-family:var(--font-p5); font-size:22px; color:var(--p5-yellow); margin-bottom:10px;">💉 CLINIC SPECIAL MEDS</div>
+          <p style="font-size:12px; color:var(--p5-muted); margin-bottom:14px;">Takemi Medical: 99x SP Adhesive 3, 99x Bead Chains, 99x Somas.</p>
+          <button class="p5-btn-action" style="width:100%; font-size:16px;" onclick="stockClinicGame()"><span>STOCK CLINIC MEDS</span></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCREEN 5: SYSTEM & RESCUE -->
+    <section class="p5-subscreen" id="screen-system">
+      <div class="subscreen-nav-bar">
+        <button class="btn-back-camp" onclick="returnToCampMenu()"><span>◄ RETURN TO CAMP</span></button>
+        <div style="font-family:var(--font-p5); font-size:36px; color:var(--p5-yellow); text-shadow:3px 3px 0 #000;">
+          ★ SYSTEM CONFIG & 3RD SEM RESCUE ★
+        </div>
+        <div></div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:30px;">
+        <div style="background:#12121A; border:3px solid #000; border-left:8px solid var(--p5-yellow); padding:25px; box-shadow:8px 8px 0 #000;">
+          <div style="font-family:var(--font-p5); font-size:24px; color:var(--p5-yellow); margin-bottom:12px;">🌟 3RD SEMESTER GUARANTEE RESCUE</div>
+          <p style="font-size:13px; color:var(--p5-muted); margin-bottom:16px; line-height:1.5;">
+            Sets Dr. Maruki to Rank 9, Kasumi to Rank 5, and Akechi to Rank 8 with game-legal points to guarantee unlocking the 3rd Semester Palace.
+          </p>
+          <button class="p5-btn-action" onclick="triggerRescueThirdSemesterGame()"><span>APPLY 3RD SEMESTER RESCUE</span></button>
+        </div>
+
+        <div style="background:#12121A; border:3px solid #000; border-left:8px solid var(--p5-crimson); padding:25px; box-shadow:8px 8px 0 #000;">
+          <div style="font-family:var(--font-p5); font-size:24px; color:var(--p5-yellow); margin-bottom:12px;">💾 REVERSIBLE RESTORE VAULT</div>
+          <select id="gameBackupSelect" class="p5-select" style="width:100%; margin-bottom:15px;">
+            <option value="">-- No Backups Found --</option>
+          </select>
+          <button class="p5-btn-action" onclick="restoreBackupGame()"><span>RESTORE BACKUP</span></button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- BOTTOM RE-SIGN DECK HUD -->
+  <footer class="p5-client-footer">
+    <div id="footerStatus" style="font-size:14px; font-weight:800; color:var(--p5-muted);">
+      Ready. Load a save file to begin.
+    </div>
+    <button class="footer-btn-save" onclick="saveActiveGameFile()">
+      <span>SAVE CHANGES & RE-SIGN (CRC + AES) ★</span>
+    </button>
+  </footer>
+
+  <script src="/game/p5r_game.js?v=2"></script>
+</body>
+</html>

@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PERSONA 5 ROYAL — Phantom Thieves Save System</title>
+  <link rel="stylesheet" href="/app.css?v=8">
+  <link rel="icon" type="image/jpeg" href="/assets/joker_avatar.jpg">
+</head>
+<body>
+
+  <!-- LEFT SIDEBAR NAVIGATION (Official P5 Style Slanted Bar) -->
+  <aside class="p5-sidebar">
+    <div class="p5-sidebar-header">
+      <div class="brand-badge" style="gap:12px;">
+        <img src="/assets/change_of_heart_logo.jpg" alt="Change of Heart" style="width:62px; height:62px; border:2px solid var(--p5-crimson); box-shadow:0 0 15px rgba(230,0,18,0.6); transform:rotate(-3deg); object-fit:cover;">
+        <div class="brand-text">
+          <h1 style="font-size:24px; line-height:1;">CHANGE OF</h1>
+          <h1 style="color:var(--p5-crimson); font-size:30px; line-height:0.9;">HEART</h1>
+          <div style="font-size:9px; font-weight:800; color:#888; letter-spacing:1px; margin-top:4px; font-family:monospace;">
+            BY <span style="color:var(--p5-yellow);">j0nny DiGITAL</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slanted Nav Buttons -->
+    <nav class="p5-nav-list">
+      <button class="p5-nav-item active" onclick="switchStage('daily_life', this)">
+        <span>📅 DAILY LIFE & STATS</span>
+      </button>
+      <button class="p5-nav-item" onclick="switchStage('velvet_room', this)">
+        <span>⚔️ VELVET ROOM & PARTY</span>
+      </button>
+      <button class="p5-nav-item" onclick="switchStage('confidants', this)">
+        <span>💖 CONFIDANTS & ROMANCE</span>
+      </button>
+      <button class="p5-nav-item" onclick="switchStage('inventory', this)">
+        <span>🎒 HIDEOUT & INVENTORY</span>
+      </button>
+      <button class="p5-nav-item" onclick="switchStage('compendium', this)">
+        <span>📖 COMPENDIUM</span>
+      </button>
+      <button class="p5-nav-item" onclick="switchStage('god_presets', this)">
+        <span>⚡ GOD-TIER BUILDS</span>
+      </button>
+      <button class="p5-nav-item" onclick="switchStage('rescue_vault', this)">
+        <span>🛡️ RESCUE & BACKUPS</span>
+      </button>
+    </nav>
+
+    <!-- Integrity Health Indicator & Ko-fi Support -->
+    <div class="p5-sidebar-footer">
+      <div id="sidebarHealthPill" class="status-pill" style="margin-bottom:8px;">
+        <span>●</span> <span id="sidebarHealthText">SCANNING SAVE...</span>
+      </div>
+      <a href="https://ko-fi.com/j0nnydigital" target="_blank" style="display:flex; align-items:center; justify-content:center; gap:6px; background:rgba(255,94,91,0.12); border:1px solid #FF5E5B; color:#FF5E5B; padding:5px 8px; border-radius:4px; font-size:11px; font-weight:800; text-decoration:none; transition:all 0.2s ease;">
+        <span>☕</span> <span>SUPPORT j0nny DiGITAL</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- MAIN STAGE DISPLAY -->
+  <main class="p5-main-stage">
+
+    <!-- Top Save Selector & Quick Stats Strip -->
+    <header class="p5-top-strip">
+      <div class="save-selector-box">
+        <select id="saveFileDropdown" class="p5-select" style="flex:1;">
+          <option value="">-- Scanning Steam Save Directory... --</option>
+        </select>
+        <button class="p5-btn-action" onclick="loadSaveFile()"><span>LOAD SAVE</span></button>
+        <button class="p5-btn-action secondary" onclick="refreshDiscovery()"><span>REFRESH</span></button>
+      </div>
+
+      <!-- Quick Calendar Info -->
+      <div style="display:flex; gap:20px; font-size:12px; font-weight:700;">
+        <div>📅 <span id="topDayText" style="color:var(--p5-yellow);">—</span></div>
+        <div>⏱️ <span id="topPlaytimeText" style="color:var(--p5-white);">—</span></div>
+        <div>💰 <span id="topMoneyText" style="color:var(--p5-green);">—</span></div>
+      </div>
+    </header>
+
+    <!-- STAGE 1: Daily Life & Social Stats -->
+    <section id="stage-daily_life" class="p5-stage-view active">
+      <div class="stage-headline">
+        <h2>★ DAILY LIFE & PHANTOM IDENTITY</h2>
+        <p>Manage Joker's school profile, Phantom Thief calling name, Yen balance, and Social Stats.</p>
+      </div>
+
+      <div class="grid-2">
+        <!-- Identity & Yen -->
+        <div class="p5-card">
+          <div class="p5-card-header">
+            <span>🎭 LEADER PROFILE</span>
+            <span style="font-size:12px; color:var(--p5-muted);">SHUJIN ACADEMY</span>
+          </div>
+
+          <div class="grid-2" style="gap:15px; margin-bottom:15px;">
+            <div>
+              <label style="font-size:11px; font-weight:800; color:var(--p5-muted); text-transform:uppercase;">First Name</label>
+              <input type="text" id="inputFname" class="p5-input" style="width:100%; margin-top:4px;">
+            </div>
+            <div>
+              <label style="font-size:11px; font-weight:800; color:var(--p5-muted); text-transform:uppercase;">Last Name</label>
+              <input type="text" id="inputLname" class="p5-input" style="width:100%; margin-top:4px;">
+            </div>
+          </div>
+
+          <div style="margin-bottom:15px;">
+            <label style="font-size:11px; font-weight:800; color:var(--p5-muted); text-transform:uppercase;">Phantom Thief Group Name</label>
+            <input type="text" id="inputGroupName" class="p5-input" style="width:100%; margin-top:4px;">
+          </div>
+
+          <div>
+            <label style="font-size:11px; font-weight:800; color:var(--p5-muted); text-transform:uppercase;">Yen / Wallet Balance (¥)</label>
+            <div style="display:flex; gap:10px; margin-top:4px;">
+              <input type="number" id="inputMoney" class="p5-input" style="flex:1;" min="0" max="9999999">
+              <button class="p5-btn-action secondary" onclick="setMaxYen()"><span>MAX (¥9,999,999)</span></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Social Stats -->
+        <div class="p5-card">
+          <div class="p5-card-header">
+            <span>⭐ SOCIAL STAT METERS</span>
+            <button class="p5-btn-action" style="padding:6px 14px; font-size:14px;" onclick="maxAllSocialStats()"><span>MAX ALL (RANK 5)</span></button>
+          </div>
+
+          <div id="socialStatsList">
+            <!-- Dynamically populated with interactive 1-5 rank nodes -->
+          </div>
+
+          <p style="font-size:11px; color:var(--p5-muted); margin-top:15px;">
+            ℹ️ Social stats are written as authentic underlying points @ <code>0x139E0</code>. Unlocks gating confidants immediately!
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- STAGE 2: Velvet Room & Party Deck -->
+    <section id="stage-velvet_room" class="p5-stage-view">
+      <div class="stage-headline">
+        <h2>★ VELVET ROOM & PARTY ROSTER</h2>
+        <p>Customize party member battle stats and equip custom high-tier Persona skill sets.</p>
+      </div>
+
+      <div class="grid-2">
+        <!-- Party Roster & Level -->
+        <div class="p5-card">
+          <div class="p5-card-header">
+            <span>👥 ACTIVE PARTY MEMBER</span>
+            <span id="activeMemberBadge" style="font-size:13px; color:var(--p5-yellow);">SLOT 0</span>
+          </div>
+
+          <div style="margin-bottom:18px;">
+            <label style="font-size:11px; font-weight:800; color:var(--p5-muted); text-transform:uppercase;">Select Party Member</label>
+            <select id="partyMemberSelect" class="p5-select" style="width:100%; margin-top:6px;" onchange="renderActiveMember()">
+              <!-- Party members -->
+            </select>
+          </div>
+
+          <div class="grid-3" style="gap:10px; margin-bottom:18px;">
+            <div>
+              <label style="font-size:11px; font-weight:800; color:var(--p5-muted);">LEVEL (1-99)</label>
+              <input type="number" id="memberLevel" class="p5-input" style="width:100%;" min="1" max="99">
+            </div>
+            <div>
+              <label style="font-size:11px; font-weight:800; color:var(--p5-muted);">BATTLE HP</label>
+              <input type="number" id="memberHP" class="p5-input" style="width:100%;" min="1" max="999">
+            </div>
+            <div>
+              <label style="font-size:11px; font-weight:800; color:var(--p5-muted);">BATTLE SP</label>
+              <input type="number" id="memberSP" class="p5-input" style="width:100%;" min="1" max="999">
+            </div>
+          </div>
+
+          <div style="display:flex; gap:10px;">
+            <button class="p5-btn-action" onclick="healActiveMember()"><span>RESTORE HP & SP</span></button>
+            <button class="p5-btn-action secondary" onclick="maxLevelActiveMember()"><span>SET LV 99</span></button>
+          </div>
+        </div>
+
+        <!-- Equipped Persona Deck -->
+        <div class="p5-card">
+          <div class="p5-card-header">
+            <span id="personaDeckHeader">🎭 EQUIPPED PERSONA & MOVESET</span>
+            <span id="stockSlotBadge" style="font-size:12px; color:var(--p5-yellow);">SLOT 0 (EQUIPPED)</span>
+          </div>
+
+          <!-- 12 Persona Stock Selector Chips (Shown for Joker / Slot 0) -->
+          <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:15px;" id="stockChipsContainer">
+            <!-- 12 chips rendered dynamically -->
+          </div>
+
+          <!-- Large Persona Hero Showcase Banner (Authentic P5 Velvet Room Style) -->
+          <div style="background:linear-gradient(135deg, #1A0508 0%, #08080C 100%); border:2px solid var(--p5-crimson); border-radius:6px; padding:15px; margin-bottom:15px; display:flex; gap:20px; align-items:center; position:relative; overflow:hidden; box-shadow:0 8px 30px rgba(230,0,18,0.25);">
+            <div style="position:relative; width:140px; height:140px; flex-shrink:0; display:flex; align-items:center; justify-content:center; background:radial-gradient(circle, rgba(230,0,18,0.2) 0%, rgba(0,0,0,0.8) 70%); border:1px solid #333; border-radius:6px;">
+              <img id="velvetPersonaPortrait" src="/assets/personas/1.png" onerror="this.style.display='none'" style="width:130px; height:130px; object-fit:contain; filter:drop-shadow(0 6px 12px rgba(0,0,0,0.9)); transition:transform 0.3s ease;">
+            </div>
+            <div style="flex:1;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <label style="font-size:11px; font-weight:900; color:var(--p5-yellow); letter-spacing:1.5px; text-transform:uppercase;">★ PERSONA SUMMON & IDENTITY</label>
+                <span id="velvetPersonaIdBadge" style="font-family:monospace; font-size:11px; color:var(--p5-muted);">ID: 0x001 (1)</span>
+              </div>
+              <select id="personaSelect" class="p5-select" style="width:100%; margin-top:6px; font-size:15px; font-weight:700; background:#0F0F16; border:2px solid var(--p5-crimson); padding:8px 12px;" onchange="onPersonaSelectChange()">
+                <!-- 460+ Personas -->
+              </select>
+              <div id="velvetPersonaArcanaTag" style="font-size:11px; color:var(--p5-muted); margin-top:6px; font-weight:700;">
+                Arcana: <span style="color:#FFF;">Fool</span> | High-Affinity Summon
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-2" style="gap:15px; margin-bottom:15px;">
+            <div>
+              <label style="font-size:11px; font-weight:800; color:var(--p5-muted);">PERSONA LEVEL</label>
+              <input type="number" id="personaLevel" class="p5-input" style="width:100%;" min="1" max="99">
+            </div>
+            <div>
+              <label style="font-size:11px; font-weight:800; color:var(--p5-muted);">SPECIAL TRAIT</label>
+              <select id="personaTraitSelect" class="p5-select" style="width:100%;">
+                <!-- Traits -->
+              </select>
+            </div>
+          </div>
+
+          <!-- 5 Core Persona Stats (St, Ma, En, Ag, Lu) Visual Sliders -->
+          <div style="background:rgba(0,0,0,0.3); border:1px solid var(--p5-border); border-radius:4px; padding:12px; margin-bottom:15px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <span style="font-size:11px; font-weight:800; color:var(--p5-yellow); text-transform:uppercase;">5 Core Stats (1-99)</span>
+              <button class="p5-btn-action secondary" style="padding:2px 8px; font-size:11px;" onclick="maxPersonaStats()"><span>MAX STATS (99)</span></button>
+            </div>
+            <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:8px;">
+              <div>
+                <label style="font-size:10px; font-weight:800; color:var(--p5-muted);">ST (力)</label>
+                <input type="number" id="stat_st" class="p5-input" style="width:100%; padding:6px; font-size:12px;" min="1" max="99">
+              </div>
+              <div>
+                <label style="font-size:10px; font-weight:800; color:var(--p5-muted);">MA (魔)</label>
+                <input type="number" id="stat_ma" class="p5-input" style="width:100%; padding:6px; font-size:12px;" min="1" max="99">
+              </div>
+              <div>
+                <label style="font-size:10px; font-weight:800; color:var(--p5-muted);">EN (耐)</label>
+                <input type="number" id="stat_en" class="p5-input" style="width:100%; padding:6px; font-size:12px;" min="1" max="99">
+              </div>
+              <div>
+                <label style="font-size:10px; font-weight:800; color:var(--p5-muted);">AG (速)</label>
+                <input type="number" id="stat_ag" class="p5-input" style="width:100%; padding:6px; font-size:12px;" min="1" max="99">
+              </div>
+              <div>
+                <label style="font-size:10px; font-weight:800; color:var(--p5-muted);">LU (运)</label>
+                <input type="number" id="stat_lu" class="p5-input" style="width:100%; padding:6px; font-size:12px;" min="1" max="99">
+              </div>
+            </div>
+          </div>
+
+          <!-- Elemental Affinities Strip -->
+          <div style="margin-bottom:15px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <label style="font-size:11px; font-weight:800; color:var(--p5-muted); text-transform:uppercase; margin:0;">Elemental Resistances & Passives</label>
+              <span id="affinityPersonaName" style="font-size:10px; color:var(--p5-yellow); font-weight:800;">BASE AFFINITIES</span>
+            </div>
+            <div id="elementalAffinitiesGrid" style="display:grid; grid-template-columns:repeat(10, 1fr); gap:4px; text-align:center;">
+              <!-- Dynamically rendered elemental affinity badges with real-time passives calculation -->
+            </div>
+          </div>
+
+          <div>
+            <label style="font-size:11px; font-weight:800; color:var(--p5-muted); text-transform:uppercase; margin-bottom:6px; display:block;">8 Learned Skills</label>
+            <div class="grid-2" id="skillsGrid" style="gap:8px;">
+              <!-- 8 Skill Dropdowns -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STAGE 3: Confidants & Romance Hub (1:1 Atlus Co-op Tarot Browser) -->
+    <section id="stage-confidants" class="p5-stage-view">
+      <div class="stage-headline">
+        <div style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:10px;">
+          <div>
+            <h2>★ CONFIDANTS / CO-OP HUB</h2>
+            <p>Story-aware relationship tracker with official Atlus character portraits, romance paths, and calendar locks.</p>
+          </div>
+          <div style="display:flex; gap:12px; align-items:center;">
+            <label style="display:flex; align-items:center; gap:6px; font-size:11px; font-weight:800; color:var(--p5-yellow); cursor:pointer; background:#000; padding:6px 12px; border:2px solid #000; box-shadow:3px 3px 0 #000; transform:skew(-8deg);">
+              <input type="checkbox" onchange="toggleUnsafeConfidants(this)" style="cursor:pointer;">
+              <span style="transform:skew(8deg);">⚠️ UNLOCK FUTURE / UNMET ALLIES</span>
+            </label>
+            <button class="p5-btn-action" onclick="maxAllConfidants()"><span>MAX ALL (RANK 10)</span></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- General Story & Cutscene Disclaimer Banner -->
+      <div style="background:linear-gradient(90deg, rgba(230,0,18,0.2) 0%, rgba(16,16,24,0.95) 100%); border-left:6px solid var(--p5-crimson); border:2px solid #000; padding:12px 18px; margin-bottom:20px; display:flex; gap:14px; align-items:flex-start; box-shadow:5px 5px 0 #000;">
+        <div style="font-size:26px; line-height:1;">🎬</div>
+        <div style="font-size:12px; line-height:1.5; color:#E0E0EE;">
+          <div style="font-weight:900; font-size:13px; color:var(--p5-yellow); margin-bottom:3px; text-transform:uppercase; letter-spacing:1px; text-shadow:1px 1px 0 #000;">
+            ⚠️ NARRATIVE NOTICE: CONFIDANT RANK EDITING & CUTSCENE SKIPS
+          </div>
+          <div>
+            In Persona 5 Royal, <strong>every single Confidant Rank (1 through 10) represents a unique, scripted story hangout cutscene</strong> featuring personal character development, dialogue branches, and post-hangout phone calls.
+          </div>
+          <div style="margin-top:4px; color:#A0A0B5; font-size:11px;">
+            • <strong>Editing Ranks:</strong> Instantly unlocks combat traits, abilities, and NG+ items, but <strong>permanently bypasses intermediate daytime hangouts and the Rank 9 confession choice</strong> on your save file.<br>
+            • <strong>First Playthrough Recommendation:</strong> If you are playing for the story, rank up naturally in-game or advance only 1 rank at a time to preserve all cutscenes!
+          </div>
+        </div>
+      </div>
+
+      <!-- Filter Bar -->
+      <div class="confidant-filter-bar" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:20px;">
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button id="pillAll" class="filter-pill active" onclick="filterConfidants('all', this)"><span>Active Arcana</span></button>
+          <button class="filter-pill" onclick="filterConfidants('romance', this)"><span>💖 Romance Partners</span></button>
+          <button class="filter-pill" onclick="filterConfidants('party', this)"><span>⚔️ Phantom Thieves</span></button>
+          <button class="filter-pill" onclick="filterConfidants('story_deadline', this)"><span>⚠️ Story Deadlines</span></button>
+          <button class="filter-pill" onclick="filterConfidants('social', this)"><span>☕ Tokyo Allies</span></button>
+        </div>
+      </div>
+
+      <!-- In-Game 2-Column Split: Left Tarot Carousel + Right Hero Spotlight -->
+      <div class="p5-coop-container">
+        <!-- Left: Slanted Tarot Placard List -->
+        <div class="p5-tarot-rail" id="confidantTarotRail">
+          <!-- Dynamically rendered tarot card list -->
+        </div>
+
+        <!-- Right: Active Character Spotlight Dossier -->
+        <div class="p5-hero-spotlight" id="confidantHeroSpotlight">
+          <!-- Dynamically updated character dossier -->
+          <div style="text-align:center; padding:50px 20px; color:var(--p5-muted);">
+            <div style="font-family:var(--font-p5); font-size:28px; color:var(--p5-yellow); margin-bottom:8px;">★ SELECT A CONFIDANT ★</div>
+            <p>Click any Tarot Card on the left rail to view their story dossier, perks, and ranking controls.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STAGE 3.5: Hideout & Inventory Manager (Dual-Pane Studio) -->
+    <section id="stage-inventory" class="p5-stage-view">
+      <div class="stage-headline">
+        <div style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:10px;">
+          <div>
+            <h2>🎒 HIDEOUT INVENTORY & DUAL-PANE POUCH STUDIO</h2>
+            <p>Side-by-side management: Inspect and adjust Joker's carried pouch on the left, search and add 2,400+ Royal items on the right.</p>
+          </div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button class="p5-btn-action" onclick="stockLeblancKitchen()"><span>☕ 99x CURRY & COFFEE</span></button>
+            <button class="p5-btn-action" onclick="stockInfiltrationKit()"><span>🔑 INFILTRATION KIT</span></button>
+            <button class="p5-btn-action" onclick="stockClinicMedicine()"><span>💉 CLINIC MEDS</span></button>
+            <button class="p5-btn-action" style="background:#330000; border-color:#FF3333; color:#FF8888;" onclick="clearAllPouchItems()"><span>🗑️ CLEAR BAG</span></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- DUAL-PANE CONTAINER -->
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start;">
+        
+        <!-- LEFT PANE: JOKER'S CURRENT POUCH -->
+        <div class="p5-card" style="border-left:6px solid var(--p5-yellow); height:620px; display:flex; flex-direction:column;">
+          <div class="p5-card-header" style="flex-shrink:0;">
+            <span>👜 JOKER'S CARRIED POUCH</span>
+            <span id="pouchSlotCounter" style="font-size:13px; color:var(--p5-yellow); font-family:var(--font-p5);">0 / 30 SLOTS</span>
+          </div>
+          
+          <!-- Pouch Pocket Filter Tabs -->
+          <div id="pouchPocketTabs" style="display:flex; gap:5px; flex-wrap:wrap; margin-bottom:10px; flex-shrink:0;">
+            <button id="pouchTabAll" class="filter-pill active" style="font-size:11px; padding:4px 8px;" onclick="filterPouchPocket('All', this)"><span>All (<span id="pouchBadgeAll">0</span>)</span></button>
+            <button class="filter-pill" style="font-size:11px; padding:4px 8px;" onclick="filterPouchPocket('Consumable', this)"><span>☕ Items (<span id="pouchBadgeConsumable">0</span>)</span></button>
+            <button class="filter-pill" style="font-size:11px; padding:4px 8px;" onclick="filterPouchPocket('Infiltration', this)"><span>🔑 Tools (<span id="pouchBadgeInfiltration">0</span>)</span></button>
+            <button class="filter-pill" style="font-size:11px; padding:4px 8px;" onclick="filterPouchPocket('SkillCard', this)"><span>🎴 Cards (<span id="pouchBadgeSkillCard">0</span>)</span></button>
+            <button class="filter-pill" style="font-size:11px; padding:4px 8px;" onclick="filterPouchPocket('Accessory', this)"><span>💍 Accs (<span id="pouchBadgeAccessory">0</span>)</span></button>
+            <button class="filter-pill" style="font-size:11px; padding:4px 8px;" onclick="filterPouchPocket('Equipment', this)"><span>🗡️ Gear (<span id="pouchBadgeEquipment">0</span>)</span></button>
+            <button class="filter-pill" style="font-size:11px; padding:4px 8px;" onclick="filterPouchPocket('KeyItem', this)"><span>📜 Key (<span id="pouchBadgeKeyItem">0</span>)</span></button>
+          </div>
+
+          <div id="currentPouchContainer" style="flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:8px; padding-right:4px;">
+            <!-- Active pouch items rendered dynamically -->
+          </div>
+        </div>
+
+        <!-- RIGHT PANE: ROYAL ITEM VAULT (SEARCH & ADD) -->
+        <div class="p5-card" style="border-left:6px solid var(--p5-crimson); height:620px; display:flex; flex-direction:column;">
+          <div class="p5-card-header" style="flex-shrink:0;">
+            <span>🔍 ROYAL ITEM VAULT (ADD TO POUCH)</span>
+            <span id="vaultCatalogCounter" style="font-size:12px; color:var(--p5-muted);">2,412 ITEMS</span>
+          </div>
+          
+          <!-- Search Input Box -->
+          <div style="margin-bottom:10px; flex-shrink:0;">
+            <input type="text" id="vaultSearchBox" class="p5-input" placeholder="Type name (e.g. Soma, Lockpick, SP Adhesive, Megidolaon, Curry)..." style="width:100%; font-size:13px; padding:10px 14px;" oninput="onVaultSearchInput()">
+          </div>
+
+          <!-- Category Filter Tabs -->
+          <div style="display:flex; gap:5px; flex-wrap:wrap; margin-bottom:10px; flex-shrink:0;">
+            <button id="catPillAll" class="filter-pill active" style="font-size:11px; padding:4px 8px;" onclick="filterVaultCategory('All', this)"><span>All</span></button>
+            <button class="filter-pill" style="font-size:11px; padding:4px 8px;" onclick="filterVaultCategory('Consumable', this)"><span>☕ Items</span></button>
+            <button class="filter-pill" style="font-size:11px; padding:4px 8px;" onclick="filterVaultCategory('Infiltration', this)"><span>🔑 Tools</span></button>
+            <button class="filter-pill" style="font-size:11px; padding:4px 8px;" onclick="filterVaultCategory('SkillCard', this)"><span>🎴 Cards</span></button>
+            <button class="filter-pill" style="font-size:11px; padding:4px 8px;" onclick="filterVaultCategory('Accessory', this)"><span>💍 Accs</span></button>
+            <button class="filter-pill" style="font-size:11px; padding:4px 8px;" onclick="filterVaultCategory('Melee', this)"><span>🗡️ Melee</span></button>
+            <button class="filter-pill" style="font-size:11px; padding:4px 8px;" onclick="filterVaultCategory('Ranged', this)"><span>🔫 Guns</span></button>
+            <button class="filter-pill" style="font-size:11px; padding:4px 8px;" onclick="filterVaultCategory('Protector', this)"><span>🛡️ Armor</span></button>
+            <button class="filter-pill" style="font-size:11px; padding:4px 8px;" onclick="filterVaultCategory('Treasure', this)"><span>💎 Loot</span></button>
+          </div>
+
+          <!-- Vault Search Results List -->
+          <div id="vaultResultsContainer" style="flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:6px; padding-right:4px;">
+            <!-- Matching items with [+ Add] buttons -->
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- STAGE 3.75: Compendium Registry (Granular & Batch Studio) -->
+    <section id="stage-compendium" class="p5-stage-view">
+      <div class="stage-headline">
+        <div style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:10px;">
+          <div>
+            <h2>📖 PERSONA COMPENDIUM REGISTRY</h2>
+            <p>Granular Persona Registration: Search and toggle individual personas or apply quick batch unlocks.</p>
+          </div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button class="p5-btn-action" onclick="unlockFullCompendium()"><span>⚡ UNLOCK ALL (100%)</span></button>
+            <button class="p5-btn-action secondary" onclick="unlockDlcPersonas()"><span>🎭 UNLOCK DLC ONLY</span></button>
+            <button class="p5-btn-action secondary" onclick="unlockTreasureDemons()"><span>💎 TREASURE DEMONS</span></button>
+            <button class="p5-btn-action secondary" style="background:#222;" onclick="resetCompendiumToOriginal()"><span>🧹 RESET</span></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Compendium Status Bar -->
+      <div class="p5-card" style="border-left:6px solid #00E5FF;">
+        <div class="p5-card-header">
+          <span>📊 COMPENDIUM REGISTRATION STATUS</span>
+          <span id="compendiumCounter" style="font-size:13px; color:#00E5FF; font-family:var(--font-p5);">0 / 232 REGISTERED</span>
+        </div>
+        <div style="margin-top:8px;">
+          <div style="background:#111; border:2px solid #222; height:28px; position:relative; overflow:hidden;">
+            <div id="compendiumProgressBar" style="height:100%; background:linear-gradient(90deg, #00E5FF, #E040FB); width:0%; transition:width 0.3s ease;"></div>
+            <div id="compendiumPercentLabel" style="position:absolute; top:0; left:0; right:0; bottom:0; display:flex; align-items:center; justify-content:center; font-family:var(--font-p5); font-size:14px; color:#FFF; text-shadow:1px 1px 2px #000;">0%</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Search & Filter Controls -->
+      <div style="display:flex; gap:10px; margin-top:12px; flex-wrap:wrap; align-items:center;">
+        <input type="text" id="compendiumSearchInput" class="p5-input" placeholder="🔍 Search by Persona name or ID..." style="flex:1; min-width:240px;" oninput="filterCompendiumGrid()">
+        <div style="display:flex; gap:6px;">
+          <button class="p5-chip active" id="filterCompAll" onclick="setCompendiumFilter('all', this)">ALL (232)</button>
+          <button class="p5-chip" id="filterCompReg" onclick="setCompendiumFilter('registered', this)">REGISTERED</button>
+          <button class="p5-chip" id="filterCompUnreg" onclick="setCompendiumFilter('unregistered', this)">UNREGISTERED</button>
+        </div>
+      </div>
+
+      <!-- Granular Persona Interactive Grid -->
+      <div class="p5-card" style="border-left:6px solid #E040FB; margin-top:12px;">
+        <div class="p5-card-header">
+          <span>🎭 PERSONA REGISTRATION MATRIX (CLICK TO TOGGLE)</span>
+          <span id="compendiumFilterCount" style="font-size:11px; color:var(--p5-muted);">Showing 232 Personas</span>
+        </div>
+        <div id="compendiumGrid" style="max-height:540px; overflow-y:auto; display:grid; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr)); gap:10px; padding:10px 4px;">
+          <!-- Rendered dynamically with toggle buttons -->
+        </div>
+      </div>
+    </section>
+
+    <!-- STAGE 4: God-Tier Build Injectors -->
+    <section id="stage-god_presets" class="p5-stage-view">
+      <div class="stage-headline">
+        <h2>⚡ 1-CLICK GOD-TIER PERSONA BUILDS</h2>
+        <p>Instantly inject competitive, legal meta builds with optimal skills, passives, and traits.</p>
+      </div>
+
+      <div class="grid-3">
+        <!-- Physical God Yoshitsune -->
+        <div class="p5-card">
+          <div class="p5-card-header">
+            <span>🗡️ YOSHITSUNE (PHYSICAL GOD)</span>
+          </div>
+          <p style="font-size:12px; color:var(--p5-muted); margin-bottom:15px;">
+            The ultimate single-target & multi-target physical shredder. Hassou Tobi deals 8x light physical damage.
+          </p>
+          <div style="font-size:11px; color:#A0A0B0; margin-bottom:15px; line-height:1.6;">
+            • <strong>Moveset:</strong> Hassou Tobi, Apt Pupil, Arms Master, Charge, Insta-Heal, Ali Dance, Drain Fire, Drain Ice<br>
+            • <strong>Trait:</strong> Undying Fury (+30% Phys)
+          </div>
+          <button class="p5-btn-action" style="width:100%;" onclick="injectGodBuild('yoshitsune')"><span>INJECT YOSHITSUNE BUILD</span></button>
+        </div>
+
+        <!-- Almighty Annihilator Izanagi-no-Okami -->
+        <div class="p5-card">
+          <div class="p5-card-header">
+            <span>💥 IZANAGI-NO-OKAMI PICARO</span>
+          </div>
+          <p style="font-size:12px; color:var(--p5-muted); margin-bottom:15px;">
+            The game-breaking Almighty cannon. Myriad Truths hits 3x heavy Almighty damage boosted by Country Maker.
+          </p>
+          <div style="font-size:11px; color:#A0A0B0; margin-bottom:15px; line-height:1.6;">
+            • <strong>Moveset:</strong> Myriad Truths, Almighty Boost, Almighty Amp, Magic Ability, Spell Master, Concentrate, Drain Curse, Victory Cry<br>
+            • <strong>Trait:</strong> Country Maker (+100% DMG/DEF)
+          </div>
+          <button class="p5-btn-action" style="width:100%;" onclick="injectGodBuild('izanagi')"><span>INJECT IZANAGI BUILD</span></button>
+        </div>
+
+        <!-- Invincible Starter Buffer Orpheus -->
+        <div class="p5-card">
+          <div class="p5-card-header">
+            <span>🛡️ RAOUL (AUTO-TRI BUFFER)</span>
+          </div>
+          <p style="font-size:12px; color:var(--p5-muted); margin-bottom:15px;">
+            The dream starter Persona. Automatically applies Matarukaja, Marakukaja, and Masukukaja at the start of every battle.
+          </p>
+          <div style="font-size:11px; color:#A0A0B0; margin-bottom:15px; line-height:1.6;">
+            • <strong>Moveset:</strong> Auto-Mataru, Auto-Maraku, Auto-Masuku, Phantom Show, Debilitate, Enduring Soul, Insta-Heal, Spell Master<br>
+            • <strong>Trait:</strong> Wealth of Lotus (+2 Turn Buffs)
+          </div>
+          <button class="p5-btn-action" style="width:100%;" onclick="injectGodBuild('raoul')"><span>INJECT RAOUL BUILD</span></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- STAGE 5: Rescue Vault & Backups -->
+    <section id="stage-rescue_vault" class="p5-stage-view">
+      <div class="stage-headline">
+        <h2>🛡️ RESCUE TOOLS & 1-CLICK BACKUPS</h2>
+        <p>Guaranteed third semester unlocker and fully reversible timestamped save state rollbacks.</p>
+      </div>
+
+      <div class="grid-2">
+        <!-- 3rd Sem Rescue -->
+        <div class="p5-card">
+          <div class="p5-card-header">
+            <span>🌟 3RD SEMESTER GUARANTEE</span>
+          </div>
+          <p style="font-size:13px; color:var(--p5-muted); margin-bottom:18px;">
+            Missed Dr. Maruki's November 18 cutoff? This tool sets Maruki to Rank 9, Kasumi to Rank 5, and Akechi to Rank 8 with game-accurate points, unlocking the 3rd Semester palace route without restarting the game.
+          </p>
+          <button class="p5-btn-action" onclick="triggerRescueThirdSemester()"><span>APPLY 3RD SEMESTER RESCUE</span></button>
+        </div>
+
+        <!-- 1-Click Backups -->
+        <div class="p5-card">
+          <div class="p5-card-header">
+            <span>💾 REVERSIBLE RESTORE VAULT</span>
+          </div>
+          <p style="font-size:13px; color:var(--p5-muted); margin-bottom:15px;">
+            Every save write creates a timestamped ZIP backup automatically. Select any backup below to roll back safely.
+          </p>
+
+          <select id="backupSelectDropdown" class="p5-select" style="width:100%; margin-bottom:15px;">
+            <option value="">-- No Backups Found --</option>
+          </select>
+
+          <div style="display:flex; gap:10px;">
+            <button class="p5-btn-action secondary" onclick="refreshBackups()"><span>REFRESH BACKUPS</span></button>
+            <button class="p5-btn-action" onclick="restoreSelectedBackup()"><span>RESTORE SELECTED STATE</span></button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BOTTOM FLOATING RE-SIGN DECK -->
+    <footer class="p5-save-deck">
+      <div>
+        <div id="bottomStatus" style="font-size:14px; font-weight:700; color:var(--p5-muted);">
+          Ready. Load a save file to begin.
+        </div>
+      </div>
+
+      <button class="save-deck-btn" onclick="saveActiveSaveFile()">
+        <span>SAVE CHANGES & RE-SIGN (CRC + AES) ★</span>
+      </button>
+    </footer>
+
+  </main>
+
+  <!-- Full-Res Character Portrait Lightbox Modal -->
+  <div id="portraitLightboxModal" class="p5-modal-backdrop" onclick="closePortraitModal(event)">
+    <div class="p5-modal-content" onclick="event.stopPropagation()">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <h3 id="lightboxCharName" style="font-family:var(--font-p5); font-size:24px; color:var(--p5-crimson); margin:0;">CHARACTER</h3>
+        <button class="p5-btn-action secondary" style="padding:4px 10px; font-size:12px;" onclick="closePortraitModal()"><span>✕ CLOSE</span></button>
+      </div>
+      <div style="text-align:center; padding:10px; background:radial-gradient(circle, #252535 0%, #101018 100%); border-radius:6px; border:2px solid var(--p5-border);">
+        <img id="lightboxImg" src="" alt="Full Character Portrait" style="max-height:480px; max-width:100%; border-radius:4px; box-shadow:0 0 25px rgba(230,0,18,0.3);">
+      </div>
+      <div id="lightboxRole" style="margin-top:10px; font-size:13px; font-weight:700; color:var(--p5-yellow); text-align:center;">ROLE</div>
+    </div>
+  </div>
+
+  <!-- Narrative Sequence Break Safety Confirmation Modal -->
+  <div id="sequenceBreakSafetyModal" class="p5-modal-backdrop" onclick="closeSafetyModal(event)">
+    <div class="p5-modal-content" style="max-width:580px;" onclick="event.stopPropagation()">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <h3 style="font-family:var(--font-p5); font-size:22px; color:var(--p5-yellow); margin:0;">⚠️ STORY PACING & SAFETY CHECK</h3>
+        <button class="p5-btn-action secondary" style="padding:4px 10px; font-size:12px;" onclick="closeSafetyModal()"><span>✕ CANCEL</span></button>
+      </div>
+      
+      <p style="font-size:12px; color:#C0C0D0; margin-bottom:14px; line-height:1.5;">
+        You have modified Confidants beyond their natural story progression thresholds on your current date. Review the sequence-break warnings below:
+      </p>
+
+      <div id="safetyWarningList" style="max-height:220px; overflow-y:auto; display:flex; flex-direction:column; gap:8px; margin-bottom:18px; padding-right:4px;">
+        <!-- Dynamically generated warning list items -->
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:10px;">
+        <button class="p5-btn-action secondary" onclick="closeSafetyModal()"><span>ADJUST RANKS</span></button>
+        <button class="p5-btn-action" style="background:#FF9F1C; border-color:#FF9F1C; color:#000;" onclick="executeSaveAfterSafetyCheck()">
+          <span style="font-weight:900;">RE-SIGN ANYWAY ★</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/app.js?v=16"></script>
+</body>
+</html>

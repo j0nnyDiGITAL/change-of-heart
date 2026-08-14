@@ -1,0 +1,21 @@
+// Decompiled by Atlus Script Tools
+const int e259_504_01_mes01                = 0;
+const int e259_504_01_mes02                = 1;
+const int e259_504_01_mes03                = 2;
+const int e259_504_01_mes04                = 3;
+const int e259_504_01_mes05                = 4;
+const int e259_504_01_mes06                = 5;
+const int e259_504_01_mes07                = 6;
+const int e259_504_01_mes08                = 7;
+const int e259_504_01_mes09                = 8;
+const int e259_504_01_mes10                = 9;
+const int e259_504_01_selA                 = 10;
+const int e259_504_01_selA_0_mes01         = 11;
+const int e259_504_01_selA_1_mes01         = 12;
+const int MSG_TEST_START_msg               = 13;
+const int MSG_TEST_msg                     = 14;
+const int MSG_TEST_CANCEL_msg              = 15;
+const int MSG_TEST_CLEAR_msg               = 16;
+const int MSG_TEST_MISS_msg                = 17;
+const int D03_07_KINKO_KAITEN_YES          = 18;
+const int D03_05_KINKO_KAITEN_DONE         = 19;

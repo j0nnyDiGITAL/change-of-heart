@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+build/
+*.egg-info/
+
+# PyInstaller / Binaries (Don't commit large 50MB exe to repo source; use GitHub Releases instead)
+dist/
+*.spec.bak
+
+# Local Scratch / Temp / Diffs / Backups
+diff/scratch_roundtrip/
+*.DAT
+*.dat
+*.bak
+*.tmp
+*.zip
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

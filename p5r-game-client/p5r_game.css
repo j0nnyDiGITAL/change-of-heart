@@ -1,0 +1,547 @@
+/* =========================================================================
+   PERSONA 5 ROYAL — THE AUTHENTIC 1:1 ATLUS IN-GAME CO-OP & MENU SYSTEM
+   ========================================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:ital,wght@0,400;0,700;0,900;1,900&family=Oswald:wght@700;900&family=Permanent+Marker&family=Rubik+Mono+One&display=swap');
+
+:root {
+  --p5-crimson: #E60012;
+  --p5-blood: #8A000A;
+  --p5-dark-red: #3A0003;
+  --p5-black: #060608;
+  --p5-surface: #0E0E14;
+  --p5-surface-alt: #161622;
+  --p5-yellow: #FFE600;
+  --p5-gold: #FFB300;
+  --p5-white: #FFFFFF;
+  --p5-muted: #8E8E9F;
+  --p5-green: #00E676;
+  --p5-pink: #FF2A6D;
+  --font-p5: 'Bebas Neue', 'Oswald', sans-serif;
+  --font-body: 'Montserrat', sans-serif;
+  --font-punk: 'Permanent Marker', 'Rubik Mono One', cursive;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+}
+
+html, body {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background-color: var(--p5-black);
+  color: var(--p5-white);
+  font-family: var(--font-body);
+}
+
+/* =========================================================================
+   TOP CALENDAR & HUD STRIP (Authentic In-Game Date Stamp)
+   ========================================================================= */
+.p5-game-hud {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 65px;
+  background: linear-gradient(180deg, rgba(8, 8, 12, 0.98) 0%, rgba(8, 8, 12, 0.75) 100%);
+  border-bottom: 3px solid var(--p5-crimson);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 40px;
+  z-index: 1000;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 6px 30px rgba(0, 0, 0, 0.9);
+}
+
+.hud-date-card {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.hud-date-stamp {
+  background: var(--p5-crimson);
+  color: #FFF;
+  font-family: var(--font-p5);
+  font-size: 26px;
+  padding: 4px 16px;
+  transform: skew(-12deg);
+  border: 2px solid #000;
+  box-shadow: 4px 4px 0px #000;
+  text-shadow: 2px 2px 0 #000;
+}
+
+.hud-weather-icon {
+  font-size: 24px;
+}
+
+.hud-wallet-counter {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  background: #000;
+  border: 2px solid #000;
+  padding: 4px 18px;
+  transform: skew(-10deg);
+  box-shadow: 3px 3px 0 var(--p5-crimson);
+}
+
+.hud-yen-symbol {
+  font-family: var(--font-p5);
+  font-size: 22px;
+  color: var(--p5-yellow);
+}
+
+.hud-yen-amount {
+  font-family: var(--font-p5);
+  font-size: 28px;
+  letter-spacing: 1.5px;
+  color: #FFF;
+  text-shadow: 2px 2px 0 var(--p5-crimson);
+}
+
+/* =========================================================================
+   3D MAIN CAMP MENU (Full-Bleed Dynamic Splash Canvas)
+   ========================================================================= */
+.p5-screen-viewport {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  padding-top: 65px;
+  perspective: 1200px;
+  transform-style: preserve-3d;
+  background-color: #060608;
+}
+
+.p5-camp-menu {
+  position: absolute;
+  top: 65px;
+  left: 0;
+  width: 100vw;
+  height: calc(100vh - 65px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 80px;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.p5-camp-menu.hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(1.2) rotate(-5deg);
+}
+
+.camp-stage-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('/game/p5r_joker_camp_hero.jpg');
+  background-size: cover;
+  background-position: center;
+  z-index: 1;
+}
+
+/* Diagonal Red Slash Overlay */
+.camp-stage-background::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(6,6,8,0.75) 0%, rgba(6,6,8,0.2) 50%, rgba(6,6,8,0.85) 100%);
+  pointer-events: none;
+}
+
+/* Giant 3D Slanted Command Wheel */
+.camp-commands-container {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transform: rotate(-6deg) translateX(30px);
+}
+
+.camp-cmd-blade {
+  background: #0B0B10;
+  color: #FFF;
+  border: 4px solid #000;
+  padding: 14px 45px 12px 25px;
+  font-family: var(--font-p5);
+  font-size: 52px;
+  letter-spacing: 4px;
+  cursor: pointer;
+  transform: skew(-14deg);
+  box-shadow: 10px 10px 0px #000;
+  transition: all 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  text-shadow: 3px 3px 0 #000;
+}
+
+.camp-cmd-blade .cmd-num {
+  font-size: 24px;
+  color: var(--p5-yellow);
+  font-weight: 900;
+  transform: skew(14deg);
+}
+
+.camp-cmd-blade .cmd-text {
+  transform: skew(14deg);
+}
+
+.camp-cmd-blade:hover {
+  background: var(--p5-yellow);
+  color: #000;
+  border-color: #000;
+  transform: skew(-14deg) translateX(35px) scale(1.08);
+  box-shadow: 14px 14px 0px var(--p5-crimson);
+  text-shadow: none;
+}
+
+.camp-cmd-blade:hover .cmd-num {
+  color: #000;
+}
+
+/* Joker Calling Card Badge */
+.camp-calling-tag {
+  position: relative;
+  z-index: 10;
+  background: #000;
+  border: 4px solid var(--p5-crimson);
+  padding: 14px 28px;
+  transform: rotate(3deg) skew(-10deg);
+  box-shadow: 8px 8px 0 #000;
+  align-self: flex-end;
+  margin-bottom: 60px;
+}
+
+.camp-calling-tag .tag-title {
+  font-family: var(--font-p5);
+  font-size: 28px;
+  letter-spacing: 2px;
+  color: var(--p5-yellow);
+  transform: skew(10deg);
+}
+
+.camp-calling-tag .tag-sub {
+  font-size: 11px;
+  font-weight: 900;
+  color: #FFF;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  transform: skew(10deg);
+}
+
+/* =========================================================================
+   SUB-SCREENS CONTAINER & DIAGONAL SLASH TRANSITION
+   ========================================================================= */
+.p5-subscreen {
+  position: absolute;
+  top: 65px;
+  left: 0;
+  width: 100vw;
+  height: calc(100vh - 65px);
+  padding: 30px 60px 90px 60px;
+  display: none;
+  overflow-y: auto;
+  opacity: 0;
+  transform: scale(0.92) rotate(2deg);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  background-image: 
+    radial-gradient(circle, rgba(230,0,18,0.08) 15%, transparent 16%),
+    linear-gradient(rgba(6, 6, 8, 0.94), rgba(6, 6, 8, 0.98)),
+    url('/assets/p5r_menu_bg.jpg');
+  background-size: 16px 16px, cover, cover;
+}
+
+.p5-subscreen.active {
+  display: block;
+  opacity: 1;
+  transform: scale(1) rotate(0deg);
+  animation: p5BladeEnter 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes p5BladeEnter {
+  0% {
+    opacity: 0;
+    clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
+    transform: scale(1.05) rotate(-3deg);
+  }
+  100% {
+    opacity: 1;
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+.subscreen-nav-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.btn-back-camp {
+  background: var(--p5-crimson);
+  color: #FFF;
+  border: 3px solid #000;
+  padding: 10px 24px;
+  font-family: var(--font-p5);
+  font-size: 22px;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transform: skew(-12deg);
+  box-shadow: 5px 5px 0 #000;
+  transition: all 0.15s;
+}
+
+.btn-back-camp:hover {
+  background: var(--p5-yellow);
+  color: #000;
+  transform: skew(-12deg) scale(1.05);
+  box-shadow: 7px 7px 0 #000;
+}
+
+/* =========================================================================
+   1:1 IN-GAME CONFIDANT CO-OP SCREEN
+   ========================================================================= */
+.coop-screen-layout {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 35px;
+  height: calc(100vh - 220px);
+}
+
+.coop-deck-scroll {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+  padding-right: 12px;
+}
+
+.coop-tarot-slab {
+  background: linear-gradient(135deg, #161622 0%, #0C0C12 100%);
+  border: 3px solid #000;
+  border-left: 8px solid var(--p5-crimson);
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  transform: skew(-10deg);
+  box-shadow: 5px 5px 0 #000;
+  transition: all 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.coop-tarot-slab:hover {
+  background: #222234;
+  transform: skew(-10deg) translateX(12px) scale(1.02);
+  box-shadow: 8px 8px 0 var(--p5-crimson);
+}
+
+.coop-tarot-slab.active {
+  background: var(--p5-crimson);
+  border-left-color: var(--p5-yellow);
+  transform: skew(-10deg) translateX(18px) scale(1.04);
+  box-shadow: 10px 10px 0 #000;
+}
+
+.coop-slab-rank {
+  background: #000;
+  color: var(--p5-yellow);
+  font-family: var(--font-p5);
+  font-size: 18px;
+  padding: 4px 10px;
+  border: 2px solid #000;
+  transform: skew(10deg);
+  min-width: 54px;
+  text-align: center;
+  font-weight: 900;
+}
+
+.coop-tarot-slab.active .coop-slab-rank {
+  background: var(--p5-yellow);
+  color: #000;
+}
+
+.coop-slab-avatar {
+  width: 50px;
+  height: 50px;
+  min-width: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--p5-white);
+  transform: skew(10deg);
+  box-shadow: 2px 2px 0 #000;
+}
+
+.coop-slab-text {
+  flex: 1;
+  min-width: 0;
+  transform: skew(10deg);
+}
+
+.coop-slab-arcana {
+  font-family: var(--font-p5);
+  font-size: 13px;
+  letter-spacing: 1px;
+  color: var(--p5-yellow);
+}
+
+.coop-tarot-slab.active .coop-slab-arcana {
+  color: #FFF;
+}
+
+.coop-slab-name {
+  font-family: var(--font-p5);
+  font-size: 22px;
+  letter-spacing: 1px;
+  color: #FFF;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Right Co-op Hero Canvas */
+.coop-hero-canvas {
+  background: linear-gradient(145deg, #181826 0%, #0A0A10 100%);
+  border: 4px solid #000;
+  border-left: 12px solid var(--p5-crimson);
+  padding: 30px;
+  box-shadow: 12px 12px 0 #000;
+  position: relative;
+  overflow-y: auto;
+  background-image: 
+    radial-gradient(circle, rgba(230,0,18,0.06) 15%, transparent 16%),
+    linear-gradient(145deg, #181826 0%, #0A0A10 100%);
+  background-size: 14px 14px, cover;
+}
+
+/* =========================================================================
+   BOTTOM RE-SIGN DECK HUD
+   ========================================================================= */
+.p5-client-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100vw;
+  height: 70px;
+  background: #08080C;
+  border-top: 4px solid var(--p5-crimson);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 40px;
+  z-index: 1000;
+  box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.95);
+}
+
+.footer-btn-save {
+  background: linear-gradient(135deg, var(--p5-crimson) 0%, var(--p5-blood) 100%);
+  color: #FFF;
+  border: 3px solid #000;
+  padding: 12px 45px;
+  font-family: var(--font-p5);
+  font-size: 26px;
+  letter-spacing: 3px;
+  cursor: pointer;
+  transform: skew(-12deg);
+  box-shadow: 6px 6px 0 #000;
+  transition: all 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.footer-btn-save:hover {
+  background: var(--p5-yellow);
+  color: #000;
+  transform: skew(-12deg) scale(1.05);
+  box-shadow: 8px 8px 0 var(--p5-crimson);
+}
+
+.p5-select, .p5-input {
+  background: #181824;
+  border: 2px solid #000;
+  color: var(--p5-white);
+  padding: 10px 14px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 700;
+  outline: none;
+  box-shadow: 3px 3px 0 #000;
+  transition: all 0.15s;
+}
+
+.p5-btn-action {
+  background: var(--p5-crimson);
+  color: var(--p5-white);
+  border: 2px solid #000;
+  padding: 8px 20px;
+  font-family: var(--font-p5);
+  font-size: 18px;
+  letter-spacing: 1.5px;
+  cursor: pointer;
+  transform: skew(-12deg);
+  box-shadow: 4px 4px 0 #000;
+  transition: all 0.15s;
+}
+
+.p5-btn-action:hover {
+  background: var(--p5-yellow);
+  color: #000;
+  box-shadow: 6px 6px 0 var(--p5-crimson);
+}
+
+.rank-stepper-btn {
+  background: var(--p5-crimson);
+  color: #FFF;
+  border: 2px solid #000;
+  width: 42px;
+  height: 42px;
+  font-size: 20px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 #000;
+  transition: all 0.15s;
+}
+
+.rank-stepper-btn:hover:not(:disabled) {
+  background: var(--p5-yellow);
+  color: #000;
+  transform: scale(1.1);
+}
+
+.star-node {
+  width: 36px;
+  height: 36px;
+  background: #181824;
+  border: 2px solid #000;
+  color: #666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-p5);
+  font-size: 18px;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 #000;
+  transition: all 0.15s;
+}
+
+.star-node.active {
+  background: var(--p5-crimson);
+  color: var(--p5-white);
+  border-color: #000;
+  box-shadow: 3px 3px 0 #000;
+  transform: scale(1.1) rotate(-3deg);
+  text-shadow: 1px 1px 0 #000;
+}

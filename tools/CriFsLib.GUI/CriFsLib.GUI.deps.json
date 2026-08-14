@@ -1,0 +1,174 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v7.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v7.0": {
+      "CriFsLib.GUI/1.0.0": {
+        "dependencies": {
+          "ByteSize": "2.1.1",
+          "CriFsV2Lib": "2.1.2",
+          "Ookii.Dialogs.Wpf": "5.0.1",
+          "PropertyChanged.Fody": "4.1.0",
+          "Reloaded.WPF.Theme.Default": "3.2.1"
+        },
+        "runtime": {
+          "CriFsLib.GUI.dll": {}
+        }
+      },
+      "ByteSize/2.1.1": {
+        "runtime": {
+          "lib/net5.0/ByteSize.dll": {
+            "assemblyVersion": "2.1.1.0",
+            "fileVersion": "2.1.1.0"
+          }
+        }
+      },
+      "Fody/6.6.4": {},
+      "Ookii.Dialogs.Wpf/5.0.1": {
+        "runtime": {
+          "lib/net6.0-windows7.0/Ookii.Dialogs.Wpf.dll": {
+            "assemblyVersion": "5.0.0.0",
+            "fileVersion": "5.0.1.0"
+          }
+        }
+      },
+      "PropertyChanged.Fody/4.1.0": {
+        "dependencies": {
+          "Fody": "6.6.4"
+        }
+      },
+      "Reloaded.WPF/3.3.0": {
+        "dependencies": {
+          "Reloaded.WPF.Animations": "1.3.1",
+          "Reloaded.WPF.ColorMineLite": "1.0.1"
+        },
+        "runtime": {
+          "lib/netcoreapp3.0/Reloaded.WPF.dll": {
+            "assemblyVersion": "3.3.0.0",
+            "fileVersion": "3.3.0.0"
+          }
+        }
+      },
+      "Reloaded.WPF.Animations/1.3.1": {
+        "dependencies": {
+          "Reloaded.WPF.ColorMineLite": "1.0.1"
+        },
+        "runtime": {
+          "lib/netcoreapp3.0/Reloaded.WPF.Animations.dll": {
+            "assemblyVersion": "1.3.1.0",
+            "fileVersion": "1.3.1.0"
+          }
+        }
+      },
+      "Reloaded.WPF.ColorMineLite/1.0.1": {
+        "runtime": {
+          "lib/netstandard2.0/Reloaded.WPF.ColorMineLite.dll": {
+            "assemblyVersion": "1.0.1.0",
+            "fileVersion": "1.0.1.0"
+          }
+        }
+      },
+      "Reloaded.WPF.Theme.Default/3.2.1": {
+        "dependencies": {
+          "Reloaded.WPF": "3.3.0",
+          "Reloaded.WPF.Animations": "1.3.1"
+        },
+        "runtime": {
+          "lib/netcoreapp3.0/Reloaded.WPF.Theme.Default.dll": {
+            "assemblyVersion": "3.2.1.0",
+            "fileVersion": "3.2.1.0"
+          }
+        }
+      },
+      "CriFsV2Lib/2.1.2": {
+        "dependencies": {
+          "CriFsV2Lib.Definitions": "1.1.0"
+        },
+        "runtime": {
+          "CriFsV2Lib.dll": {}
+        }
+      },
+      "CriFsV2Lib.Definitions/1.1.0": {
+        "runtime": {
+          "CriFsV2Lib.Definitions.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "CriFsLib.GUI/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "ByteSize/2.1.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-D+Y3NpbHrW21vZwwegeWf/8iAg2Mr0s7n1su8Ysho+O9dctJ5/EkWUi19QVxc6+nZl080gGTXBP/Nz0twSI3dA==",
+      "path": "bytesize/2.1.1",
+      "hashPath": "bytesize.2.1.1.nupkg.sha512"
+    },
+    "Fody/6.6.4": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-vLZS+oa+ndUHYPlx/8n9bBTT3dHkCF0riml4paKq4D663+cZd47x1uagQo32D/gKFZ/sfmV1oqKaLmH0elxq4A==",
+      "path": "fody/6.6.4",
+      "hashPath": "fody.6.6.4.nupkg.sha512"
+    },
+    "Ookii.Dialogs.Wpf/5.0.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-iZNnZwqTpK0cfR0vkotncP1c025/PHlIdzc7iEKBYwhVv1V0zXp9/RT/O0kMhsmlwXqRxxbE4pdhfinbJXtjPg==",
+      "path": "ookii.dialogs.wpf/5.0.1",
+      "hashPath": "ookii.dialogs.wpf.5.0.1.nupkg.sha512"
+    },
+    "PropertyChanged.Fody/4.1.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-6v+f9cI8YjnZH2WBHuOqWEAo8DFFNGFIdU8xD3AsL6fhV6Y8oAmVWd7XKk49t8DpeUBwhR/X+97+6Epvek0Y3A==",
+      "path": "propertychanged.fody/4.1.0",
+      "hashPath": "propertychanged.fody.4.1.0.nupkg.sha512"
+    },
+    "Reloaded.WPF/3.3.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-BK/mjurg0fgEnV9D7fcqm0P6N1RnUKtA+Q0EHryU2vG2mbzy7HfJyRU4iQ8mspfyJNpq934DKaVFOz2Nise5AA==",
+      "path": "reloaded.wpf/3.3.0",
+      "hashPath": "reloaded.wpf.3.3.0.nupkg.sha512"
+    },
+    "Reloaded.WPF.Animations/1.3.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-gtvzEnGNiLA0kJuTYhkpukWdJAsODsF7JKJo+uQ/uH+b2H14TbOChra2xflPXmFYVX0O038emAqUZvocm2nTtQ==",
+      "path": "reloaded.wpf.animations/1.3.1",
+      "hashPath": "reloaded.wpf.animations.1.3.1.nupkg.sha512"
+    },
+    "Reloaded.WPF.ColorMineLite/1.0.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-QL+BIUwj1WvctN8Glu+PMriiRlEMqX6ZcPAoSODrVl7cSJ5729aOLM44ATjqVoaKmmVIcnFIlmv0gOLtlzq9Dg==",
+      "path": "reloaded.wpf.colorminelite/1.0.1",
+      "hashPath": "reloaded.wpf.colorminelite.1.0.1.nupkg.sha512"
+    },
+    "Reloaded.WPF.Theme.Default/3.2.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-H85xQvz6zDVB4BAzT6AExFDM4tOpX45AypF27TTSBENRYubyAvp7kzaRHTragFnEeHtddTdsJPxBmVnpo3tYAQ==",
+      "path": "reloaded.wpf.theme.default/3.2.1",
+      "hashPath": "reloaded.wpf.theme.default.3.2.1.nupkg.sha512"
+    },
+    "CriFsV2Lib/2.1.2": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "CriFsV2Lib.Definitions/1.1.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

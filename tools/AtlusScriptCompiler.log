@@ -1,0 +1,966 @@
+8/14/2026 9:42:09 AM  Trace: Arguments: -Decompile -InFormat FlowScriptBinary -Library P5R -Encoding P5 -OutFormat V3 -In E:\ai-workspace\knowledge-base\projects\p5r-save-editor\tools\cpk_out\decompiled\FIELDFSCR0154_051_110.BF.raw -Out E:\ai-workspace\knowledge-base\projects\p5r-save-editor\tools\cpk_out\decompiled\FIELDFSCR0154_051_110.BF.flow
+8/14/2026 9:42:10 AM  Info: Using P5 encoding
+8/14/2026 9:42:10 AM  Info: Output file path is set to E:\ai-workspace\knowledge-base\projects\p5r-save-editor\tools\cpk_out\decompiled\FIELDFSCR0154_051_110.BF.flow
+8/14/2026 9:42:10 AM  Info: Loading binary FlowScript file...
+8/14/2026 9:42:10 AM  Info: Decompiling FlowScript...
+8/14/2026 9:42:10 AM  Info: FlowScript output path set to E:\ai-workspace\knowledge-base\projects\p5r-save-editor\tools\cpk_out\decompiled\FIELDFSCR0154_051_110.BF.flow
+8/14/2026 9:42:10 AM  Info: MessageScript output path set to E:\ai-workspace\knowledge-base\projects\p5r-save-editor\tools\cpk_out\decompiled\FIELDFSCR0154_051_110.BF.msg
+8/14/2026 9:42:10 AM  Info: Writing decompiled MessageScript to file
+8/14/2026 9:42:10 AM  Info: Start decompiling FlowScript
+8/14/2026 9:42:10 AM  Info: Start evaluating FlowScript
+8/14/2026 9:42:10 AM  Info: Registering functions
+8/14/2026 9:42:10 AM  Info: Registering top level variables
+8/14/2026 9:42:10 AM  Info: Evaluating procedures
+8/14/2026 9:42:10 AM  Info: Evaluating procedure: 'General_0154_051_100'
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PROC 0 at index 0
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction CALL 1 at index 1
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction END  at index 2
+8/14/2026 9:42:10 AM  Info: Evaluating procedure: 'D03_KeySearch_PlanEvent'
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PROC 1 at index 0
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 1
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4436 at index 2
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 3
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4099 at index 4
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHREG  at index 5
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 0 at index 6
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 1 at index 7
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction MINUS  at index 8
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 1 at index 9
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 1 at index 10
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction MINUS  at index 11
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 2 at index 12
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 1 at index 13
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction MINUS  at index 14
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 3 at index 15
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction CALL 2 at index 16
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 0 at index 17
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4414 at index 18
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4101 at index 19
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 20
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHF 0.8125 at index 21
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHF 0.1419 at index 22
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHF 0.5202 at index 23
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHF 0.2217 at index 24
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction MINUS  at index 25
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHF 180.8928 at index 26
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHF 294.8148 at index 27
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHF 252.3162 at index 28
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4221 at index 29
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 20 at index 30
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 31
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 7 at index 32
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 10 at index 33
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 34 at index 34
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 35
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 36
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 5 at index 37
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 35 at index 38
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 34 at index 39
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 40
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 1 at index 41
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 5 at index 42
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 35 at index 43
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 34 at index 44
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 45
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 2 at index 46
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 5 at index 47
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 35 at index 48
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 34 at index 49
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 50
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 3 at index 51
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 5 at index 52
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 35 at index 53
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 34 at index 54
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 55
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 4 at index 56
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 5 at index 57
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 35 at index 58
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 34 at index 59
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 60
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 5 at index 61
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 5 at index 62
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 35 at index 63
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 34 at index 64
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 65
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 6 at index 66
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 5 at index 67
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 35 at index 68
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 34 at index 69
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 70
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 7 at index 71
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 5 at index 72
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 35 at index 73
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 34 at index 74
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 75
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 8 at index 76
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 5 at index 77
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 35 at index 78
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 34 at index 79
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 80
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 9 at index 81
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 5 at index 82
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 10 at index 83
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 36 at index 84
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHREG  at index 85
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 4 at index 86
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 35 at index 87
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 88
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 4 at index 89
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction EQ  at index 90
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction IF 0 at index 91
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 34 at index 92
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 93
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 11 at index 94
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 5 at index 95
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 35 at index 96
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction GOTO 1 at index 97
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 1 at index 98
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 4 at index 99
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction EQ  at index 100
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction IF 1 at index 101
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 34 at index 102
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 103
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 12 at index 104
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 5 at index 105
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 35 at index 106
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 34 at index 107
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 108
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 13 at index 109
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 5 at index 110
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 35 at index 111
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction GOTO 1 at index 112
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 34 at index 113
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 114
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 15 at index 115
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 5 at index 116
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 35 at index 117
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction CALL 3 at index 118
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 10 at index 119
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 120
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 8 at index 121
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 10 at index 122
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 123
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4437 at index 124
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4207 at index 125
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4102 at index 126
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction END  at index 127
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction END  at index 128
+8/14/2026 9:42:10 AM  Info: Evaluating procedure: 'event_member_setup'
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PROC 2 at index 0
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 1 at index 1
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 5 at index 2
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 2 at index 3
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 6 at index 4
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 3 at index 5
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 7 at index 6
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction CALL 4 at index 7
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 1 at index 8
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 11 at index 9
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 4 at index 10
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 11 at index 11
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction S  at index 12
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction IF 2 at index 13
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 11 at index 14
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4099 at index 15
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHREG  at index 16
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 12 at index 17
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 18
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 12 at index 19
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction L  at index 20
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction IF 0 at index 21
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 22
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 23
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 12 at index 24
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4278 at index 25
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction GOTO 0 at index 26
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 1 at index 27
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 11 at index 28
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction ADD  at index 29
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 11 at index 30
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction GOTO 1 at index 31
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction CALL 6 at index 32
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 8 at index 33
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 1 at index 34
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 9 at index 35
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 2 at index 36
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 10 at index 37
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 3 at index 38
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction END  at index 39
+8/14/2026 9:42:10 AM  Info: Evaluating procedure: 'event_member_release'
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PROC 3 at index 0
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4869 at index 1
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 8 at index 2
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 24 at index 3
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction CALL 7 at index 4
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 9 at index 5
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 24 at index 6
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction CALL 7 at index 7
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 10 at index 8
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 24 at index 9
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction CALL 7 at index 10
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 1 at index 11
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 13 at index 12
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 4 at index 13
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 13 at index 14
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction S  at index 15
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction IF 2 at index 16
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 13 at index 17
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4099 at index 18
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHREG  at index 19
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 14 at index 20
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 21
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 14 at index 22
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction L  at index 23
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction IF 0 at index 24
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 25
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 1 at index 26
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 14 at index 27
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4278 at index 28
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction GOTO 0 at index 29
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 1 at index 30
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 13 at index 31
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction ADD  at index 32
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 13 at index 33
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction GOTO 1 at index 34
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction END  at index 35
+8/14/2026 9:42:10 AM  Info: Evaluating procedure: '_choice_member'
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PROC 4 at index 0
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 1 at index 1
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction MINUS  at index 2
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 1 at index 3
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction EQ  at index 4
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction IF 4 at index 5
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 6
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 1 at index 7
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 1 at index 8
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 15 at index 9
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 4 at index 10
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 15 at index 11
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction S  at index 12
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction IF 3 at index 13
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 15 at index 14
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4432 at index 15
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHREG  at index 16
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 16 at index 17
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 18
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 16 at index 19
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction NEQ  at index 20
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction IF 1 at index 21
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 16 at index 22
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 18 at index 23
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction CALL 5 at index 24
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 25
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 19 at index 26
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction EQ  at index 27
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction IF 0 at index 28
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 18 at index 29
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 1 at index 30
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction GOTO 3 at index 31
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction GOTO 0 at index 32
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction GOTO 1 at index 33
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 1 at index 34
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 15 at index 35
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction ADD  at index 36
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 15 at index 37
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction GOTO 2 at index 38
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction GOTO 4 at index 39
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 1 at index 40
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction MINUS  at index 41
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 2 at index 42
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction EQ  at index 43
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction IF 9 at index 44
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 45
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 2 at index 46
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 1 at index 47
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 15 at index 48
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 4 at index 49
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 15 at index 50
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction S  at index 51
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction IF 8 at index 52
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 15 at index 53
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4432 at index 54
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHREG  at index 55
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 16 at index 56
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 57
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 16 at index 58
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction NEQ  at index 59
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction IF 6 at index 60
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 16 at index 61
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 18 at index 62
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction CALL 5 at index 63
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 64
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 19 at index 65
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction EQ  at index 66
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction IF 5 at index 67
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 18 at index 68
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 2 at index 69
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction GOTO 8 at index 70
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction GOTO 5 at index 71
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction GOTO 6 at index 72
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 1 at index 73
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 15 at index 74
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction ADD  at index 75
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 15 at index 76
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction GOTO 7 at index 77
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction GOTO 9 at index 78
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 1 at index 79
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction MINUS  at index 80
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 3 at index 81
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction EQ  at index 82
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction IF 14 at index 83
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 84
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 3 at index 85
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 1 at index 86
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 15 at index 87
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 4 at index 88
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 15 at index 89
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction S  at index 90
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction IF 13 at index 91
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 15 at index 92
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4432 at index 93
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHREG  at index 94
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 16 at index 95
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 96
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 16 at index 97
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction NEQ  at index 98
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction IF 11 at index 99
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 16 at index 100
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 18 at index 101
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction CALL 5 at index 102
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 103
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 19 at index 104
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction EQ  at index 105
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction IF 10 at index 106
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 18 at index 107
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 3 at index 108
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction GOTO 13 at index 109
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction GOTO 10 at index 110
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction GOTO 11 at index 111
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 1 at index 112
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 15 at index 113
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction ADD  at index 114
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 15 at index 115
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction GOTO 12 at index 116
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction GOTO 14 at index 117
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction END  at index 118
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction END  at index 119
+8/14/2026 9:42:10 AM  Info: Evaluating procedure: '_check_fix_member'
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PROC 5 at index 0
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 1
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 19 at index 2
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 11 at index 3
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 18 at index 4
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction LE  at index 5
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 1 at index 6
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 18 at index 7
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction SE  at index 8
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction OR  at index 9
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction IF 0 at index 10
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction END  at index 11
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction GOTO 0 at index 12
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 1 at index 13
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 18 at index 14
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction EQ  at index 15
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction IF 1 at index 16
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 1 at index 17
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 19 at index 18
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction END  at index 19
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction GOTO 1 at index 20
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 2 at index 21
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 18 at index 22
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction EQ  at index 23
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction IF 2 at index 24
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 1 at index 25
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 19 at index 26
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction END  at index 27
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction GOTO 2 at index 28
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 3 at index 29
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 18 at index 30
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction EQ  at index 31
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction IF 3 at index 32
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 1 at index 33
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 19 at index 34
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction END  at index 35
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction GOTO 3 at index 36
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction END  at index 37
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction END  at index 38
+8/14/2026 9:42:10 AM  Info: Evaluating procedure: '_make_handle'
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PROC 6 at index 0
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 50 at index 1
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 21 at index 2
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 3
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 22 at index 4
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 51 at index 5
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 23 at index 6
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4545 at index 7
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHREG  at index 8
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction IF 0 at index 9
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 99 at index 10
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 21 at index 11
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 99 at index 12
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 23 at index 13
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction GOTO 0 at index 14
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 1 at index 15
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction MINUS  at index 16
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 8 at index 17
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 18
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 1 at index 19
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction NEQ  at index 20
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction IF 2 at index 21
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 1 at index 22
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4318 at index 23
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHREG  at index 24
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 20 at index 25
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 20 at index 26
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 8 at index 27
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 1 at index 28
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction MINUS  at index 29
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 20 at index 30
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction EQ  at index 31
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction IF 1 at index 32
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 23 at index 33
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 34
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 21 at index 35
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 1 at index 36
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4343 at index 37
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHREG  at index 38
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 8 at index 39
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 8 at index 40
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4130 at index 41
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 1 at index 42
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 22 at index 43
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction ADD  at index 44
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 22 at index 45
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction GOTO 1 at index 46
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 47
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 1 at index 48
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 8 at index 49
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4278 at index 50
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 51
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 8 at index 52
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4868 at index 53
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction GOTO 2 at index 54
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 1 at index 55
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction MINUS  at index 56
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 9 at index 57
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 58
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 2 at index 59
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction NEQ  at index 60
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction IF 4 at index 61
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 2 at index 62
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4318 at index 63
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHREG  at index 64
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 20 at index 65
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 20 at index 66
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 9 at index 67
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 1 at index 68
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction MINUS  at index 69
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 20 at index 70
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction EQ  at index 71
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction IF 3 at index 72
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 23 at index 73
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 74
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 21 at index 75
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 2 at index 76
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4343 at index 77
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHREG  at index 78
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 9 at index 79
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 9 at index 80
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4130 at index 81
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 1 at index 82
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 22 at index 83
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction ADD  at index 84
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 22 at index 85
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction GOTO 3 at index 86
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 87
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 1 at index 88
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 9 at index 89
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4278 at index 90
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 1 at index 91
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 9 at index 92
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4868 at index 93
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction GOTO 4 at index 94
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 1 at index 95
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction MINUS  at index 96
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 10 at index 97
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 98
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 3 at index 99
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction NEQ  at index 100
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction IF 6 at index 101
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 3 at index 102
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4318 at index 103
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHREG  at index 104
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 20 at index 105
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 20 at index 106
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 10 at index 107
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 1 at index 108
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction MINUS  at index 109
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 20 at index 110
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction EQ  at index 111
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction IF 5 at index 112
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 23 at index 113
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 114
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 21 at index 115
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 3 at index 116
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4343 at index 117
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHREG  at index 118
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 10 at index 119
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 10 at index 120
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4130 at index 121
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 1 at index 122
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 22 at index 123
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction ADD  at index 124
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 22 at index 125
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction GOTO 5 at index 126
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 127
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 1 at index 128
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 10 at index 129
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4278 at index 130
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 2 at index 131
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 10 at index 132
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4868 at index 133
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction GOTO 6 at index 134
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction END  at index 135
+8/14/2026 9:42:10 AM  Info: Evaluating procedure: '_release_handle'
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PROC 7 at index 0
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 1
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 24 at index 2
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction L  at index 3
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction IF 4 at index 4
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 1 at index 5
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 25 at index 6
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 4 at index 7
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 25 at index 8
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction S  at index 9
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction IF 2 at index 10
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 25 at index 11
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4099 at index 12
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHREG  at index 13
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 26 at index 14
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 24 at index 15
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 26 at index 16
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction EQ  at index 17
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction IF 0 at index 18
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction GOTO 2 at index 19
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction GOTO 0 at index 20
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 1 at index 21
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 25 at index 22
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction ADD  at index 23
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 25 at index 24
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction GOTO 1 at index 25
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 4 at index 26
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 25 at index 27
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction EQ  at index 28
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction IF 3 at index 29
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 30
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 31
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 24 at index 32
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4278 at index 33
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 24 at index 34
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4322 at index 35
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction GOTO 3 at index 36
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction GOTO 4 at index 37
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 38
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 24 at index 39
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction END  at index 40
+8/14/2026 9:42:10 AM  Info: Evaluating procedure: 'motion_wait'
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PROC 8 at index 0
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 1
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4099 at index 2
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHREG  at index 3
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 27 at index 4
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 5
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 27 at index 6
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 145 at index 7
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHREG  at index 8
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction NEQ  at index 9
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction IF 0 at index 10
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHF 1 at index 11
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 5 at index 12
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 13
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 14
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 27 at index 15
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4580 at index 16
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction GOTO 0 at index 17
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction END  at index 18
+8/14/2026 9:42:10 AM  Info: Evaluating procedure: 'motion_event_wait'
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PROC 9 at index 0
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 1
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4099 at index 2
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHREG  at index 3
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 28 at index 4
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 58 at index 5
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 28 at index 6
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 145 at index 7
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHREG  at index 8
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction NEQ  at index 9
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction IF 0 at index 10
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHF 1 at index 11
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 5 at index 12
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 13
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 58 at index 14
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 28 at index 15
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4580 at index 16
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction GOTO 0 at index 17
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction END  at index 18
+8/14/2026 9:42:10 AM  Info: Evaluating procedure: 'add_motion_CONSOLE'
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PROC 10 at index 0
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 1
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4099 at index 2
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHREG  at index 3
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 31 at index 4
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 57 at index 5
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 31 at index 6
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4331 at index 7
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHREG  at index 8
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 29 at index 9
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHF 1 at index 10
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 3 at index 11
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 12
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 13
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 60 at index 14
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction ADD  at index 15
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 29 at index 16
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4580 at index 17
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 2 at index 18
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 30 at index 19
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction END  at index 20
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction END  at index 21
+8/14/2026 9:42:10 AM  Info: Evaluating procedure: 'add_motion_TAKE'
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PROC 11 at index 0
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 1
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4099 at index 2
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHREG  at index 3
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 32 at index 4
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 84 at index 5
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 32 at index 6
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4331 at index 7
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHREG  at index 8
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 29 at index 9
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHF 1 at index 10
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 3 at index 11
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 12
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 13
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 60 at index 14
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction ADD  at index 15
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 29 at index 16
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4580 at index 17
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 2 at index 18
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 30 at index 19
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction END  at index 20
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction END  at index 21
+8/14/2026 9:42:10 AM  Info: Evaluating procedure: 'add_motion_GIMMICK_TAKE'
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PROC 12 at index 0
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 1
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4099 at index 2
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHREG  at index 3
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 33 at index 4
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 86 at index 5
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 33 at index 6
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4331 at index 7
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHREG  at index 8
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 29 at index 9
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHF 1 at index 10
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 3 at index 11
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 12
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 13
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 60 at index 14
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction ADD  at index 15
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 29 at index 16
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4580 at index 17
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 1 at index 18
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 30 at index 19
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction END  at index 20
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction END  at index 21
+8/14/2026 9:42:10 AM  Info: Evaluating procedure: 'add_motion_GIMMICK_PUT'
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PROC 13 at index 0
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 1
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4099 at index 2
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHREG  at index 3
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 34 at index 4
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 87 at index 5
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 34 at index 6
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4331 at index 7
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHREG  at index 8
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 29 at index 9
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHF 1 at index 10
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 3 at index 11
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 12
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 13
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 60 at index 14
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction ADD  at index 15
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 29 at index 16
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4580 at index 17
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 1 at index 18
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 30 at index 19
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction END  at index 20
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction END  at index 21
+8/14/2026 9:42:10 AM  Info: Evaluating procedure: 'add_motion_DOOR_OPEN'
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PROC 14 at index 0
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 1
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4099 at index 2
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHREG  at index 3
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 35 at index 4
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 90 at index 5
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 35 at index 6
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4331 at index 7
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHREG  at index 8
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 29 at index 9
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHF 0.7 at index 10
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 3 at index 11
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 12
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 13
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 60 at index 14
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction ADD  at index 15
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 29 at index 16
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4580 at index 17
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 1 at index 18
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 30 at index 19
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction END  at index 20
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction END  at index 21
+8/14/2026 9:42:10 AM  Info: Evaluating procedure: 'add_motion_DOOR_NOT_OPEN'
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PROC 15 at index 0
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 1
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4099 at index 2
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHREG  at index 3
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 36 at index 4
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 91 at index 5
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 36 at index 6
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4331 at index 7
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHREG  at index 8
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 29 at index 9
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHF 0.7 at index 10
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 3 at index 11
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 12
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 13
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 60 at index 14
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction ADD  at index 15
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 29 at index 16
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4580 at index 17
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 1 at index 18
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 30 at index 19
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction END  at index 20
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction END  at index 21
+8/14/2026 9:42:10 AM  Info: Evaluating procedure: 'add_motion_DOOR_KICK'
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PROC 16 at index 0
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 1
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4099 at index 2
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHREG  at index 3
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 37 at index 4
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 92 at index 5
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 37 at index 6
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4331 at index 7
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHREG  at index 8
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 29 at index 9
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHF 0.7 at index 10
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 3 at index 11
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 12
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 13
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 60 at index 14
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction ADD  at index 15
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 29 at index 16
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4580 at index 17
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 1 at index 18
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 30 at index 19
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction END  at index 20
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction END  at index 21
+8/14/2026 9:42:10 AM  Info: Evaluating procedure: 'add_motion_SWITCH'
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PROC 17 at index 0
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 1
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4099 at index 2
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHREG  at index 3
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 38 at index 4
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 93 at index 5
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 38 at index 6
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4331 at index 7
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHREG  at index 8
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 29 at index 9
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHF 1 at index 10
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 3 at index 11
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 12
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 13
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 60 at index 14
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction ADD  at index 15
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 29 at index 16
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4580 at index 17
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 1 at index 18
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 30 at index 19
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction END  at index 20
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction END  at index 21
+8/14/2026 9:42:10 AM  Info: Evaluating procedure: 'add_motion_SWITCH_NONE'
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PROC 18 at index 0
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 1
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4099 at index 2
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHREG  at index 3
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 39 at index 4
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 94 at index 5
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 39 at index 6
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4331 at index 7
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHREG  at index 8
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 29 at index 9
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHF 1 at index 10
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 3 at index 11
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 12
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 13
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 60 at index 14
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction ADD  at index 15
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 29 at index 16
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4580 at index 17
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 1 at index 18
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 30 at index 19
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction END  at index 20
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction END  at index 21
+8/14/2026 9:42:10 AM  Info: Evaluating procedure: 'add_motion_SWITCH_L'
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PROC 19 at index 0
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 1
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4099 at index 2
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHREG  at index 3
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 40 at index 4
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 96 at index 5
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 40 at index 6
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4331 at index 7
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHREG  at index 8
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 29 at index 9
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHF 0.7 at index 10
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 3 at index 11
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 12
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 13
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 60 at index 14
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction ADD  at index 15
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 29 at index 16
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4580 at index 17
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 1 at index 18
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 30 at index 19
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction END  at index 20
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction END  at index 21
+8/14/2026 9:42:10 AM  Info: Evaluating procedure: 'add_motion_SWITCH_L_NONE'
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PROC 20 at index 0
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 1
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4099 at index 2
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHREG  at index 3
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 41 at index 4
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 97 at index 5
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 41 at index 6
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4331 at index 7
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHREG  at index 8
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 29 at index 9
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHF 0.7 at index 10
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 3 at index 11
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 12
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 13
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 60 at index 14
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction ADD  at index 15
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 29 at index 16
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4580 at index 17
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 1 at index 18
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 30 at index 19
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction END  at index 20
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction END  at index 21
+8/14/2026 9:42:10 AM  Info: Evaluating procedure: 'add_motion_CARD_IN'
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PROC 21 at index 0
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 1
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4099 at index 2
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHREG  at index 3
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 42 at index 4
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 81 at index 5
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 42 at index 6
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4331 at index 7
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHREG  at index 8
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 29 at index 9
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHF 0.7 at index 10
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 3 at index 11
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 12
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 13
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 60 at index 14
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction ADD  at index 15
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 29 at index 16
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4580 at index 17
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 2 at index 18
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 30 at index 19
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction END  at index 20
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction END  at index 21
+8/14/2026 9:42:10 AM  Info: Evaluating procedure: 'add_motion_wait'
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PROC 22 at index 0
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 1
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4099 at index 2
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHREG  at index 3
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 43 at index 4
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 29 at index 5
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4581 at index 6
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 1 at index 7
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 30 at index 8
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction EQ  at index 9
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction IF 0 at index 10
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHF 1 at index 11
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 5 at index 12
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 1 at index 13
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 14
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 29 at index 15
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4580 at index 16
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction GOTO 1 at index 17
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 2 at index 18
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 30 at index 19
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction EQ  at index 20
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction IF 1 at index 21
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHF 1 at index 22
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 5 at index 23
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 1 at index 24
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 58 at index 25
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 29 at index 26
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4580 at index 27
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction GOTO 1 at index 28
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 29 at index 29
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 43 at index 30
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4332 at index 31
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 32
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 29 at index 33
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 0 at index 34
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 30 at index 35
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction END  at index 36
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction END  at index 37
+8/14/2026 9:42:10 AM  Info: Evaluating procedure: 'talk_motion'
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PROC 23 at index 0
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 44 at index 1
+8/14/2026 9:42:10 AM  Info: Referenced undeclared local int variable: '44'
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4318 at index 2
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHREG  at index 3
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction POPLIX 45 at index 4
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHIS 1 at index 5
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction MINUS  at index 6
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 45 at index 7
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction NEQ  at index 8
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction IF 0 at index 9
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction PUSHLIX 45 at index 10
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction COMM 4611 at index 11
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction GOTO 0 at index 12
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction END  at index 13
+8/14/2026 9:42:10 AM  Debug: Evaluating instruction END  at index 14
+8/14/2026 9:42:10 AM  Info: Done evaluating FlowScript
+8/14/2026 9:42:10 AM  Info: Decompiling procedure: General_0154_051_100
+8/14/2026 9:42:10 AM  Info: Decompiling procedure: D03_KeySearch_PlanEvent
+8/14/2026 9:42:10 AM  Info: Decompiling procedure: event_member_setup
+8/14/2026 9:42:10 AM  Info: Decompiling procedure: event_member_release
+8/14/2026 9:42:10 AM  Info: Decompiling procedure: _choice_member
+8/14/2026 9:42:10 AM  Info: Decompiling procedure: _check_fix_member
+8/14/2026 9:42:10 AM  Info: Decompiling procedure: _make_handle
+8/14/2026 9:42:10 AM  Info: Decompiling procedure: _release_handle
+8/14/2026 9:42:10 AM  Info: Decompiling procedure: motion_wait
+8/14/2026 9:42:10 AM  Info: Decompiling procedure: motion_event_wait
+8/14/2026 9:42:10 AM  Info: Decompiling procedure: add_motion_CONSOLE
+8/14/2026 9:42:10 AM  Info: Decompiling procedure: add_motion_TAKE
+8/14/2026 9:42:10 AM  Info: Decompiling procedure: add_motion_GIMMICK_TAKE
+8/14/2026 9:42:10 AM  Info: Decompiling procedure: add_motion_GIMMICK_PUT
+8/14/2026 9:42:10 AM  Info: Decompiling procedure: add_motion_DOOR_OPEN
+8/14/2026 9:42:10 AM  Info: Decompiling procedure: add_motion_DOOR_NOT_OPEN
+8/14/2026 9:42:10 AM  Info: Decompiling procedure: add_motion_DOOR_KICK
+8/14/2026 9:42:10 AM  Info: Decompiling procedure: add_motion_SWITCH
+8/14/2026 9:42:10 AM  Info: Decompiling procedure: add_motion_SWITCH_NONE
+8/14/2026 9:42:10 AM  Info: Decompiling procedure: add_motion_SWITCH_L
+8/14/2026 9:42:10 AM  Info: Decompiling procedure: add_motion_SWITCH_L_NONE
+8/14/2026 9:42:10 AM  Info: Decompiling procedure: add_motion_CARD_IN
+8/14/2026 9:42:10 AM  Info: Decompiling procedure: add_motion_wait
+8/14/2026 9:42:10 AM  Info: Decompiling procedure: talk_motion
+8/14/2026 9:42:10 AM  Info: Done decompiling FlowScript
+8/14/2026 9:42:10 AM  Info: Writing decompiled FlowScript to file
+8/14/2026 9:42:10 AM  Info: FlowScript version V3BE decompiled.
+8/14/2026 9:42:10 AM  Info: Task completed successfully!
