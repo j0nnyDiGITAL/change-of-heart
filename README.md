@@ -6,9 +6,9 @@
   <img src="change_of_heart_logo.jpg" alt="CHANGE OF HEART Logo" width="320" style="border-radius:8px; box-shadow:0 0 25px rgba(230,0,18,0.5);">
 </p>
 
-[![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Steam%20%7C%20Steam%20Deck-red?style=for-the-badge&logo=steam)](https://github.com/j0nnyDiGITAL/p5r-save-editor)
-[![Built With](https://img.shields.io/badge/Built%20With-100%25%20Vibecoded%20⚡-ff007f?style=for-the-badge)](https://github.com/j0nnyDiGITAL/p5r-save-editor)
-[![Tests](https://img.shields.io/badge/Tests-79%2F79%20Passing%20(100%25)-brightgreen?style=for-the-badge)](https://github.com/j0nnyDiGITAL/p5r-save-editor)
+[![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Steam%20%7C%20Steam%20Deck-red?style=for-the-badge&logo=steam)](https://github.com/j0nnyDiGITAL/change-of-heart)
+[![Built With](https://img.shields.io/badge/Built%20With-100%25%20Vibecoded%20⚡-ff007f?style=for-the-badge)](https://github.com/j0nnyDiGITAL/change-of-heart)
+[![Tests](https://img.shields.io/badge/Tests-79%2F79%20Passing%20(100%25)-brightgreen?style=for-the-badge)](https://github.com/j0nnyDiGITAL/change-of-heart)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
 [![Ko-fi](https://img.shields.io/badge/Ko--fi-Support%20j0nny%20DiGITAL-ff5e5b?style=for-the-badge&logo=kofi&logoColor=white)](https://ko-fi.com/j0nnydigital)
 
