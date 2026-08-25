@@ -92,7 +92,8 @@
 - **UI North Star:** `docs/UI_NORTH_STAR.md` — executable 1:1 P5R fidelity spec. Ground truth = 146 official screenshots (pixel-sampled palette: red #FD1700, cyan selection #00C4FE, per-context accents lime/blue/gold; black canvas, white text, parallelograms, no gradients/emoji/rounded pills). Reference corpus local at `design/reference/` (79MB, gitignored), contact sheets tracked. Phase roadmap P2-P6 inside; every UI change must cite a reference screenshot + spec rule.
 
 ## Session History
-- 2026-08-14: Project scaffold, v1.0.7 Item Studio Rework, 120/120 tests
+- 2026-08-25: UI P2 pass — stage accent theming, emoji purge, kinetic motion, search consolidation; 176/176 tests green, 10/10 captures, ledger .unlazy/ui-p2/GATES.md (8/9 gates met). See memory/2026-08-25-ui-p2-stage-accents.md
+- 2026-08-21: Inventory UX pass R1-R9 (memory/2026-08-21-inventory-ux-pass.md)
 - 2026-08-15: v1.0.7 EXE build, safety hardening
 - 2026-08-16: v1.0.8 prep, master item count rewrite, compendium fixes
 - 2026-08-17: Equipment ownership probe (melee verified, others WIP)
