@@ -673,6 +673,35 @@ class TestDiscoveryAndManualUpload(unittest.TestCase):
         self.assertIn("party", payload)
         self.assertIn("confidants", payload)
 
+    def test_confidant_romance_and_points_preservation(self):
+        from server import _build_loaded_save_payload, CONFIDANT_ARCANA_MAP
+        e = make_pc_editor()
+        arc_id = CONFIDANT_ARCANA_MAP["Death"]  # 13
+        # Set Death (Takemi) to Rank 4 with 15 affinity points
+        e.set_confidant_rank(arc_id, 4, points=15, romance=False, auto_unlock=True)
+        conf = e.get_confidant_ranks()["Death"]
+        self.assertEqual(conf["rank"], 4)
+        self.assertEqual(conf["points"], 15)
+        self.assertFalse(conf["romance"])
+
+        # Calling set_confidant_rank without points parameter preserves existing points
+        e.set_confidant_rank(arc_id, 4, romance=True)
+        conf2 = e.get_confidant_ranks()["Death"]
+        self.assertEqual(conf2["rank"], 4)
+        self.assertEqual(conf2["points"], 15, "Affinity points must not be wiped when modifying romance/other fields")
+        self.assertTrue(conf2["romance"])
+
+
+class TestRomanceUIReactivity(unittest.TestCase):
+    """Verifies that app.js properly renders both LOVER and PLATONIC badges based on info.romance."""
+
+    def test_app_js_checks_info_romance_for_status_badge(self):
+        with open(os.path.join(ROOT, "web-app", "static", "app.js"), encoding="utf-8") as f:
+            src = f.read()
+        self.assertIn("info.romance ?", src)
+        self.assertIn("LOVER RELATIONSHIP", src)
+        self.assertIn("PLATONIC FRIENDSHIP", src)
+
 
 if __name__ == "__main__":
     unittest.main()
