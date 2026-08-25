@@ -5,8 +5,8 @@
   "gate": "ready",
   "mode": "single-agent",
   "pinned_shas": {},
-  "last_session": "memory/2026-08-25-ui-phase-4-typography.md",
-  "updated_at": "2026-08-25T22:25:00Z",
+  "last_session": "memory/2026-08-25-ui-phase-3-geometry.md",
+  "updated_at": "2026-08-25T22:20:00Z",
   "version": "v1.1.1",
   "test_command": [
     "python",
@@ -18,7 +18,7 @@
   ],
   "test_count": 176,
   "blockers": [],
-  "next_action": "UI Phase 4 ransom-note typography pass complete; 176/176 tests green",
+  "next_action": "UI Phase 3 geometry & hard shadow pass complete; 176/176 tests green",
   "active_owners": [],
   "frozen_offsets": [
     "0xA000+ Outfits save wiring (D008 \u2014 read-only in UI)"
