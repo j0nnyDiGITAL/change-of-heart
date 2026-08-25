@@ -96,60 +96,96 @@
       </div>
     </header>
 
-    <!-- STAGE 1: Daily Life & Social Stats -->
+    <!-- STAGE 1: Daily Life & Social Stats (1:1 Atlus Status Layout — Ref: 27809.jpg) -->
     <section id="stage-daily_life" class="p5-stage-view active">
       <div class="stage-headline">
         <h2>★ DAILY LIFE & PHANTOM IDENTITY</h2>
         <p>Manage Joker's school profile, Phantom Thief calling name, Yen balance, and Social Stats.</p>
       </div>
 
-      <div class="grid-2">
-        <!-- Identity & Yen -->
-        <div class="p5-card">
-          <div class="p5-card-header">
-            <span> LEADER PROFILE</span>
-            <span style="font-size:12px; color:var(--p5-muted);">SHUJIN ACADEMY</span>
-          </div>
-
-          <div class="grid-2" style="gap:15px; margin-bottom:15px;">
-            <div>
-              <label style="font-size:11px; font-weight:800; color:var(--p5-muted); text-transform:uppercase;">First Name</label>
-              <input type="text" id="inputFname" class="p5-input" style="width:100%; margin-top:4px;">
+      <div class="p5-status-stage-grid">
+        <!-- LEFT: Leader Identity & Shujin Dossier -->
+        <div>
+          <!-- Hero Name Shard (Authentic White Angular Polygon) -->
+          <div class="p5-hero-name-shard">
+            <div class="p5-hero-name-inner">
+              <div>
+                <span style="font-size:10px; font-weight:900; letter-spacing:1px; color:#666;">PHANTOM THIEF LEADER</span>
+                <div class="p5-hero-name-label">
+                  <span id="heroDisplayFname">REN</span> <span id="heroDisplayLname">AMAMIYA</span>
+                </div>
+              </div>
+              <div style="font-family:var(--font-p5); font-size:20px; background:#000; color:#FFF; padding:2px 8px; border:2px solid #000;">
+                LV <span id="heroDisplayLevel">99</span>
+              </div>
             </div>
+          </div>
+
+          <!-- School Profile & Group Identity Card -->
+          <div class="p5-card" style="margin-bottom:20px;">
+            <div class="p5-card-header">
+              <span> SHUJIN ACADEMY PROFILE</span>
+              <span style="font-size:12px; color:var(--p5-muted);">2ND YEAR</span>
+            </div>
+
+            <div class="grid-2" style="gap:15px; margin-bottom:15px;">
+              <div>
+                <label style="font-size:11px; font-weight:800; color:var(--p5-muted); text-transform:uppercase;">First Name</label>
+                <input type="text" id="inputFname" class="p5-input" style="width:100%; margin-top:4px;" oninput="document.getElementById('heroDisplayFname').textContent = this.value || 'REN'">
+              </div>
+              <div>
+                <label style="font-size:11px; font-weight:800; color:var(--p5-muted); text-transform:uppercase;">Last Name</label>
+                <input type="text" id="inputLname" class="p5-input" style="width:100%; margin-top:4px;" oninput="document.getElementById('heroDisplayLname').textContent = this.value || 'AMAMIYA'">
+              </div>
+            </div>
+
+            <div style="margin-bottom:15px;">
+              <label style="font-size:11px; font-weight:800; color:var(--p5-muted); text-transform:uppercase;">Phantom Thief Group Name</label>
+              <input type="text" id="inputGroupName" class="p5-input" style="width:100%; margin-top:4px;">
+            </div>
+
             <div>
-              <label style="font-size:11px; font-weight:800; color:var(--p5-muted); text-transform:uppercase;">Last Name</label>
-              <input type="text" id="inputLname" class="p5-input" style="width:100%; margin-top:4px;">
+              <label style="font-size:11px; font-weight:800; color:var(--p5-muted); text-transform:uppercase;">Yen / Wallet Balance (¥)</label>
+              <div style="display:flex; gap:10px; margin-top:4px;">
+                <input type="number" id="inputMoney" class="p5-input" style="flex:1;" min="0" max="9999999" oninput="document.getElementById('showcaseMoneyText').textContent = '¥ ' + Number(this.value || 0).toLocaleString()">
+                <button class="p5-btn-action secondary" onclick="setMaxYen()"><span>MAX (¥9,999,999)</span></button>
+              </div>
             </div>
           </div>
 
-          <div style="margin-bottom:15px;">
-            <label style="font-size:11px; font-weight:800; color:var(--p5-muted); text-transform:uppercase;">Phantom Thief Group Name</label>
-            <input type="text" id="inputGroupName" class="p5-input" style="width:100%; margin-top:4px;">
-          </div>
-
-          <div>
-            <label style="font-size:11px; font-weight:800; color:var(--p5-muted); text-transform:uppercase;">Yen / Wallet Balance (¥)</label>
-            <div style="display:flex; gap:10px; margin-top:4px;">
-              <input type="number" id="inputMoney" class="p5-input" style="flex:1;" min="0" max="9999999">
-              <button class="p5-btn-action secondary" onclick="setMaxYen()"><span>MAX (¥9,999,999)</span></button>
+          <!-- Social Stats Radar Deck -->
+          <div class="p5-card">
+            <div class="p5-card-header">
+              <span> SOCIAL STATS (HUMAN PARAMETERS)</span>
+              <button class="p5-btn-action" style="padding:4px 12px; font-size:12px;" onclick="maxAllSocialStats()"><span>MAX ALL (RANK 5)</span></button>
+            </div>
+            <div id="socialStatsList">
+              <!-- Dynamically populated with 1-5 star rank nodes -->
             </div>
           </div>
         </div>
 
-        <!-- Social Stats -->
-        <div class="p5-card">
-          <div class="p5-card-header">
-            <span> SOCIAL STAT METERS</span>
-            <button class="p5-btn-action" style="padding:6px 14px; font-size:14px;" onclick="maxAllSocialStats()"><span>MAX ALL (RANK 5)</span></button>
+        <!-- RIGHT: Authentic Leader Art & Stencil Showcase -->
+        <div class="p5-leader-showcase-box">
+          <img class="p5-leader-silhouette" src="/assets/party/joker.png" alt="Joker">
+          <div style="position:relative; z-index:2;">
+            <div class="p5-leader-stamp">[LEADER]</div>
+            <div style="font-family:var(--font-p5); font-size:18px; color:var(--p5-white); letter-spacing:2px; margin-top:12px; text-shadow:2px 2px 0 #000;">
+              CODE NAME: JOKER
+            </div>
+            <div style="font-size:11px; font-weight:800; color:var(--p5-muted); margin-top:4px;">
+              ARCANA: 0 (THE FOOL)
+            </div>
           </div>
 
-          <div id="socialStatsList">
-            <!-- Dynamically populated with interactive 1-5 rank nodes -->
+          <div style="position:relative; z-index:2; margin-top:auto;">
+            <div style="font-size:11px; font-weight:900; letter-spacing:1.5px; color:var(--p5-white); text-shadow:1px 1px 0 #000;">
+              CURRENT ASSETS
+            </div>
+            <div id="showcaseMoneyText" class="p5-total-exp-banner">
+              ¥ 9,999,999
+            </div>
           </div>
-
-          <p style="font-size:11px; color:var(--p5-muted); margin-top:15px;">
-            <b>INFO:</b> Social stats are written as authentic underlying points @ <code>0x139E0</code>. Unlocks gating confidants immediately!
-          </p>
         </div>
       </div>
     </section>

@@ -558,6 +558,114 @@ body {
   gap: 20px;
 }
 
+/* =========================================================================
+   AUTHENTIC 1:1 P5R STATUS & LEADER SHOWCASE (Reference: 27809.jpg)
+   ========================================================================= */
+.p5-status-stage-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 25px;
+  align-items: start;
+  position: relative;
+}
+
+.p5-hero-name-shard {
+  background: var(--p5-white);
+  color: #000;
+  padding: 16px 24px;
+  clip-path: polygon(0 0, 100% 0, 88% 100%, 0 100%);
+  transform: skew(-8deg);
+  box-shadow: 6px 6px 0 #000;
+  margin-bottom: 20px;
+}
+
+.p5-hero-name-inner {
+  transform: skew(8deg);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.p5-hero-name-label {
+  font-family: var(--font-p5);
+  font-size: 32px;
+  letter-spacing: 2px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.p5-leader-showcase-box {
+  position: relative;
+  background: #08080C;
+  border: 3px solid #000;
+  border-left: 8px solid var(--p5-crimson);
+  min-height: 480px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 24px;
+  overflow: hidden;
+  box-shadow: 8px 8px 0 #000;
+}
+
+.p5-leader-silhouette {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 90%;
+  object-fit: cover;
+  object-position: center top;
+  opacity: 0.85;
+  filter: contrast(140%) drop-shadow(0 0 20px rgba(0,0,0,0.9));
+  pointer-events: none;
+  z-index: 1;
+}
+
+.p5-leader-stamp {
+  display: inline-block;
+  background: #000;
+  color: var(--p5-crimson);
+  border: 3px solid var(--p5-crimson);
+  font-family: var(--font-p5);
+  font-size: 28px;
+  letter-spacing: 3px;
+  padding: 4px 16px;
+  transform: rotate(-6deg) skew(-10deg);
+  box-shadow: 4px 4px 0 #000;
+  position: relative;
+  z-index: 2;
+}
+
+.p5-total-exp-banner {
+  position: relative;
+  z-index: 2;
+  font-family: var(--font-p5);
+  font-size: 48px;
+  color: var(--p5-crimson);
+  letter-spacing: 3px;
+  text-shadow: 3px 3px 0 #000;
+  transform: skew(-6deg);
+  margin-top: auto;
+}
+
+.p5-social-stat-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(10, 10, 16, 0.85);
+  border: 2px solid #000;
+  border-left: 6px solid var(--p5-crimson);
+  padding: 10px 14px;
+  margin-bottom: 8px;
+  transform: skew(-6deg);
+  box-shadow: 3px 3px 0 #000;
+}
+
+.p5-social-stat-row span {
+  transform: skew(6deg);
+}
+
 /* Filter Pills */
 .filter-pill {
   background: #14141E;

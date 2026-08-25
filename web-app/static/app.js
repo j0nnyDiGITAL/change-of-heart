@@ -458,10 +458,26 @@ function renderSaveData() {
   if (!CURRENT_SAVE) return;
 
   // Header & Top Strip
+  const fname = CURRENT_SAVE.header.fname || "REN";
+  const lname = CURRENT_SAVE.header.lname || "AMAMIYA";
   document.getElementById("inputFname").value = CURRENT_SAVE.header.fname || "";
   document.getElementById("inputLname").value = CURRENT_SAVE.header.lname || "";
   document.getElementById("inputGroupName").value = CURRENT_SAVE.header.group_name || "";
   document.getElementById("inputMoney").value = CURRENT_SAVE.header.money || 0;
+
+  const heroFnameEl = document.getElementById("heroDisplayFname");
+  const heroLnameEl = document.getElementById("heroDisplayLname");
+  const heroLevelEl = document.getElementById("heroDisplayLevel");
+  const showcaseMoneyEl = document.getElementById("showcaseMoneyText");
+
+  if (heroFnameEl) heroFnameEl.textContent = fname.toUpperCase();
+  if (heroLnameEl) heroLnameEl.textContent = lname.toUpperCase();
+  if (heroLevelEl && CURRENT_SAVE.party && CURRENT_SAVE.party[0]) {
+    heroLevelEl.textContent = CURRENT_SAVE.party[0].level || 99;
+  }
+  if (showcaseMoneyEl) {
+    showcaseMoneyEl.textContent = `¥ ${(CURRENT_SAVE.header.money || 0).toLocaleString()}`;
+  }
 
   document.getElementById("topDayText").textContent = CURRENT_SAVE.header.day || "Unknown";
   document.getElementById("topPlaytimeText").textContent = CURRENT_SAVE.header.playtime || "Unknown";
