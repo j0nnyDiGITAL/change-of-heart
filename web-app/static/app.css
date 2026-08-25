@@ -6,8 +6,8 @@
 
 :root {
   --p5-crimson: #E31500; /* sampled from official title-screen Joker silhouette */
-  --p5-cyan: #00C4FE;    /* sampled: P5R selection state (main-menu active banner) */
-  --p5-blue: #005AFE;    /* sampled: deep-blue offset shadow behind cyan banners */
+  --p5-cyan: #00C4FE; /* sampled: P5R selection state (main-menu active banner) */
+  --p5-blue: #005AFE; /* sampled: deep-blue offset shadow behind cyan banners */
   --p5-blood: #8A000A;
   --p5-dark-red: #3A0003;
   --p5-black: #060608;
@@ -24,6 +24,10 @@
   --font-body: 'Montserrat', sans-serif;
   --font-punk: 'Permanent Marker', 'Rubik Mono One', cursive;
   --ease-p5-snap: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  /* North Star §1 per-context accents (location theming, law 4) */
+  --acc-lime: #CBE337;
+  --acc-blue: #0086E9;
+  --acc-gold: #FED023;
 }
 
 * {
@@ -31,6 +35,24 @@
   margin: 0;
   padding: 0;
   user-select: none;
+}
+
+/* =========================================================================
+   STAGE ACCENT SYSTEM (law 4: every stage owns an accent; base stays B/W)
+   ========================================================================= */
+body {
+  --stage-accent: var(--p5-crimson);
+}
+body[data-stage="inventory"] {
+  --stage-accent: var(--acc-lime);
+}
+body[data-stage="velvet_room"],
+body[data-stage="compendium"] {
+  --stage-accent: var(--acc-blue);
+}
+body[data-stage="confidants"],
+body[data-stage="god_presets"] {
+  --stage-accent: var(--acc-gold);
 }
 
 /* Base Body with Authentic Halftone Manga Dots Overlay */
@@ -304,7 +326,7 @@ body {
 
 .p5-btn-action {
   position: relative;
-  background: linear-gradient(135deg, #FF0018 0%, #C4000F 100%);
+  background: var(--p5-crimson); /* flat UI red — gradients banned (North Star §1) */
   color: #FFF;
   border: 3px solid #000;
   padding: 10px 24px;
@@ -345,8 +367,13 @@ body {
   background: var(--p5-white);
   color: #000;
   border-color: #000;
-  transform: skew(-10deg) scale(1.05) translateY(-3px);
-  box-shadow: 7px 7px 0 var(--p5-crimson), 0 0 20px rgba(255, 230, 0, 0.4);
+  transform: skew(-10deg) translate(-2px, -3px);
+  box-shadow: 8px 8px 0 var(--p5-crimson);
+}
+
+.p5-btn-action:active {
+  transform: skew(-10deg) translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--p5-crimson);
 }
 
 .p5-btn-action:hover span {
@@ -378,14 +405,81 @@ body {
   flex: 1;
 }
 
+/* Kinetic stage transition: skewed slash-in with snap overshoot.
+   Motion motivated: communicates "you have moved to a new location"
+   (P5R menu geography), per taste-skill MOTION-MUST-BE-MOTIVATED. */
 .p5-stage-view.active {
   display: block;
-  animation: stagePop 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: stageSlashIn 0.4s var(--ease-p5-snap) 0.05s both;
 }
 
-@keyframes stagePop {
-  from { opacity: 0; transform: translateY(14px) scale(0.99); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+.p5-stage-view.stage-exit {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+  z-index: 5;
+  animation: stageSlashOut 0.16s ease-in both;
+}
+
+@keyframes stageSlashIn {
+  0% {
+    opacity: 0;
+    transform: translateX(52px) skewX(-12deg);
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) skewX(0deg);
+  }
+}
+
+@keyframes stageSlashOut {
+  from {
+    opacity: 1;
+    transform: translateX(0) skewX(0deg);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-34px) skewX(-8deg);
+  }
+}
+
+/* Entry cascade: direct children snap in with slight stagger (rhythm, not noise) */
+.p5-stage-view.active > * {
+  animation: cardSnapIn 0.36s var(--ease-p5-snap) both;
+}
+.p5-stage-view.active > *:nth-child(1) { animation-delay: 0.10s; }
+.p5-stage-view.active > *:nth-child(2) { animation-delay: 0.15s; }
+.p5-stage-view.active > *:nth-child(3) { animation-delay: 0.20s; }
+.p5-stage-view.active > *:nth-child(4) { animation-delay: 0.25s; }
+.p5-stage-view.active > *:nth-child(5) { animation-delay: 0.30s; }
+.p5-stage-view.active > *:nth-child(n + 6) { animation-delay: 0.35s; }
+
+@keyframes cardSnapIn {
+  from {
+    opacity: 0;
+    transform: translateY(18px) skewY(0.5deg);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) skewY(0deg);
+  }
+}
+
+/* Reduced motion: transitions collapse to instant cuts (accessibility floor) */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 .stage-headline {
@@ -398,12 +492,12 @@ body {
   letter-spacing: 3.5px;
   color: var(--p5-white);
   text-transform: uppercase;
-  text-shadow: 4px 4px 0 #000, 6px 6px 0 var(--p5-crimson);
+  text-shadow: 4px 4px 0 #000, 6px 6px 0 var(--stage-accent);
   display: inline-block;
   background: #000;
   padding: 4px 16px 2px 14px;
   transform: skew(-8deg) rotate(-1deg);
-  border-left: 6px solid var(--p5-crimson);
+  border-left: 6px solid var(--stage-accent);
   box-shadow: 6px 6px 0px #000;
 }
 
@@ -492,8 +586,8 @@ body {
 }
 
 .filter-pill.active {
-  background: var(--p5-crimson);
-  color: var(--p5-white);
+  background: var(--stage-accent);
+  color: #000;
   border-color: #000;
   box-shadow: 5px 5px 0 #000;
   transform: skew(-10deg) translateY(-2px);
@@ -705,7 +799,7 @@ body {
 }
 
 .spotlight-status-badge.max {
-  background: #00E676;
+  background: var(--acc-lime);
   color: #000;
 }
 
@@ -876,8 +970,8 @@ body {
 
 .intel-stat-check.ok {
   background: rgba(0, 230, 118, 0.2);
-  color: #00E676;
-  border-color: #00E676;
+  color: var(--acc-lime);
+  border-color: var(--acc-lime);
 }
 
 .intel-stat-check.blocked {
@@ -930,8 +1024,8 @@ body {
 }
 
 .elem-aff.wk { color: #FF5252; background: rgba(255, 82, 82, 0.25); border-color:#FF5252; }
-.elem-aff.str { color: #00E676; background: rgba(0, 230, 118, 0.25); border-color:#00E676; }
-.elem-aff.nul { color: #00E5FF; background: rgba(0, 229, 255, 0.25); border-color:#00E5FF; }
+.elem-aff.str { color: var(--acc-lime); background: rgba(0, 230, 118, 0.25); border-color:var(--acc-lime); }
+.elem-aff.nul { color: var(--p5-cyan); background: rgba(0, 229, 255, 0.25); border-color:var(--p5-cyan); }
 .elem-aff.rpl { color: #E040FB; background: rgba(224, 64, 251, 0.25); border-color:#E040FB; }
 .elem-aff.dr { color: #FFD600; background: rgba(255, 214, 0, 0.25); border-color:#FFD600; }
 .elem-aff.neu { color: #666680; background: transparent; border-color:transparent; }

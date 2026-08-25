@@ -98,9 +98,9 @@ document.addEventListener("click", (e) => {
 // and produced junk personas / crashes in-game)
 const GOD_BUILDS = {
   yoshitsune: {
-    persona_id: 87,   // Yoshitsune (0x57)
+    persona_id: 87, // Yoshitsune (0x57)
     level: 99,
-    trait_id: 58,     // Undying Fury (+30% Phys)
+    trait_id: 58, // Undying Fury (+30% Phys)
     skills: [
       215, // Hassou Tobi
       856, // Apt Pupil
@@ -109,13 +109,13 @@ const GOD_BUILDS = {
       851, // Insta-Heal
       857, // Ali Dance
       873, // Drain Fire
-      878  // Drain Ice
+      878 // Drain Ice
     ]
   },
   izanagi: {
-    persona_id: 366,  // Izanagi-no-Okami Picaro (0x16E)
+    persona_id: 366, // Izanagi-no-Okami Picaro (0x16E)
     level: 99,
-    trait_id: 194,    // Country Maker (+100% DMG/DEF)
+    trait_id: 194, // Country Maker (+100% DMG/DEF)
     skills: [
       713, // Myriad Truths
       986, // Almighty Boost
@@ -124,13 +124,13 @@ const GOD_BUILDS = {
       853, // Spell Master
       361, // Concentrate
       898, // Drain Curse
-      861  // Victory Cry
+      861 // Victory Cry
     ]
   },
   raoul: {
-    persona_id: 363,  // Raoul (0x16B)
+    persona_id: 363, // Raoul (0x16B)
     level: 99,
-    trait_id: 179,    // Wealth of Lotus (+2 Turn Buffs)
+    trait_id: 179, // Wealth of Lotus (+2 Turn Buffs)
     skills: [
       841, // Auto-Mataru
       844, // Auto-Maraku
@@ -139,7 +139,7 @@ const GOD_BUILDS = {
       348, // Debilitate
       806, // Enduring Soul
       851, // Insta-Heal
-      853  // Spell Master
+      853 // Spell Master
     ]
   }
 };
@@ -216,40 +216,40 @@ const PASSIVE_AFFINITY_SKILLS = {
   872: { elem: "fire", type: "Str" }, // Resist Fire
   873: { elem: "fire", type: "Nul" }, // Null Fire
   874: { elem: "fire", type: "Rpl" }, // Repel Fire
-  875: { elem: "fire", type: "Dr"  }, // Drain Fire
-  341: { elem: "fire", type: "Dr"  }, // Drain Fire (alt)
+  875: { elem: "fire", type: "Dr" }, // Drain Fire
+  341: { elem: "fire", type: "Dr" }, // Drain Fire (alt)
   // Ice
   877: { elem: "ice", type: "Str" }, // Resist Ice
   878: { elem: "ice", type: "Nul" }, // Null Ice
   879: { elem: "ice", type: "Rpl" }, // Repel Ice
-  880: { elem: "ice", type: "Dr"  }, // Drain Ice
-  834: { elem: "ice", type: "Dr"  }, // Drain Ice (alt)
+  880: { elem: "ice", type: "Dr" }, // Drain Ice
+  834: { elem: "ice", type: "Dr" }, // Drain Ice (alt)
   // Wind
   882: { elem: "wind", type: "Str" }, // Resist Wind
   883: { elem: "wind", type: "Nul" }, // Null Wind
   884: { elem: "wind", type: "Rpl" }, // Repel Wind
-  885: { elem: "wind", type: "Dr"  }, // Drain Wind
+  885: { elem: "wind", type: "Dr" }, // Drain Wind
   // Elec
   887: { elem: "elec", type: "Str" }, // Resist Elec
   888: { elem: "elec", type: "Nul" }, // Null Elec
   889: { elem: "elec", type: "Rpl" }, // Repel Elec
-  890: { elem: "elec", type: "Dr"  }, // Drain Elec
+  890: { elem: "elec", type: "Dr" }, // Drain Elec
   // Bless
   892: { elem: "bless", type: "Str" }, // Resist Bless
   893: { elem: "bless", type: "Nul" }, // Null Bless
   894: { elem: "bless", type: "Rpl" }, // Repel Bless
-  895: { elem: "bless", type: "Dr"  }, // Drain Bless
+  895: { elem: "bless", type: "Dr" }, // Drain Bless
   // Curse
   897: { elem: "curse", type: "Str" }, // Resist Curse
   898: { elem: "curse", type: "Nul" }, // Null Curse
   899: { elem: "curse", type: "Rpl" }, // Repel Curse
-  900: { elem: "curse", type: "Dr"  }, // Drain Curse
-  342: { elem: "curse", type: "Dr"  }, // Drain Curse (alt)
+  900: { elem: "curse", type: "Dr" }, // Drain Curse
+  342: { elem: "curse", type: "Dr" }, // Drain Curse (alt)
   // Phys
   902: { elem: "phys", type: "Str" }, // Resist Phys
   903: { elem: "phys", type: "Nul" }, // Null Phys
   904: { elem: "phys", type: "Rpl" }, // Repel Phys
-  905: { elem: "phys", type: "Dr"  }  // Drain Phys
+  905: { elem: "phys", type: "Dr" } // Drain Phys
 };
 
 // Lifecycle
@@ -285,7 +285,7 @@ async function loadDatabase() {
       const v = h.get("inv"); if (v === "pouch" || v === "catalog") INVENTORY_VIEW = v;
       const c = h.get("cat"); if (c) CURRENT_UNIFIED_CATEGORY = c;
       const w = h.get("who"); if (w) INVENTORY_CHARA = w;
-      const q = h.get("q"); if (q !== null) { UNIFIED_SEARCH_QUERY = decodeURIComponent(q); const inp = document.getElementById("unifiedItemSearchBox"); if (inp) inp.value = UNIFIED_SEARCH_QUERY; }
+      const q = h.get("q"); if (q !== null) { const v = decodeURIComponent(q); GLOBAL_SEARCH_QUERY = v; UNIFIED_SEARCH_QUERY = v; const inp = document.getElementById("globalItemSearchBox"); if (inp) inp.value = v; const clr = document.getElementById("clearGlobalSearchBtn"); if (clr) clr.style.display = v ? "inline-flex" : "none"; }
       setInventoryView(INVENTORY_VIEW);
       renderCharacterChips();
     } catch {}
@@ -307,13 +307,13 @@ async function refreshDiscovery() {
       data.saves.forEach((s) => {
         const opt = document.createElement("option");
         opt.value = s;
-        opt.textContent = `🎮 ${s.split("\\").slice(-2).join(" / ")}`;
+        opt.textContent = ` ${s.split("\\").slice(-2).join(" / ")}`;
         dropdown.appendChild(opt);
       });
       await loadSaveFile();
     } else {
       dropdown.innerHTML = `<option value="">-- No Steam saves found (Use BROWSE button) --</option>`;
-      setStatus("No saves auto-detected in standard folder — click 📂 BROWSE to select your save file.");
+      setStatus("No saves auto-detected in standard folder — click BROWSE to select your save file.");
     }
   } catch (err) {
     console.error("Discovery error:", err);
@@ -371,7 +371,7 @@ function onManualFileSelected(event) {
       const dropdown = document.getElementById("saveFileDropdown");
       const opt = document.createElement("option");
       opt.value = file.name;
-      opt.textContent = `📂 ${file.name} (Uploaded)`;
+      opt.textContent = ` ${file.name} (Uploaded)`;
       dropdown.prepend(opt);
       dropdown.value = file.name;
 
@@ -441,7 +441,7 @@ function renderSameSaveNotice(text) {
   banner.textContent = "⚠ " + text;
   banner.style.cssText = `
     position: fixed; top: 14px; left: 50%; transform: translateX(-50%);
-    background: #3A2E1B; color: #FFD54F; border: 1px solid #FFD54F;
+    background: #3A2E1B; color: var(--p5-gold); border: 1px solid var(--p5-gold);
     padding: 10px 20px; border-radius: 6px; z-index: 9999;
     font-family: var(--font-p5); font-size: 13px; font-weight: 700;
     box-shadow: 0 4px 18px rgba(0,0,0,.5);
@@ -492,35 +492,35 @@ const SOCIAL_STAT_UNLOCKS = {
     "Rank 2: Pass mid-term pop quizzes",
     "Rank 3: Unlock Hifumi Togo (Star) Shogi lessons",
     "Rank 4: Top 10 Midterm Exam placement",
-    "Rank 5: 🔓 Unlocks Makoto Niijima (Priestess) Rank 6+ & Ace Exams"
+    "Rank 5: Unlocks Makoto Niijima (Priestess) Rank 6+ & Ace Exams"
   ],
   Guts: [
     "Rank 1: Milquetoast Baseline",
-    "Rank 2: 🔓 Unlocks Dr. Tae Takemi (Death) Clinical Trials",
-    "Rank 3: 🔓 Unlocks Sadayo Kawakami (Temperance) & Munehisa Iwai (Hanged)",
+    "Rank 2: Unlocks Dr. Tae Takemi (Death) Clinical Trials",
+    "Rank 3: Unlocks Sadayo Kawakami (Temperance) & Munehisa Iwai (Hanged)",
     "Rank 4: Unlock Big Bang Burger Captain Challenge",
-    "Rank 5: 🔓 Unlocks Sadayo Kawakami (Temperance) Rank 8+ & Munehisa Iwai Max"
+    "Rank 5: Unlocks Sadayo Kawakami (Temperance) Rank 8+ & Munehisa Iwai Max"
   ],
   Proficiency: [
     "Rank 1: Bumbling Baseline",
     "Rank 2: Craft basic lockpicks & infiltration tools",
     "Rank 3: Unlock Beef Bowl Shop Part-Time Job",
-    "Rank 4: 🔓 Unlocks Sojiro Sakura (Hierophant) Rank 7+ Curry Master",
-    "Rank 5: 🔓 Unlocks Haru Okumura (Empress) Rank 2+ & 100% Infiltration Tool Crafts"
+    "Rank 4: Unlocks Sojiro Sakura (Hierophant) Rank 7+ Curry Master",
+    "Rank 5: Unlocks Haru Okumura (Empress) Rank 2+ & 100% Infiltration Tool Crafts"
   ],
   Kindness: [
     "Rank 1: Inoffensive Baseline",
-    "Rank 2: 🔓 Unlocks Ann Takamaki (Lovers) Rank 2+",
+    "Rank 2: Unlocks Ann Takamaki (Lovers) Rank 2+",
     "Rank 3: Unlock Crossroads Bar Job & Plant Nutrition",
     "Rank 4: Unlock Sojiro Sakura (Hierophant) Rank 6",
-    "Rank 5: 🔓 Unlocks Futaba Sakura (Hermit) Rank 2+"
+    "Rank 5: Unlocks Futaba Sakura (Hermit) Rank 2+"
   ],
   Charm: [
     "Rank 1: Existent Baseline",
     "Rank 2: Unlock Maid Cafe specials",
-    "Rank 3: 🔓 Unlocks Makoto Niijima (Priestess) & Hifumi Togo (Star)",
-    "Rank 4: 🔓 Unlocks Tae Takemi (Death) Rank 8+",
-    "Rank 5: 🔓 Unlocks Makoto Niijima (Priestess) Rank 10 Max & Maid Slacking"
+    "Rank 3: Unlocks Makoto Niijima (Priestess) & Hifumi Togo (Star)",
+    "Rank 4: Unlocks Tae Takemi (Death) Rank 8+",
+    "Rank 5: Unlocks Makoto Niijima (Priestess) Rank 10 Max & Maid Slacking"
   ]
 };
 
@@ -670,7 +670,7 @@ function renderActiveMember() {
   const evoBadge = document.getElementById("partyEvolutionTierBadge");
 
   if (isJoker) {
-    if (deckHeader) deckHeader.textContent = "🎭 EQUIPPED PERSONA & MOVESET";
+    if (deckHeader) deckHeader.textContent = " EQUIPPED PERSONA & MOVESET";
     if (stockChipsBox) stockChipsBox.style.display = "flex";
     if (stockBadge) stockBadge.style.display = "inline";
     if (evoBox) evoBox.style.display = "none";
@@ -680,7 +680,7 @@ function renderActiveMember() {
     renderStockChips();
     loadPersonaIntoDeck(ACTIVE_STOCK_SLOT);
   } else {
-    if (deckHeader) deckHeader.textContent = `🎭 ${member.name.toUpperCase()}'S PERSONA`;
+    if (deckHeader) deckHeader.textContent = ` ${member.name.toUpperCase()}'S PERSONA`;
     if (stockChipsBox) stockChipsBox.style.display = "none";
     if (stockBadge) stockBadge.style.display = "none";
     if (evoBox) evoBox.style.display = "block";
@@ -707,7 +707,7 @@ function renderActiveMember() {
     if (evoSelect) evoSelect.value = curTier;
     if (evoBadge) {
       evoBadge.textContent = curTier === 1 ? "TIER 1 (BASE)" : (curTier === 2 ? "TIER 2 (AWAKENED)" : "TIER 3 (ROYAL)");
-      evoBadge.style.background = curTier === 1 ? "#00E5FF" : (curTier === 2 ? "#FFD54F" : "#E040FB");
+      evoBadge.style.background = curTier === 1 ? "var(--p5-cyan)" : (curTier === 2 ? "var(--p5-gold)" : "#E040FB");
     }
 
     document.getElementById("personaLevel").value = pers.level || 1;
@@ -775,7 +775,7 @@ function onPartyEvolutionChange() {
     const evoBadge = document.getElementById("partyEvolutionTierBadge");
     if (evoBadge) {
       evoBadge.textContent = tier === 1 ? "TIER 1 (BASE)" : (tier === 2 ? "TIER 2 (AWAKENED)" : "TIER 3 (ROYAL)");
-      evoBadge.style.background = tier === 1 ? "#00E5FF" : (tier === 2 ? "#FFD54F" : "#E040FB");
+      evoBadge.style.background = tier === 1 ? "var(--p5-cyan)" : (tier === 2 ? "var(--p5-gold)" : "#E040FB");
     }
 
     const portraitEl = document.getElementById("velvetPersonaPortrait");
@@ -806,7 +806,7 @@ function renderStockChips() {
     chip.style.padding = "4px 8px";
     
     const label = entry.empty || !entry.persona ? `Slot ${k} (Empty)` : `Slot ${k}: ${entry.persona}`;
-    chip.innerHTML = `${k === 0 ? '👑 ' : ''}${label}`;
+    chip.innerHTML = `${k === 0 ? ' ' : ''}${label}`;
     chip.onclick = () => selectStockSlot(k);
     container.appendChild(chip);
   }
@@ -1026,16 +1026,16 @@ function populateTraitDropdown() {
 
 // Elemental Affinities & Passive Calculation Engine
 const ELEMENT_CONFIG = [
-  { key: "phys", label: "Phys", icon: "⚔️" },
-  { key: "gun", label: "Gun", icon: "🔫" },
-  { key: "fire", label: "Fire", icon: "🔥" },
-  { key: "ice", label: "Ice", icon: "❄️" },
-  { key: "elec", label: "Elec", icon: "⚡" },
-  { key: "wind", label: "Wind", icon: "🌀" },
-  { key: "psy", label: "Psy", icon: "🔮" },
-  { key: "nuke", label: "Nuke", icon: "☢️" },
-  { key: "bless", label: "Bless", icon: "✨" },
-  { key: "curse", label: "Curse", icon: "💀" }
+  { key: "phys", label: "Phys", icon: "" },
+  { key: "gun", label: "Gun", icon: "" },
+  { key: "fire", label: "Fire", icon: "" },
+  { key: "ice", label: "Ice", icon: "" },
+  { key: "elec", label: "Elec", icon: "" },
+  { key: "wind", label: "Wind", icon: "" },
+  { key: "psy", label: "Psy", icon: "" },
+  { key: "nuke", label: "Nuke", icon: "" },
+  { key: "bless", label: "Bless", icon: "" },
+  { key: "curse", label: "Curse", icon: "" }
 ];
 
 function renderElementalAffinities(personaId, skillsList) {
@@ -1331,7 +1331,7 @@ function toggleAllConfidantIntel() {
 
   const btn = document.getElementById("btnToggleAllIntel");
   if (btn) {
-    btn.innerHTML = `<span>${ALL_CONFIDANT_INTEL_EXPANDED ? '📕 COLLAPSE ALL INTEL' : '📖 EXPAND ALL INTEL'}</span>`;
+    btn.innerHTML = `<span>${ALL_CONFIDANT_INTEL_EXPANDED ? ' COLLAPSE ALL INTEL' : ' EXPAND ALL INTEL'}</span>`;
   }
 }
 
@@ -1428,7 +1428,7 @@ function renderConfidants() {
       const portraitSrc = prof.img ? `/assets/confidants/${prof.img}?v=20260816b` : '/assets/joker_avatar.jpg';
 
       card.innerHTML = `
-        <div class="tarot-rank-badge ${info.rank >= 10 ? 'max' : ''}">${!isMet ? '🔒' : `RK ${info.rank}`}</div>
+        <div class="tarot-rank-badge ${info.rank >= 10 ? 'max' : ''}">${!isMet ? '' : `RK ${info.rank}`}</div>
         <img src="${portraitSrc}" class="tarot-thumb" alt="${prof.name}">
         <div style="flex:1; min-width:0;">
           <div class="tarot-arcana">${arcana.toUpperCase()} (${info.arcana_id})</div>
@@ -1485,15 +1485,15 @@ function renderActiveConfidantSpotlight(arcana) {
   let deadlineAlert = "";
   if (arcana === "Councillor") {
     const days = calculateDaysRemaining(currentDay, "11/18");
-    deadlineAlert = `<div class="spotlight-deadline">⚠️ NOV 18 THIRD SEMESTER CUTOFF (${days !== null ? `${days} in-game days left` : 'CRITICAL'})</div>`;
+    deadlineAlert = `<div class="spotlight-deadline"> NOV 18 THIRD SEMESTER CUTOFF (${days !== null ? `${days} in-game days left` : 'CRITICAL'})</div>`;
   } else if (arcana === "Justice") {
     const days = calculateDaysRemaining(currentDay, "11/17");
-    deadlineAlert = `<div class="spotlight-deadline">⚠️ NOV 17 DUEL & TRUE ENDING CUTOFF (${days !== null ? `${days} in-game days left` : 'CRITICAL'})</div>`;
+    deadlineAlert = `<div class="spotlight-deadline"> NOV 17 DUEL & TRUE ENDING CUTOFF (${days !== null ? `${days} in-game days left` : 'CRITICAL'})</div>`;
   } else if (arcana === "Sun") {
     const days = calculateDaysRemaining(currentDay, "11/13");
-    deadlineAlert = `<div class="spotlight-deadline">⚠️ NOV 13 SPEECH CAMPAIGN CUTOFF (${days !== null ? `${days} in-game days left` : 'CRITICAL'})</div>`;
+    deadlineAlert = `<div class="spotlight-deadline"> NOV 13 SPEECH CAMPAIGN CUTOFF (${days !== null ? `${days} in-game days left` : 'CRITICAL'})</div>`;
   } else if (arcana === "Faith") {
-    deadlineAlert = `<div class="spotlight-deadline" style="background:#FFFFFF; color:#000;">🔒 RANK 5 CAP (Ranks 6–10 locked until January 3rd Semester)</div>`;
+    deadlineAlert = `<div class="spotlight-deadline" style="background:#FFFFFF; color:#000;"> RANK 5 CAP (Ranks 6–10 locked until January 3rd Semester)</div>`;
   }
 
   // Stat Requirements
@@ -1502,14 +1502,14 @@ function renderActiveConfidantSpotlight(arcana) {
     Object.entries(lore.stat_req).forEach(([statName, reqRank]) => {
       const curRank = socialStats[statName]?.rank || 1;
       const isOk = curRank >= reqRank;
-      statChecksHtml += `<span class="intel-stat-check ${isOk ? 'ok' : 'blocked'}">${isOk ? '✔' : '❌'} Req: ${statName} Lv ${reqRank} (Current: ${curRank})</span>`;
+      statChecksHtml += `<span class="intel-stat-check ${isOk ? 'ok' : 'blocked'}">${isOk ? '✔' : ''} Req: ${statName} Lv ${reqRank} (Current: ${curRank})</span>`;
     });
   }
 
   const warning = getConfidantSafetyWarning(arcana, info.rank);
   const warningHtml = warning ? `
     <div class="spotlight-warning-box">
-      <div style="font-weight:900; font-size:13px; margin-bottom:2px;">⚠️ SEQUENCE BREAK / STORY CUTSCENE ALERT:</div>
+      <div style="font-weight:900; font-size:13px; margin-bottom:2px;"> SEQUENCE BREAK / STORY CUTSCENE ALERT:</div>
       <div>${warning.badge}</div>
     </div>
   ` : "";
@@ -1519,20 +1519,20 @@ function renderActiveConfidantSpotlight(arcana) {
     <div class="spotlight-header-card">
       <div class="spotlight-portrait-frame" onclick="openPortraitModal('${fullStandeeSrc}', '${prof.name.replace(/'/g, "\\'")}', '${prof.role.replace(/'/g, "\\'")}')" title="Click to view full portrait">
         <img src="${fullStandeeSrc}" onerror="this.src='${portraitSrc}'" class="spotlight-full-portrait" alt="${prof.name}">
-        <div class="spotlight-zoom-hint">🔍 FULL STANDEE</div>
+        <div class="spotlight-zoom-hint"> FULL STANDEE</div>
       </div>
 
       <div class="spotlight-identity-block">
         <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:8px;">
           <div class="spotlight-arcana-tag">${arcana.toUpperCase()} ARCANA (${info.arcana_id})</div>
-          ${info.rank >= 10 ? '<span class="spotlight-status-badge max">★ BOND MAXED (10/10)</span>' : (info.rank >= 9 && isRomanceable ? '<span class="spotlight-status-badge romance">💖 LOVER RELATIONSHIP</span>' : `<span class="spotlight-status-badge">PROGRESSION (${info.rank}/10)</span>`)}
+          ${info.rank >= 10 ? '<span class="spotlight-status-badge max">★ BOND MAXED (10/10)</span>' : (info.rank >= 9 && isRomanceable ? (info.romance ? '<span class="spotlight-status-badge romance"> LOVER RELATIONSHIP</span>' : '<span class="spotlight-status-badge"> PLATONIC FRIENDSHIP</span>') : `<span class="spotlight-status-badge">PROGRESSION (${info.rank}/10)</span>`)}
         </div>
 
         <h1 class="spotlight-character-name">${prof.name}</h1>
         <div class="spotlight-role-text">${prof.role}</div>
 
         <div class="spotlight-perk-card">
-          <div style="font-family:var(--font-p5); font-size:14px; color:var(--p5-white); letter-spacing:1px; margin-bottom:2px;">⚡ SIGNATURE INFILTRATION ABILITY:</div>
+          <div style="font-family:var(--font-p5); font-size:14px; color:var(--p5-white); letter-spacing:1px; margin-bottom:2px;"> SIGNATURE INFILTRATION ABILITY:</div>
           <div style="font-size:12px; color:#FFFFFF; font-weight:700; line-height:1.4;">${prof.unlock}</div>
         </div>
 
@@ -1563,7 +1563,7 @@ function renderActiveConfidantSpotlight(arcana) {
         <div style="display:flex; align-items:center; gap:8px; margin-left:auto; background:rgba(255,42,109,0.15); padding:6px 12px; border:1px solid #FF2A6D; border-radius:4px;">
           <span style="font-size:12px; font-weight:900; color:#FF80AB;">RELATIONSHIP:</span>
           <button class="filter-pill ${info.romance ? 'active' : ''}" style="border-radius:4px; font-size:11px; padding:3px 8px; ${info.romance ? 'background:#FF2A6D; border-color:#FF2A6D;' : ''}" onclick="toggleConfidantRomance('${arcana}')">
-            ${info.romance ? '💖 LOVER' : '🤝 FRIEND'}
+            ${info.romance ? ' LOVER' : ' FRIEND'}
           </button>
         </div>
       ` : ''}
@@ -1574,36 +1574,39 @@ function renderActiveConfidantSpotlight(arcana) {
     <!-- In-Game Consequence & Lore Panels -->
     <div class="spotlight-dossier-grid">
       <!-- Live Rank Consequence -->
-      <div class="dossier-panel" style="border-left-color:${info.rank >= 10 ? '#FFFFFF' : (info.rank >= 9 && isRomanceable ? '#FF2A6D' : 'var(--p5-crimson)')};">
+      <div class="dossier-panel" style="border-left-color:${info.rank >= 10 ? '#FFFFFF' : (info.rank >= 9 && isRomanceable ? (info.romance ? '#FF2A6D' : '#3388FF') : 'var(--p5-crimson)')};">
         <div class="dossier-panel-title">
-          <span>⚡ RANK ${info.rank} NARRATIVE IMPACT</span>
+          <span> RANK ${info.rank} NARRATIVE IMPACT</span>
           <span style="color:${info.rank >= 10 ? '#FFFFFF' : 'var(--p5-cyan)'};">${info.rank >= 10 ? '✔ COMPLETED' : 'ACTIVE'}</span>
         </div>
         <div style="font-size:12px; line-height:1.5; color:#E0E0EE;">
           ${info.rank >= 10 ? `
-            • 🌟 <strong>Story Status:</strong> Bond has reached its emotional zenith. Joker has earned ${prof.name}'s ultimate trust.<br>
-            • 👑 <strong>Awakening / Fusion:</strong> Ultimate Arcana Persona unlocked in the Velvet Room.<br>
-            • 🎁 <strong>3/19 Farewell Keepsake:</strong> ${prof.name} will hand Joker their sentimental farewell memento on the final day in Tokyo, carrying their signature ability into New Game+ from Day 1.
-          ` : (info.rank >= 9 && isRomanceable ? `
-            • 💖 <strong>Romance Route:</strong> Confession cutscene completed. Unlocks exclusive Christmas Eve & Valentine's Day dates.<br>
-            • 🔓 <strong>Perks:</strong> Full clinical/service perks unlocked. Final Rank 10 event ready.
+            • <strong>Story Status:</strong> Bond has reached its emotional zenith. Joker has earned ${prof.name}'s ultimate trust.<br>
+            • <strong>Awakening / Fusion:</strong> Ultimate Arcana Persona unlocked in the Velvet Room.<br>
+            • <strong>3/19 Farewell Keepsake:</strong> ${prof.name} will hand Joker their sentimental farewell memento on the final day in Tokyo, carrying their signature ability into New Game+ from Day 1.
+          ` : (info.rank >= 9 && isRomanceable ? (info.romance ? `
+            • <strong>Romance Route:</strong> Confession cutscene completed. Unlocks exclusive Christmas Eve & Valentine's Day dates.<br>
+            • <strong>Perks:</strong> Full clinical/service perks unlocked. Final Rank 10 event ready.
           ` : `
-            • 📖 <strong>Story Pacing:</strong> Currently progressing through ${prof.name}'s Tokyo storyline at Rank ${info.rank}.<br>
-            • 💡 <strong>Rank Up Impact:</strong> Reaching higher ranks unlocks signature abilities and deepens Joker's bond toward their 3/19 NG+ Farewell Gift.
+            • <strong>Platonic Route:</strong> Deep personal bond established as trusted confidants without romantic involvement.<br>
+            • <strong>Perks:</strong> Full clinical/service perks unlocked. Final Rank 10 event ready.
+          `) : `
+            • <strong>Story Pacing:</strong> Currently progressing through ${prof.name}'s Tokyo storyline at Rank ${info.rank}.<br>
+            • <strong>Rank Up Impact:</strong> Reaching higher ranks unlocks signature abilities and deepens Joker's bond toward their 3/19 NG+ Farewell Gift.
           `)}
         </div>
       </div>
 
       <!-- Narrative Milestone & Gating -->
       <div class="dossier-panel">
-        <div class="dossier-panel-title">🌟 STORY MILESTONE & STAT GATES</div>
+        <div class="dossier-panel-title"> STORY MILESTONE & STAT GATES</div>
         <div style="font-size:12px; line-height:1.45; color:#C0C0D0; margin-bottom:8px;">${lore.milestone}</div>
         ${statChecksHtml ? `<div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:6px;">${statChecksHtml}</div>` : ''}
       </div>
 
       <!-- Persona Evolution & NG+ Keepsake Spoilers -->
       <div class="dossier-panel" style="grid-column: 1 / -1; border-left-color:var(--p5-white);">
-        <div class="dossier-panel-title" style="color:var(--p5-white);">👑 ULTIMATE PERSONA AWAKENING & 3/19 NG+ KEEPSAKE</div>
+        <div class="dossier-panel-title" style="color:var(--p5-white);"> ULTIMATE PERSONA AWAKENING & 3/19 NG+ KEEPSAKE</div>
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; font-size:12px; margin-top:6px;">
           <div>
             <strong>Velvet Room Ultimate Fusion:</strong><br>
@@ -1624,7 +1627,7 @@ function toggleConfidantRomance(arcana) {
   const cur = Boolean(CURRENT_SAVE.confidants[arcana].romance);
   CURRENT_SAVE.confidants[arcana].romance = !cur;
   renderConfidants();
-  setStatus(`★ ${arcana} relationship set to ${!cur ? '💖 LOVER' : '🤝 FRIEND'} — armed for save.`);
+  setStatus(`★ ${arcana} relationship set to ${!cur ? ' LOVER' : ' FRIEND'} — armed for save.`);
 }
 
 function stepConfidantRank(arcana, delta) {
@@ -1647,7 +1650,7 @@ function getConfidantSafetyWarning(arcana, newRank) {
   if (isRomanceable && origRank < 9 && newRank >= 9) {
     return {
       type: "romance",
-      badge: `🎬 CUTSCENE SKIP: You will permanently skip ${prof.name}'s Rank 9 Confession Scene! (Romance route dialogue choice will not trigger in-game).`,
+      badge: ` CUTSCENE SKIP: You will permanently skip ${prof.name}'s Rank 9 Confession Scene! (Romance route dialogue choice will not trigger in-game).`,
       detail: `Setting ${prof.name || arcana} to Rank ${newRank} bypasses the romantic confession cutscene. You will get the perks immediately, but you will miss the romance dialogue choice.`
     };
   }
@@ -1658,7 +1661,7 @@ function getConfidantSafetyWarning(arcana, newRank) {
     if (!isWinter) {
       return {
         type: "cap",
-        badge: `⚠️ SEQUENCE BREAK: Exceeds Rank 5 School Cap! (Ranks 6–10 cutscenes are locked until Third Semester in January).`,
+        badge: ` SEQUENCE BREAK: Exceeds Rank 5 School Cap! (Ranks 6–10 cutscenes are locked until Third Semester in January).`,
         detail: `Kasumi's storyline is hard-coded to pause at Rank 5. Forcing Ranks 6–10 now skips her story awakening cutscenes.`
       };
     }
@@ -1669,7 +1672,7 @@ function getConfidantSafetyWarning(arcana, newRank) {
   if (!isCalendarReady && newRank > 0 && origRank === 0) {
     return {
       type: "unmet",
-      badge: `🎬 SEQUENCE BREAK: Ally arrives on ${prof.unlock_date}. (Introductory story cutscenes will be skipped).`,
+      badge: ` SEQUENCE BREAK: Ally arrives on ${prof.unlock_date}. (Introductory story cutscenes will be skipped).`,
       detail: `${prof.name || arcana} has not been introduced on your current calendar date (${currentDay}). Forcing ranks skips their meeting cutscenes.`
     };
   }
@@ -1679,7 +1682,7 @@ function getConfidantSafetyWarning(arcana, newRank) {
     const skippedCount = newRank - origRank;
     return {
       type: "jump",
-      badge: `🎬 CUTSCENE SKIP: Advancing from Rank ${origRank} ➔ ${newRank} will skip ${skippedCount} daytime hangout cutscenes in Tokyo!`,
+      badge: ` CUTSCENE SKIP: Advancing from Rank ${origRank} ${newRank} will skip ${skippedCount} daytime hangout cutscenes in Tokyo!`,
       detail: `You will gain all intermediate battle perks immediately, but the character development cutscenes between Rank ${origRank} and ${newRank} will not play in-game.`
     };
   }
@@ -2039,8 +2042,8 @@ let INVENTORY_NORMALIZED = null; // { owned_gear, stacks, conflicts, mirror_mism
 let KEY_ITEM_UNLOCKED = false; // S4 guard: Key Items editing disabled until confirm
 
 // ── S5b Dual-view + Character chips (Plan Phase 1-2) ──────────────────
-let INVENTORY_VIEW = "pouch"; // "pouch" | "catalog"  (ADR 0002)
-let INVENTORY_CHARA = "All";  // filter chip value (name, not EN_NAME)
+let INVENTORY_VIEW = "pouch"; // "pouch" | "catalog" (ADR 0002)
+let INVENTORY_CHARA = "All"; // filter chip value (name, not EN_NAME)
 const THIEF_LABELS = ["Joker","Ryuji","Morgana","Ann","Yusuke","Makoto","Haru","Futaba","Akechi","Kasumi"];
 const CHIP_SUPPORT_CATS = new Set(["Melee","Ranged","Protector","Outfit"]); // where owner matters
 // id -> owner English label (parsed from data/Weapon*.txt col 5; hydrated after DB load)
@@ -2048,15 +2051,15 @@ const ITEM_OWNER_BY_ID = new Map();
 let STAGED_DIRTY = new Set(); // item_ids with unsaved staged delta (shared buffer mirror)
 
 // ── UX pass 2026-08-21 (docs/INVENTORY_UX_REVIEW.md R1-R9) ────────────
-let MAIN_LIST_BATCH = 150;          // R7: incremental render for the main roster
-let GLOBAL_SEARCH_QUERY = "";       // R3: cross-category search ("")
-let INV_RENDER_IDS = [];            // flat ordered ids currently rendered (keyboard nav)
+let MAIN_LIST_BATCH = 150; // R7: incremental render for the main roster
+let GLOBAL_SEARCH_QUERY = ""; // R3: cross-category search ("")
+let INV_RENDER_IDS = []; // flat ordered ids currently rendered (keyboard nav)
 const CATEGORY_CLUSTER_ORDER = ["Consumable", "Infiltration", "SkillCard", "Melee", "Ranged", "Protector", "Accessory", "Treasure", "Outfit", "KeyItem"];
-const CATEGORY_CLUSTERS = [         // R4: 10 tabs -> 4 labeled clusters
-  { label: "🧪 CONSUMABLES", cats: ["Consumable", "Infiltration", "SkillCard"] },
-  { label: "⚔️ EQUIPMENT", cats: ["Melee", "Ranged", "Protector", "Accessory"] },
-  { label: "💎 VALUABLES", cats: ["Treasure", "Outfit"] },
-  { label: "📜 KEY", cats: ["KeyItem"] },
+const CATEGORY_CLUSTERS = [ // R4: 10 tabs -> 4 labeled clusters
+  { label: " CONSUMABLES", cats: ["Consumable", "Infiltration", "SkillCard"] },
+  { label: " EQUIPMENT", cats: ["Melee", "Ranged", "Protector", "Accessory"] },
+  { label: " VALUABLES", cats: ["Treasure", "Outfit"] },
+  { label: " KEY", cats: ["KeyItem"] },
 ];
 
 function belongsToChara(itemId, chara) {
@@ -2111,16 +2114,16 @@ function hydrateItemOwnerMap() {
 
 // Canonical Category Visual Themes & Glyph Badges
 const P5R_CATEGORY_THEMES = {
-  Consumable:   { glyph: "HP",   color: "#00E5FF", bg: "#002B33", name: "Consumable / Healing" },
+  Consumable: { glyph: "HP", color: "var(--p5-cyan)", bg: "#002B33", name: "Consumable / Healing" },
   Infiltration: { glyph: "TOOL", color: "#FFD600", bg: "#332B00", name: "Infiltration Tool" },
-  SkillCard:    { glyph: "CARD", color: "#E040FB", bg: "#2E0033", name: "Skill Card" },
-  Melee:        { glyph: "BLD",  color: "#FF3D00", bg: "#330D00", name: "Melee Weapon" },
-  Ranged:       { glyph: "GUN",  color: "#76FF03", bg: "#133300", name: "Firearm / Gun" },
-  Protector:    { glyph: "ARM",  color: "#2979FF", bg: "#001733", name: "Protector / Armor" },
-  Outfit:       { glyph: "CLO",  color: "#D500F9", bg: "#280033", name: "Outfit & Costume" },
-  Accessory:    { glyph: "ACC",  color: "#FF4081", bg: "#330018", name: "Accessory / Ring" },
-  Treasure:     { glyph: "GEM",  color: "#FFE600", bg: "#003318", name: "Material & Loot" },
-  KeyItem:      { glyph: "KEY",  color: "#FFAB00", bg: "#332200", name: "Key & Story Item" }
+  SkillCard: { glyph: "CARD", color: "#E040FB", bg: "#2E0033", name: "Skill Card" },
+  Melee: { glyph: "BLD", color: "#FF3D00", bg: "#330D00", name: "Melee Weapon" },
+  Ranged: { glyph: "GUN", color: "#76FF03", bg: "#133300", name: "Firearm / Gun" },
+  Protector: { glyph: "ARM", color: "#2979FF", bg: "#001733", name: "Protector / Armor" },
+  Outfit: { glyph: "CLO", color: "#D500F9", bg: "#280033", name: "Outfit & Costume" },
+  Accessory: { glyph: "ACC", color: "#FF4081", bg: "#330018", name: "Accessory / Ring" },
+  Treasure: { glyph: "GEM", color: "#FFE600", bg: "#003318", name: "Material & Loot" },
+  KeyItem: { glyph: "KEY", color: "#FFAB00", bg: "#332200", name: "Key & Story Item" }
 };
 
 // In-Game Item Descriptions & Effect Dictionary
@@ -2199,16 +2202,17 @@ function switchItemCategory(cat, btnEl) {
 }
 
 function onUnifiedSearchInput() {
-  UNIFIED_SEARCH_QUERY = (document.getElementById("unifiedItemSearchBox")?.value || "").toLowerCase().trim();
-  MAIN_LIST_BATCH = 150; // R7
-  try { const u = new URL(window.location.href); u.hash = `inv=${INVENTORY_VIEW}&cat=${CURRENT_UNIFIED_CATEGORY}&who=${INVENTORY_CHARA}&q=${encodeURIComponent(UNIFIED_SEARCH_QUERY)}`; history.replaceState(null,"",u); } catch {}
-  renderUnifiedItemList();
+  /* R10 consolidation: single search box — legacy entry point delegates to the
+     cross-category global search (North Star §4: one search before content). */
+  return onGlobalSearchInput();
 }
 
 // R3: cross-category search — overrides the active tab, results grouped by category
 function onGlobalSearchInput() {
   GLOBAL_SEARCH_QUERY = (document.getElementById("globalItemSearchBox")?.value || "").toLowerCase().trim();
+  UNIFIED_SEARCH_QUERY = GLOBAL_SEARCH_QUERY;
   MAIN_LIST_BATCH = 150; // R7
+  try { const u = new URL(window.location.href); u.hash = `inv=${INVENTORY_VIEW}&cat=${CURRENT_UNIFIED_CATEGORY}&who=${INVENTORY_CHARA}&q=${encodeURIComponent(GLOBAL_SEARCH_QUERY)}`; history.replaceState(null,"",u); } catch {}
   const btn = document.getElementById("clearGlobalSearchBtn");
   if (btn) btn.style.display = GLOBAL_SEARCH_QUERY ? "inline-flex" : "none";
   renderUnifiedItemList();
@@ -2307,7 +2311,7 @@ function getItemSortRank(item) {
 // Render the In-Game Active Carried Items Roster — S5b dual view + UX pass:
 // R3 global search (grouped by category), R7 incremental batches, R2 per-item
 // revert, R8 Outfit read-only branch, R5 context-menu/keyboard hooks.
-const CATEGORY_LABELS = { Consumable: "🧪 CONSUMABLES", Infiltration: "🔑 INFILTRATION TOOLS", SkillCard: "🎴 SKILL CARDS", Melee: "🗡️ MELEE", Ranged: "🔫 GUNS", Protector: "🛡️ ARMOR", Accessory: "💍 ACCESSORIES", Treasure: "💎 TREASURE", Outfit: "👗 OUTFITS", KeyItem: "📜 KEY ITEMS" };
+const CATEGORY_LABELS = { Consumable: " CONSUMABLES", Infiltration: " INFILTRATION TOOLS", SkillCard: " SKILL CARDS", Melee: " MELEE", Ranged: " GUNS", Protector: " ARMOR", Accessory: " ACCESSORIES", Treasure: " TREASURE", Outfit: " OUTFITS", KeyItem: " KEY ITEMS" };
 function catLabel(cat) { return CATEGORY_LABELS[cat] || cat.toUpperCase(); }
 
 function renderUnifiedItemList() {
@@ -2384,7 +2388,7 @@ function renderUnifiedItemList() {
     const emptySub = globalMode ? `Nothing in the bag or catalog matches "${GLOBAL_SEARCH_QUERY}".`
       : isCatalog ? `No catalog items match your filters.`
       : `Joker is not carrying any ${CURRENT_UNIFIED_CATEGORY}${INVENTORY_CHARA !== "All" ? ` for ${INVENTORY_CHARA}` : ""} items right now.`;
-    const emptyCTA = (isCatalog || globalMode) ? "" : `<button class="p5-btn-action" style="background:#FFFFFF; border-color:#FFFFFF; color:#000; font-weight:900; padding:8px 18px; margin-top:6px;" onclick="setInventoryView('catalog')"><span>📚 BROWSE FULL CATALOG</span></button>`;
+    const emptyCTA = (isCatalog || globalMode) ? "" : `<button class="p5-btn-action" style="background:#FFFFFF; border-color:#FFFFFF; color:#000; font-weight:900; padding:8px 18px; margin-top:6px;" onclick="setInventoryView('catalog')"><span> BROWSE FULL CATALOG</span></button>`;
     container.innerHTML = `
       <div style="text-align:center; padding:60px 20px; color:var(--p5-muted);">
         <div style="font-family:var(--font-p5); font-size:24px; color:var(--p5-white); margin-bottom:8px;">${emptyTitle}</div>
@@ -2443,8 +2447,8 @@ function renderUnifiedItemList() {
     `;
     // Staged dirty dot + per-item revert (R2)
     const dirty = STAGED_DIRTY.has(String(item.id)) || STAGED_DIRTY.has(item.id);
-    const dirtyDot = dirty ? `<span title="Staged (unsaved)" style="width:8px; height:8px; background:#FFD54F; border-radius:50%; display:inline-block; margin-left:6px; box-shadow:0 0 6px #FFD54F;"></span>` : '';
-    const revertBtn = dirty ? `<button title="Revert to saved value" style="background:#222; border:1px solid #FFD54F; color:#FFD54F; width:20px; height:20px; border-radius:3px; font-size:11px; cursor:pointer; display:inline-flex; align-items:center; justify-content:center;" onclick="event.stopPropagation();revertItemToBaseline(${item.id})">↺</button>` : '';
+    const dirtyDot = dirty ? `<span title="Staged (unsaved)" style="width:8px; height:8px; background:var(--p5-gold); border-radius:50%; display:inline-block; margin-left:6px; box-shadow:0 0 6px var(--p5-gold);"></span>` : '';
+    const revertBtn = dirty ? `<button title="Revert to saved value" style="background:#222; border:1px solid var(--p5-gold); color:var(--p5-gold); width:20px; height:20px; border-radius:3px; font-size:11px; cursor:pointer; display:inline-flex; align-items:center; justify-content:center;" onclick="event.stopPropagation();revertItemToBaseline(${item.id})">↺</button>` : '';
     // Mirror/conflict warning on this id
     const mm = (INVENTORY_NORMALIZED?.mirror_mismatches || []).some(m => String(m.item_id) === String(item.id));
     const cf = (INVENTORY_NORMALIZED?.conflicts || []).some(c => String(c.item_id) === String(item.id));
@@ -2454,8 +2458,8 @@ function renderUnifiedItemList() {
     // keyBadge enriched with owner when relevant
     const ownerSuffix = (item.ownerOwner || ITEM_OWNER_BY_ID.get(String(item.id)) || "");
     const ownerChip = ownerSuffix ? `<span style="font-size:10px; color:#BBB; background:#1E1E2A; padding:1px 5px; border-radius:3px; margin-left:6px;">${ownerSuffix}</span>` : "";
-    const keyBadge = isKey ? `<span style="font-size:10px; color:#FFAB00; font-weight:800; background:#332200; padding:1px 5px; border-radius:3px; margin-left:6px;">🔒 KEY</span>` : ownerChip;
-    const outfitBadge = isOutfit ? `<span style="font-size:11px; color:${theme.color}; font-weight:900; margin-left:6px;">${item.qty ? '◆ OWNED' : '◇ NOT OWNED'}</span><span title="Outfit writability frozen per decision D008 pending final live-diff sign-off" style="font-size:10px; color:#888; background:#222; padding:1px 5px; border-radius:3px; margin-left:6px;">🔒 FROZEN</span>` : '';
+    const keyBadge = isKey ? `<span style="font-size:10px; color:#FFAB00; font-weight:800; background:#332200; padding:1px 5px; border-radius:3px; margin-left:6px;"> KEY</span>` : ownerChip;
+    const outfitBadge = isOutfit ? `<span style="font-size:11px; color:${theme.color}; font-weight:900; margin-left:6px;">${item.qty ? '◆ OWNED' : '◇ NOT OWNED'}</span><span title="Outfit writability frozen per decision D008 pending final live-diff sign-off" style="font-size:10px; color:#888; background:#222; padding:1px 5px; border-radius:3px; margin-left:6px;"> FROZEN</span>` : '';
     let controls;
     if (isOutfit) {
       controls = `<div style="display:flex; align-items:center; gap:6px; flex-shrink:0; transform:skew(4deg);">
@@ -2633,13 +2637,13 @@ function copyItemShareCode(itemId) {
   if (!(qty > 0)) { alert("Item is not in the bag — nothing to share."); return; }
   const code = makeShareCode([[itemId, qty]]);
   navigator.clipboard.writeText(code);
-  setStatus(`📋 Share code copied (${getItemById(itemId)?.name || "item"}).`);
+  setStatus(` Share code copied (${getItemById(itemId)?.name || "item"}).`);
 }
 function exportBagShareCode() {
   const entries = Object.entries(INVENTORY_ITEM_COUNTS).filter(([, q]) => q > 0);
   if (!entries.length) { alert("Bag is empty."); return; }
   navigator.clipboard.writeText(makeShareCode(entries));
-  setStatus(`📋 Bag share code copied (${entries.length} distinct items).`);
+  setStatus(` Bag share code copied (${entries.length} distinct items).`);
 }
 function importBagShareCode() {
   const code = prompt("Paste a COH1 share code:");
@@ -2656,7 +2660,7 @@ function importBagShareCode() {
     _markDirty(id); applied++;
   });
   renderUnifiedItemList();
-  setStatus(`📥 Imported ${applied} item(s) from share code (staged — RE-SIGN to apply).`);
+  setStatus(` Imported ${applied} item(s) from share code (staged — RE-SIGN to apply).`);
 }
 
 // ── R1: Pending-changes receipt (review before RE-SIGN) ────────────────
@@ -2766,7 +2770,7 @@ function renderItemDossierSpotlight() {
             <div style="font-size:11px; font-weight:800; color:#FFAB00; margin-bottom:6px;">⚠ KEY ITEM — GUARDED</div>
             <div style="font-size:12px; color:#E0E0EE; margin-bottom:10px;">Story-flag risk — editing may break progression. Keep read-only unless you know what you're doing.</div>
             <button class="p5-btn-action" style="padding:6px 12px; background:${locked ? '#222' : '#FFAB00'}; border-color:#FFAB00; color:${locked ? '#FFAB00' : '#000'}" onclick="toggleKeyItemLock()">
-              <span>${locked ? '🔒 UNLOCK FOR EDITING' : '🔓 LOCK AGAIN'}</span>
+              <span>${locked ? ' UNLOCK FOR EDITING' : ' LOCK AGAIN'}</span>
             </button>
           </div>`;
         }
@@ -2789,12 +2793,12 @@ function renderItemDossierSpotlight() {
     <div style="display:flex; gap:10px;">
       ${isGearCategory(item.category)
         ? `<button class="p5-btn-action" style="flex:1; padding:10px; background:#330000; border-color:#FF3333; color:#FF8888;" onclick="setUnifiedItemQty(${item.id}, 0)"><span>DISCARD</span></button>
-           <button class="p5-btn-action" title="Copy a COH1 share code for this item" style="padding:10px; background:#222; border-color:#444; color:#BBB;" onclick="copyItemShareCode(${item.id})"><span>📋</span></button>`
+           <button class="p5-btn-action" title="Copy a COH1 share code for this item" style="padding:10px; background:#222; border-color:#444; color:#BBB;" onclick="copyItemShareCode(${item.id})"><span></span></button>`
         : item.category === "KeyItem"
           ? `<button class="p5-btn-action" style="flex:1; padding:10px; background:#222; border-color:#444; color:#888;" disabled><span>READ-ONLY (UNLOCK TO EDIT)</span></button>`
           : `<button class="p5-btn-action" style="flex:1; padding:10px;" onclick="setUnifiedItemQty(${item.id}, 99)"><span>SET TO 99x (MAX)</span></button>
              <button class="p5-btn-action" style="flex:1; background:#330000; border-color:#FF3333; color:#FF8888; padding:10px;" onclick="setUnifiedItemQty(${item.id}, 0)"><span>DISCARD (REMOVE)</span></button>
-             <button class="p5-btn-action" title="Copy a COH1 share code for this item" style="padding:10px; background:#222; border-color:#444; color:#BBB;" onclick="copyItemShareCode(${item.id})"><span>📋</span></button>`}
+             <button class="p5-btn-action" title="Copy a COH1 share code for this item" style="padding:10px; background:#222; border-color:#444; color:#BBB;" onclick="copyItemShareCode(${item.id})"><span></span></button>`}
     </div>
   `;
 }
@@ -2840,7 +2844,7 @@ function stepUnifiedItemQty(itemId, delta) {
     return;
   }
   if (cat === "KeyItem" && !KEY_ITEM_UNLOCKED) {
-    alert("🔒 Key Items are guarded — unlock first.");
+    alert(" Key Items are guarded — unlock first.");
     return;
   }
   if (cat === "KeyItem" && !confirm("Modify Key Item? May break story flags — proceed?")) return;
@@ -2861,7 +2865,7 @@ function setUnifiedItemQty(itemId, targetQty) {
     return;
   }
   if (cat === "KeyItem" && !KEY_ITEM_UNLOCKED) {
-    alert("🔒 Key Items are guarded — unlock first.");
+    alert(" Key Items are guarded — unlock first.");
     return;
   }
   if (cat === "KeyItem" && targetQty !== 0 && !confirm("Modify Key Item? May break story flags — write anyway?")) return;
@@ -2973,9 +2977,9 @@ function renderModalCatalog() {
     // Action buttons — KeyItem guarded-add first; Outfit read-only (D008 freeze)
     let actionBtns;
     if (isKey) {
-      actionBtns = `<button class="p5-btn-action" style="padding:4px 10px; font-size:11px; background:#332200; border-color:#FFAB00; color:#FFAB00;" onclick="addItemFromModal(${item.id}, 1)"><span>🔒 ADD KEY</span></button>`;
+      actionBtns = `<button class="p5-btn-action" style="padding:4px 10px; font-size:11px; background:#332200; border-color:#FFAB00; color:#FFAB00;" onclick="addItemFromModal(${item.id}, 1)"><span> ADD KEY</span></button>`;
     } else if (isUnwired) {
-      actionBtns = `<button class="p5-btn-action" style="padding:4px 10px; font-size:11px; background:#333; border-color:#555; color:#888; cursor:not-allowed;" disabled title="Outfit writability frozen per decision D008 pending final live-diff sign-off"><span>🔒 FROZEN</span></button>`;
+      actionBtns = `<button class="p5-btn-action" style="padding:4px 10px; font-size:11px; background:#333; border-color:#555; color:#888; cursor:not-allowed;" disabled title="Outfit writability frozen per decision D008 pending final live-diff sign-off"><span>FROZEN</span></button>`;
     } else if (isGear) {
       actionBtns = `<button class="p5-btn-action" style="padding:4px 10px; font-size:11px; ${isOwned ? 'background:#330000; border-color:#FF3333; color:#FF8888;' : 'background:#FFFFFF; border-color:#FFFFFF; color:#000;'}" onclick="addItemFromModal(${item.id}, 1)"><span>${isOwned ? 'OWNED ◆' : 'OWN'}</span></button>`;
     } else {
@@ -3006,7 +3010,7 @@ function renderModalCatalog() {
           </span>
           ${isOwned ? `<span style="font-size:10px; color:#FFFFFF; font-weight:800; background:#003311; padding:0 5px; border-radius:3px;">${isGear ? 'OWNED ◆' : `IN BAG (✕${curQty})`}</span>` : ''}
           ${isGear && !isOwned ? `<span style="font-size:10px; color:#888; font-weight:800; background:#222; padding:0 5px; border-radius:3px;">NOT OWNED ◇</span>` : ''}
-          ${isUnwired ? `<span title="Outfit writability frozen per decision D008 pending final live-diff sign-off" style="font-size:9px; color:#888; font-weight:800; background:#222; padding:0 5px; border-radius:3px;">🔒 READ-ONLY · FROZEN</span>` : ''}
+          ${isUnwired ? `<span title="Outfit writability frozen per decision D008 pending final live-diff sign-off" style="font-size:9px; color:#888; font-weight:800; background:#222; padding:0 5px; border-radius:3px;"> READ-ONLY · FROZEN</span>` : ''}
         </div>
         <div style="font-size:11px; color:#999; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
           ${getItemDescription(item)}
@@ -3049,7 +3053,7 @@ function addItemFromModal(itemId, addQty) {
     INVENTORY_ITEM_COUNTS[itemId] = Math.min(99, cur + addQty);
   }
   SELECTED_ITEM_ID = itemId;
-  _markDirty(itemId);          // shared staged buffer — main tab pill shows ● STAGED
+  _markDirty(itemId); // shared staged buffer — main tab pill shows ● STAGED
   renderModalCatalog();
   renderUnifiedItemList();
 }
@@ -3062,7 +3066,7 @@ function stockLeblancKitchen() {
   // Consumable-only preset (0x2000, verified 0x2530 base) — safe bulk write.
   const leblancItems = [
     8355, 8358, 8359, 8360, 8361, // Leblanc Coffee, Master Coffee, Decent Curry, Leblanc Curry, Master Curry
-    8215, 8203, 8204, 8205, 8206  // Soma, Soul Drop, Snuff Soul, Chewing Soul, Soul Food
+    8215, 8203, 8204, 8205, 8206 // Soma, Soul Drop, Snuff Soul, Chewing Soul, Soul Food
   ];
   if (!confirm(`Stock 99x of ${leblancItems.length} Leblanc consumables?`)) return;
   leblancItems.forEach(id => {
@@ -3078,7 +3082,7 @@ function stockClinicMedicine() {
   // Clinic meds = all Consumable 0x2000 (verified 0x2530..0x2600) — safe to 99x.
   const clinicIds = [
     8194, 8195, 8196, 8199, 8200, 8201, 8202, // Recov-R, Takemedic, Takemedic-All V/Z
-    8207, 8208, 8210, 8211, 8212, 8216        // Revival Bead, Balm of Life, Nohar-M, Relax Gel, Amrita Soda
+    8207, 8208, 8210, 8211, 8212, 8216 // Revival Bead, Balm of Life, Nohar-M, Relax Gel, Amrita Soda
   ];
   if (!confirm(`Stock 99x of ${clinicIds.length} clinic meds?`)) return;
   clinicIds.forEach(id => {
@@ -3136,9 +3140,9 @@ function injectGodBuild(buildKey) {
   const stock = CURRENT_SAVE.joker_stock || [];
 
   // 1. Already own this god persona? Update its slot in place (no dupes,
-  //    no clobbering a different persona). Fixed 2026-08-16: the injector
-  //    used to overwrite stock slot 0 blindly, destroying the previous god
-  //    build on every injection.
+  // no clobbering a different persona). Fixed 2026-08-16: the injector
+  // used to overwrite stock slot 0 blindly, destroying the previous god
+  // build on every injection.
   let target = stock.findIndex(s => s && !s.empty && s.persona_id === build.persona_id);
   let action;
   if (target >= 0) {
@@ -3158,7 +3162,7 @@ function injectGodBuild(buildKey) {
   stock[target] = entry;
 
   // 3. Equip it: slot 0 is the equipped persona, so swap in the client
-  //    model (mirrors the backend equip_persona swap semantics).
+  // model (mirrors the backend equip_persona swap semantics).
   if (target !== 0) {
     const displaced = stock[0] || { slot: 0, persona_id: 0, level: 0, empty: true, flags: 0, persona: null, skills: [], stats: [] };
     entry.slot = 0;
@@ -3335,7 +3339,7 @@ async function refreshBackups() {
       data.backups.forEach((b) => {
         const opt = document.createElement("option");
         opt.value = b;
-        opt.textContent = `💾 ${b}`;
+        opt.textContent = ` ${b}`;
         select.appendChild(opt);
       });
     } else {
@@ -3375,11 +3379,23 @@ async function restoreSelectedBackup() {
 // Navigation Stages (Snappy, Instant P5R Switching)
 function switchStage(stageId, btnEl) {
   P5Audio.playSwitch();
-  document.querySelectorAll(".p5-stage-view").forEach((el) => el.classList.remove("active"));
   document.querySelectorAll(".p5-nav-item").forEach((el) => el.classList.remove("active"));
 
+  // Stage accent theming (North Star law 4): body[data-stage] drives --stage-accent
+  document.body.dataset.stage = stageId;
+
   const target = document.getElementById(`stage-${stageId}`);
+  const current = document.querySelector(".p5-stage-view.active");
+
+  if (current && current !== target) {
+    current.classList.add("stage-exit");
+    setTimeout(() => current.classList.remove("active", "stage-exit"), 170);
+  }
+
   if (target) {
+    target.classList.remove("stage-exit");
+    target.classList.remove("active");
+    void target.offsetWidth; /* restart enter animation */
     target.classList.add("active");
   }
 

@@ -68,7 +68,7 @@
         <span id="status-text">INITIALIZING SYSTEM...</span>
       </div>
       <a href="https://ko-fi.com/j0nnydigital" target="_blank" style="display:flex; align-items:center; justify-content:center; gap:6px; background:rgba(255,94,91,0.12); border:1px solid #FF5E5B; color:#FF5E5B; padding:5px 8px; border-radius:4px; font-size:11px; font-weight:800; text-decoration:none; transition:all 0.2s ease;">
-        <span>☕</span> <span>SUPPORT j0nny DiGITAL</span>
+        <span></span> <span>SUPPORT j0nny DiGITAL</span>
       </a>
     </div>
   </aside>
@@ -84,15 +84,15 @@
         </select>
         <button class="p5-btn-action" onclick="loadSaveFile()"><span>LOAD SAVE</span></button>
         <button class="p5-btn-action secondary" onclick="refreshDiscovery()" title="Rescan standard Steam directory"><span>REFRESH</span></button>
-        <button class="p5-btn-action secondary" onclick="document.getElementById('manualFileInput').click()" title="Browse custom or GamePass save file (DATA.DAT / DATA.BIN)"><span>📂 BROWSE...</span></button>
+        <button class="p5-btn-action secondary" onclick="document.getElementById('manualFileInput').click()" title="Browse custom or GamePass save file (DATA.DAT / DATA.BIN)"><span> BROWSE...</span></button>
         <input type="file" id="manualFileInput" style="display:none;" accept=".DAT,.BIN,.dat,.bin" onchange="onManualFileSelected(event)">
       </div>
 
       <!-- Quick Calendar Info -->
       <div style="display:flex; gap:20px; font-size:12px; font-weight:700;">
-        <div>📅 <span id="topDayText" style="color:var(--p5-white);">—</span></div>
-        <div>⏱️ <span id="topPlaytimeText" style="color:var(--p5-white);">—</span></div>
-        <div>💰 <span id="topMoneyText" style="color:var(--p5-green);">—</span></div>
+        <div> <span id="topDayText" style="color:var(--p5-white);">—</span></div>
+        <div><svg class="top-ico" viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6" fill="none" stroke="currentColor" stroke-width="2"/></svg> <span id="topPlaytimeText" style="color:var(--p5-white);">—</span></div>
+        <div> <span id="topMoneyText" style="color:var(--p5-green);">—</span></div>
       </div>
     </header>
 
@@ -107,7 +107,7 @@
         <!-- Identity & Yen -->
         <div class="p5-card">
           <div class="p5-card-header">
-            <span>🎭 LEADER PROFILE</span>
+            <span> LEADER PROFILE</span>
             <span style="font-size:12px; color:var(--p5-muted);">SHUJIN ACADEMY</span>
           </div>
 
@@ -139,7 +139,7 @@
         <!-- Social Stats -->
         <div class="p5-card">
           <div class="p5-card-header">
-            <span>⭐ SOCIAL STAT METERS</span>
+            <span> SOCIAL STAT METERS</span>
             <button class="p5-btn-action" style="padding:6px 14px; font-size:14px;" onclick="maxAllSocialStats()"><span>MAX ALL (RANK 5)</span></button>
           </div>
 
@@ -148,7 +148,7 @@
           </div>
 
           <p style="font-size:11px; color:var(--p5-muted); margin-top:15px;">
-            ℹ️ Social stats are written as authentic underlying points @ <code>0x139E0</code>. Unlocks gating confidants immediately!
+            <b>INFO:</b> Social stats are written as authentic underlying points @ <code>0x139E0</code>. Unlocks gating confidants immediately!
           </p>
         </div>
       </div>
@@ -212,7 +212,7 @@
         <!-- Right: Velvet Room Persona & Moveset Engine -->
         <div class="p5-card">
           <div class="p5-card-header">
-            <span id="personaDeckHeader">🎭 EQUIPPED PERSONA & MOVESET</span>
+            <span id="personaDeckHeader"> EQUIPPED PERSONA & MOVESET</span>
             <span id="stockSlotBadge" style="font-size:12px; color:var(--p5-white);">SLOT 0 (EQUIPPED)</span>
           </div>
 
@@ -236,20 +236,20 @@
               </select>
               
               <!-- Party Member Evolution Tier Selector -->
-              <div id="partyEvolutionContainer" style="display:none; margin-top:10px; padding:10px; background:rgba(0,229,255,0.08); border:1px solid #00E5FF; border-radius:4px;">
+              <div id="partyEvolutionContainer" style="display:none; margin-top:10px; padding:10px; background:rgba(0,229,255,0.08); border:1px solid var(--p5-cyan); border-radius:4px;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-                  <label style="font-size:11px; font-weight:900; color:#00E5FF; letter-spacing:1px;">⚡ AWAKENING EVOLUTION TIER</label>
-                  <span id="partyEvolutionTierBadge" style="font-size:10px; color:#FFF; font-weight:800; background:#00E5FF; color:#000; padding:2px 6px; border-radius:3px;">TIER 1 (BASE)</span>
+                  <label style="font-size:11px; font-weight:900; color:var(--p5-cyan); letter-spacing:1px;"> AWAKENING EVOLUTION TIER</label>
+                  <span id="partyEvolutionTierBadge" style="font-size:10px; color:#FFF; font-weight:800; background:var(--p5-cyan); color:#000; padding:2px 6px; border-radius:3px;">TIER 1 (BASE)</span>
                 </div>
-                <select id="partyEvolutionSelect" class="p5-select" style="width:100%; font-size:14px; font-weight:700; background:#0A0A12; border:1px solid #00E5FF;" onchange="onPartyEvolutionChange()">
-                  <option value="1">🌱 Tier 1: Base Persona (Initial Awakening)</option>
-                  <option value="2">👑 Tier 2: Awakened Persona (Rank 10 Confidant)</option>
-                  <option value="3">🌟 Tier 3: Royal Persona (Third Semester)</option>
+                <select id="partyEvolutionSelect" class="p5-select" style="width:100%; font-size:14px; font-weight:700; background:#0A0A12; border:1px solid var(--p5-cyan);" onchange="onPartyEvolutionChange()">
+                  <option value="1"> Tier 1: Base Persona (Initial Awakening)</option>
+                  <option value="2"> Tier 2: Awakened Persona (Rank 10 Confidant)</option>
+                  <option value="3"> Tier 3: Royal Persona (Third Semester)</option>
                 </select>
               </div>
 
               <div id="personaLockNote" style="display:none; font-size:11px; font-weight:800; color:var(--p5-white); margin-top:6px; letter-spacing:0.5px;">
-                🔒 Joker selects from 12 stock slots; teammates use Awakening Tiers above.
+                 Joker selects from 12 stock slots; teammates use Awakening Tiers above.
               </div>
             </div>
           </div>
@@ -329,7 +329,7 @@
           <div style="display:flex; gap:12px; align-items:center;">
             <label style="display:flex; align-items:center; gap:6px; font-size:11px; font-weight:800; color:var(--p5-white); cursor:pointer; background:#000; padding:6px 12px; border:2px solid #000; box-shadow:3px 3px 0 #000; transform:skew(-8deg);">
               <input type="checkbox" onchange="toggleUnsafeConfidants(this)" style="cursor:pointer;">
-              <span style="transform:skew(8deg);">⚠️ UNLOCK FUTURE / UNMET ALLIES</span>
+              <span style="transform:skew(8deg);"> UNLOCK FUTURE / UNMET ALLIES</span>
             </label>
             <button class="p5-btn-action" onclick="maxAllConfidants()"><span>MAX ALL (RANK 10)</span></button>
           </div>
@@ -338,10 +338,10 @@
 
       <!-- General Story & Cutscene Disclaimer Banner -->
       <div style="background:linear-gradient(90deg, rgba(230,0,18,0.2) 0%, rgba(16,16,24,0.95) 100%); border-left:6px solid var(--p5-crimson); border:2px solid #000; padding:12px 18px; margin-bottom:20px; display:flex; gap:14px; align-items:flex-start; box-shadow:5px 5px 0 #000;">
-        <div style="font-size:26px; line-height:1;">🎬</div>
+        <div style="font-size:26px; line-height:1;"></div>
         <div style="font-size:12px; line-height:1.5; color:#E0E0EE;">
           <div style="font-weight:900; font-size:13px; color:var(--p5-white); margin-bottom:3px; text-transform:uppercase; letter-spacing:1px; text-shadow:1px 1px 0 #000;">
-            ⚠️ NARRATIVE NOTICE: CONFIDANT RANK EDITING & CUTSCENE SKIPS
+             NARRATIVE NOTICE: CONFIDANT RANK EDITING & CUTSCENE SKIPS
           </div>
           <div>
             In Persona 5 Royal, <strong>every single Confidant Rank (1 through 10) represents a unique, scripted story hangout cutscene</strong> featuring personal character development, dialogue branches, and post-hangout phone calls.
@@ -357,10 +357,10 @@
       <div class="confidant-filter-bar" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:20px;">
         <div style="display:flex; gap:8px; flex-wrap:wrap;">
           <button id="pillAll" class="filter-pill active" onclick="filterConfidants('all', this)"><span>Active Arcana</span></button>
-          <button class="filter-pill" onclick="filterConfidants('romance', this)"><span>💖 Romance Partners</span></button>
-          <button class="filter-pill" onclick="filterConfidants('party', this)"><span>⚔️ Phantom Thieves</span></button>
-          <button class="filter-pill" onclick="filterConfidants('story_deadline', this)"><span>⚠️ Story Deadlines</span></button>
-          <button class="filter-pill" onclick="filterConfidants('social', this)"><span>☕ Tokyo Allies</span></button>
+          <button class="filter-pill" onclick="filterConfidants('romance', this)"><span> Romance Partners</span></button>
+          <button class="filter-pill" onclick="filterConfidants('party', this)"><span> Phantom Thieves</span></button>
+          <button class="filter-pill" onclick="filterConfidants('story_deadline', this)"><span> Story Deadlines</span></button>
+          <button class="filter-pill" onclick="filterConfidants('social', this)"><span> Tokyo Allies</span></button>
         </div>
       </div>
 
@@ -387,14 +387,14 @@
       <div class="stage-headline">
         <div style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:10px;">
           <div>
-            <h2>🎒 PERSONA 5 ROYAL ITEM STUDIO</h2>
+            <h2> PERSONA 5 ROYAL ITEM STUDIO</h2>
             <p>Unified In-Game Item Roster with authentic effect sorting, quantity stepper badges, and live item dossier.</p>
           </div>
           <div style="display:flex; gap:8px; flex-wrap:wrap;">
             <!-- MAX CURRENT TAB bulk action removed — unwired-range corruption risk (see docs/ITEM_STUDIO_REBUILD_PLAN.md §8) -->
-            <button class="p5-btn-action" onclick="stockLeblancKitchen()"><span>☕ 99x CURRY & COFFEE</span></button>
-            <button class="p5-btn-action" onclick="stockClinicMedicine()"><span>💉 CLINIC MEDS (Consumable-only)</span></button>
-            <button class="p5-btn-action" style="background:#330000; border-color:#FF3333; color:#FF8888;" onclick="clearAllPouchItems()"><span>🗑️ RESET BAG</span></button>
+            <button class="p5-btn-action" onclick="stockLeblancKitchen()"><span> 99x CURRY & COFFEE</span></button>
+            <button class="p5-btn-action" onclick="stockClinicMedicine()"><span> CLINIC MEDS (Consumable-only)</span></button>
+            <button class="p5-btn-action" style="background:#330000; border-color:#FF3333; color:#FF8888;" onclick="clearAllPouchItems()"><span> RESET BAG</span></button>
           </div>
         </div>
       </div>
@@ -402,8 +402,8 @@
       <!-- Dual View Toggle — Owned Pouch vs Full Catalog (S5b) -->
       <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px; flex-wrap:wrap;">
         <div class="filter-pill" style="display:flex; padding:2px; background:#0A0A12; border:2px solid #222; border-radius:8px;">
-          <button id="viewPouchBtn" class="filter-pill active" style="border-radius:6px;" onclick="setInventoryView('pouch')">🎒 Owned Pouch</button>
-          <button id="viewCatalogBtn" class="filter-pill" style="border-radius:6px;" onclick="setInventoryView('catalog')">📚 Full Catalog</button>
+          <button id="viewPouchBtn" class="filter-pill active" style="border-radius:6px;" onclick="setInventoryView('pouch')"> Owned Pouch</button>
+          <button id="viewCatalogBtn" class="filter-pill" style="border-radius:6px;" onclick="setInventoryView('catalog')"> Full Catalog</button>
         </div>
         <span id="viewScopeHint" style="font-size:11px; color:var(--p5-muted);">Owned items only — fix your bag.</span>
         <span style="flex:1"></span>
@@ -414,33 +414,33 @@
       <div class="confidant-filter-bar" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
         <div id="unifiedItemTabs" style="display:flex; gap:10px; flex-wrap:wrap; align-items:flex-start;">
           <div style="display:flex; flex-direction:column; gap:3px;">
-            <span style="font-size:9px; font-weight:900; letter-spacing:1px; color:#00E5FF;">🧪 CONSUMABLES</span>
+            <span style="font-size:9px; font-weight:900; letter-spacing:1px; color:var(--p5-cyan);"> CONSUMABLES</span>
             <div style="display:flex; gap:6px; flex-wrap:wrap;">
-              <button id="tabConsumable" class="filter-pill active" onclick="switchItemCategory('Consumable', this)"><span>🧪 Items (<span id="catBadgeConsumable">0</span>)</span></button>
-              <button class="filter-pill" onclick="switchItemCategory('Infiltration', this)"><span>🔑 Tools (<span id="catBadgeInfiltration">0</span>)</span></button>
-              <button class="filter-pill" onclick="switchItemCategory('SkillCard', this)"><span>🎴 Cards (<span id="catBadgeSkillCard">0</span>)</span></button>
+              <button id="tabConsumable" class="filter-pill active" onclick="switchItemCategory('Consumable', this)"><span> Items (<span id="catBadgeConsumable">0</span>)</span></button>
+              <button class="filter-pill" onclick="switchItemCategory('Infiltration', this)"><span> Tools (<span id="catBadgeInfiltration">0</span>)</span></button>
+              <button class="filter-pill" onclick="switchItemCategory('SkillCard', this)"><span> Cards (<span id="catBadgeSkillCard">0</span>)</span></button>
             </div>
           </div>
           <div style="display:flex; flex-direction:column; gap:3px;">
-            <span style="font-size:9px; font-weight:900; letter-spacing:1px; color:#FF3D00;">⚔️ EQUIPMENT</span>
+            <span style="font-size:9px; font-weight:900; letter-spacing:1px; color:#FF3D00;"> EQUIPMENT</span>
             <div style="display:flex; gap:6px; flex-wrap:wrap;">
-              <button class="filter-pill" onclick="switchItemCategory('Melee', this)"><span>🗡️ Melee (<span id="catBadgeMelee">0</span>)</span></button>
-              <button class="filter-pill" onclick="switchItemCategory('Ranged', this)"><span>🔫 Guns (<span id="catBadgeRanged">0</span>)</span></button>
-              <button class="filter-pill" onclick="switchItemCategory('Protector', this)"><span>🛡️ Armor (<span id="catBadgeProtector">0</span>)</span></button>
-              <button class="filter-pill" onclick="switchItemCategory('Accessory', this)"><span>💍 Accs (<span id="catBadgeAccessory">0</span>)</span></button>
+              <button class="filter-pill" onclick="switchItemCategory('Melee', this)"><span> Melee (<span id="catBadgeMelee">0</span>)</span></button>
+              <button class="filter-pill" onclick="switchItemCategory('Ranged', this)"><span> Guns (<span id="catBadgeRanged">0</span>)</span></button>
+              <button class="filter-pill" onclick="switchItemCategory('Protector', this)"><span> Armor (<span id="catBadgeProtector">0</span>)</span></button>
+              <button class="filter-pill" onclick="switchItemCategory('Accessory', this)"><span> Accs (<span id="catBadgeAccessory">0</span>)</span></button>
             </div>
           </div>
           <div style="display:flex; flex-direction:column; gap:3px;">
-            <span style="font-size:9px; font-weight:900; letter-spacing:1px; color:#00E676;">💎 VALUABLES</span>
+            <span style="font-size:9px; font-weight:900; letter-spacing:1px; color:var(--acc-lime);"> VALUABLES</span>
             <div style="display:flex; gap:6px; flex-wrap:wrap;">
-              <button class="filter-pill" onclick="switchItemCategory('Treasure', this)"><span>💎 Loot (<span id="catBadgeTreasure">0</span>)</span></button>
-              <button class="filter-pill" onclick="switchItemCategory('Outfit', this)"><span>👗 Outfits (<span id="catBadgeOutfit">0</span>)</span></button>
+              <button class="filter-pill" onclick="switchItemCategory('Treasure', this)"><span> Loot (<span id="catBadgeTreasure">0</span>)</span></button>
+              <button class="filter-pill" onclick="switchItemCategory('Outfit', this)"><span> Outfits (<span id="catBadgeOutfit">0</span>)</span></button>
             </div>
           </div>
           <div style="display:flex; flex-direction:column; gap:3px;">
-            <span style="font-size:9px; font-weight:900; letter-spacing:1px; color:#FFAB00;">📜 KEY</span>
+            <span style="font-size:9px; font-weight:900; letter-spacing:1px; color:#FFAB00;"> KEY</span>
             <div style="display:flex; gap:6px; flex-wrap:wrap;">
-              <button class="filter-pill" onclick="switchItemCategory('KeyItem', this)"><span>📜 Key (<span id="catBadgeKeyItem">0</span>)</span></button>
+              <button class="filter-pill" onclick="switchItemCategory('KeyItem', this)"><span> Key (<span id="catBadgeKeyItem">0</span>)</span></button>
             </div>
           </div>
         </div>
@@ -458,15 +458,12 @@
         <!-- LEFT: P5R SLANTED ITEM ROSTER -->
         <div class="p5-card" style="border-left:6px solid var(--p5-crimson); height:640px; display:flex; flex-direction:column; padding:14px;">
           <!-- Filter / Search & Add Header (R3: global search + R9 import/export) -->
-          <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:8px; flex-shrink:0;">
-            <input type="text" id="globalItemSearchBox" class="p5-input" placeholder="🔍 Search ALL categories..." style="flex:1; font-size:13px; padding:8px 12px; border-color:#FFD54F;" oninput="onGlobalSearchInput()">
-            <button class="p5-btn-action" style="padding:8px 10px; font-size:11px; background:#222; border-color:#444; display:none;" id="clearGlobalSearchBtn" onclick="clearGlobalSearch()"><span>✕</span></button>
-          </div>
           <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:12px; flex-shrink:0;">
-            <input type="text" id="unifiedItemSearchBox" class="p5-input" placeholder="Search bag items by name..." style="flex:1; font-size:13px; padding:8px 12px;" oninput="onUnifiedSearchInput()">
-            <button class="p5-btn-action" title="Export whole bag as a share code" style="background:#222; border-color:#444; color:#BBB; padding:8px 10px; font-size:12px;" onclick="exportBagShareCode()"><span>📤</span></button>
-            <button class="p5-btn-action" title="Import a COH1 share code" style="background:#222; border-color:#444; color:#BBB; padding:8px 10px; font-size:12px;" onclick="importBagShareCode()"><span>📥</span></button>
-            <button class="p5-btn-action" style="background:#00E676; border-color:#00E676; color:#000; font-weight:900; padding:8px 14px; font-size:12px;" onclick="openAddItemModal()">
+            <input type="text" id="globalItemSearchBox" class="p5-input" placeholder="Search ALL categories..." style="flex:1; font-size:13px; padding:8px 12px;" oninput="onGlobalSearchInput()">
+            <button class="p5-btn-action" style="padding:8px 10px; font-size:11px; background:#222; border-color:#444; display:none;" id="clearGlobalSearchBtn" onclick="clearGlobalSearch()"><span>✕</span></button>
+            <button class="p5-btn-action" title="Export whole bag as a share code" style="background:#222; border-color:#444; color:#BBB; padding:8px 10px; font-size:11px;" onclick="exportBagShareCode()"><span>EXPORT</span></button>
+            <button class="p5-btn-action" title="Import a COH1 share code" style="background:#222; border-color:#444; color:#BBB; padding:8px 10px; font-size:11px;" onclick="importBagShareCode()"><span>IMPORT</span></button>
+            <button class="p5-btn-action" style="background:var(--acc-lime); border-color:var(--acc-lime); color:#000; font-weight:900; padding:8px 14px; font-size:12px;" onclick="openAddItemModal()">
               <span>+ ADD ITEM</span>
             </button>
           </div>
@@ -501,7 +498,7 @@
       <div class="p5-card" style="width:700px; max-width:92vw; max-height:85vh; border:3px solid var(--p5-crimson); background:#0E0E14; display:flex; flex-direction:column; padding:20px; box-shadow:0 0 30px rgba(230,0,18,0.5);">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:2px solid var(--p5-crimson); padding-bottom:10px;">
           <div style="font-family:var(--font-p5); font-size:24px; color:var(--p5-white); text-shadow:2px 2px 0 #000;">
-            🎁 ADD TO INVENTORY (<span id="modalCategoryTitle">CONSUMABLE</span>)
+             ADD TO INVENTORY (<span id="modalCategoryTitle">CONSUMABLE</span>)
           </div>
           <button style="background:transparent; border:none; color:#FF3333; font-size:24px; cursor:pointer; font-weight:900;" onclick="closeAddItemModal()">✕</button>
         </div>
@@ -523,14 +520,14 @@
       <div class="p5-card" style="width:620px; max-width:92vw; max-height:85vh; border:3px solid var(--p5-white); background:#0E0E14; display:flex; flex-direction:column; padding:20px; box-shadow:0 0 30px rgba(255,213,79,0.4);">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:2px solid var(--p5-white); padding-bottom:10px;">
           <div style="font-family:var(--font-p5); font-size:24px; color:var(--p5-white); text-shadow:2px 2px 0 #000;">
-            📋 PENDING CHANGES (<span id="pendingChangesCount">0</span>)
+             PENDING CHANGES (<span id="pendingChangesCount">0</span>)
           </div>
         </div>
         <p style="font-size:12px; color:var(--p5-muted); margin-bottom:10px;">These exact changes will be written when you confirm. Anything not listed stays untouched.</p>
         <div id="pendingChangesList" style="flex:1; overflow-y:auto; max-height:380px; display:flex; flex-direction:column; gap:4px;"></div>
         <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:15px; padding-top:10px; border-top:1px solid #222;">
           <button class="p5-btn-action" style="background:#222; border-color:#444;" onclick="document.getElementById('pendingChangesModal').style.display='none'"><span>CANCEL</span></button>
-          <button class="p5-btn-action" id="pendingChangesConfirm" style="background:#00E676; border-color:#00E676; color:#000; font-weight:900;"><span>✔ CONFIRM & RE-SIGN</span></button>
+          <button class="p5-btn-action" id="pendingChangesConfirm" style="background:var(--acc-lime); border-color:var(--acc-lime); color:#000; font-weight:900;"><span>✔ CONFIRM & RE-SIGN</span></button>
         </div>
       </div>
     </div>
@@ -540,23 +537,23 @@
       <div class="stage-headline">
         <div style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:10px;">
           <div>
-            <h2>📖 PERSONA COMPENDIUM REGISTRY</h2>
+            <h2> PERSONA COMPENDIUM REGISTRY</h2>
             <p>Granular Persona Registration: Search and toggle individual personas or apply quick batch unlocks.</p>
           </div>
           <div style="display:flex; gap:8px; flex-wrap:wrap;">
-            <button class="p5-btn-action" onclick="unlockFullCompendium()"><span>⚡ UNLOCK ALL (100%)</span></button>
-            <button class="p5-btn-action secondary" onclick="unlockDlcPersonas()"><span>🎭 UNLOCK DLC ONLY</span></button>
-            <button class="p5-btn-action secondary" onclick="unlockTreasureDemons()"><span>💎 TREASURE DEMONS</span></button>
-            <button class="p5-btn-action secondary" style="background:#222;" onclick="resetCompendiumToOriginal()"><span>🧹 RESET</span></button>
+            <button class="p5-btn-action" onclick="unlockFullCompendium()"><span> UNLOCK ALL (100%)</span></button>
+            <button class="p5-btn-action secondary" onclick="unlockDlcPersonas()"><span> UNLOCK DLC ONLY</span></button>
+            <button class="p5-btn-action secondary" onclick="unlockTreasureDemons()"><span> TREASURE DEMONS</span></button>
+            <button class="p5-btn-action secondary" style="background:#222;" onclick="resetCompendiumToOriginal()"><span> RESET</span></button>
           </div>
         </div>
       </div>
 
       <!-- Compendium Status Bar -->
-      <div class="p5-card" style="border-left:6px solid #00E5FF;">
+      <div class="p5-card" style="border-left:6px solid var(--p5-cyan);">
         <div class="p5-card-header">
-          <span>📊 COMPENDIUM REGISTRATION STATUS</span>
-          <span id="compendiumCounter" style="font-size:13px; color:#00E5FF; font-family:var(--font-p5);">— / — REGISTERED</span>
+          <span> COMPENDIUM REGISTRATION STATUS</span>
+          <span id="compendiumCounter" style="font-size:13px; color:var(--p5-cyan); font-family:var(--font-p5);">— / — REGISTERED</span>
         </div>
         <div style="margin-top:8px;">
           <div style="background:#111; border:2px solid #222; height:28px; position:relative; overflow:hidden;">
@@ -568,7 +565,7 @@
 
       <!-- Search & Filter Controls -->
       <div style="display:flex; gap:10px; margin-top:12px; flex-wrap:wrap; align-items:center;">
-        <input type="text" id="compendiumSearchInput" class="p5-input" placeholder="🔍 Search by Persona name or ID..." style="flex:1; min-width:240px;" oninput="filterCompendiumGrid()">
+        <input type="text" id="compendiumSearchInput" class="p5-input" placeholder=" Search by Persona name or ID..." style="flex:1; min-width:240px;" oninput="filterCompendiumGrid()">
         <div style="display:flex; gap:6px;">
           <button class="p5-chip active" id="filterCompAll" onclick="setCompendiumFilter('all', this)">ALL (—)</button>
           <button class="p5-chip" id="filterCompReg" onclick="setCompendiumFilter('registered', this)">REGISTERED</button>
@@ -579,7 +576,7 @@
       <!-- Granular Persona Interactive Grid -->
       <div class="p5-card" style="border-left:6px solid #E040FB; margin-top:12px;">
         <div class="p5-card-header">
-          <span>🎭 PERSONA REGISTRATION MATRIX (CLICK TO TOGGLE)</span>
+          <span> PERSONA REGISTRATION MATRIX (CLICK TO TOGGLE)</span>
           <span id="compendiumFilterCount" style="font-size:11px; color:var(--p5-muted);">Showing 224 Personas</span>
         </div>
         <div id="compendiumGrid" style="max-height:540px; overflow-y:auto; display:grid; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr)); gap:10px; padding:10px 4px;">
@@ -591,7 +588,7 @@
     <!-- STAGE 4: God-Tier Build Injectors -->
     <section id="stage-god_presets" class="p5-stage-view">
       <div class="stage-headline">
-        <h2>⚡ 1-CLICK GOD-TIER PERSONA BUILDS</h2>
+        <h2> 1-CLICK GOD-TIER PERSONA BUILDS</h2>
         <p>Instantly inject competitive, legal meta builds with optimal skills, passives, and traits.</p>
       </div>
 
@@ -599,7 +596,7 @@
         <!-- Physical God Yoshitsune -->
         <div class="p5-card">
           <div class="p5-card-header">
-            <span>🗡️ YOSHITSUNE (PHYSICAL GOD)</span>
+            <span> YOSHITSUNE (PHYSICAL GOD)</span>
           </div>
           <p style="font-size:12px; color:var(--p5-muted); margin-bottom:15px;">
             The ultimate single-target & multi-target physical shredder. Hassou Tobi deals 8x light physical damage.
@@ -614,7 +611,7 @@
         <!-- Almighty Annihilator Izanagi-no-Okami -->
         <div class="p5-card">
           <div class="p5-card-header">
-            <span>💥 IZANAGI-NO-OKAMI PICARO</span>
+            <span> IZANAGI-NO-OKAMI PICARO</span>
           </div>
           <p style="font-size:12px; color:var(--p5-muted); margin-bottom:15px;">
             The game-breaking Almighty cannon. Myriad Truths hits 3x heavy Almighty damage boosted by Country Maker.
@@ -629,7 +626,7 @@
         <!-- Invincible Starter Buffer Orpheus -->
         <div class="p5-card">
           <div class="p5-card-header">
-            <span>🛡️ RAOUL (AUTO-TRI BUFFER)</span>
+            <span> RAOUL (AUTO-TRI BUFFER)</span>
           </div>
           <p style="font-size:12px; color:var(--p5-muted); margin-bottom:15px;">
             The dream starter Persona. Automatically applies Matarukaja, Marakukaja, and Masukukaja at the start of every battle.
@@ -646,7 +643,7 @@
     <!-- STAGE 5: Reversible Backups & Safety Vault -->
     <section id="stage-rescue_vault" class="p5-stage-view">
       <div class="stage-headline">
-        <h2>🛡️ REVERSIBLE BACKUPS & SAFETY VAULT</h2>
+        <h2> REVERSIBLE BACKUPS & SAFETY VAULT</h2>
         <p>Automated timestamped ZIP snapshots created before every save write, with 1-click state rollback.</p>
       </div>
 
@@ -654,7 +651,7 @@
         <!-- 1-Click Backups & Restore -->
         <div class="p5-card">
           <div class="p5-card-header">
-            <span>💾 REVERSIBLE RESTORE VAULT</span>
+            <span> REVERSIBLE RESTORE VAULT</span>
           </div>
           <p style="font-size:13px; color:var(--p5-muted); margin-bottom:15px;">
             Every save write creates a timestamped ZIP backup automatically. Select any backup below to roll back safely.
@@ -673,7 +670,7 @@
         <!-- Cryptographic Save Integrity Info -->
         <div class="p5-card">
           <div class="p5-card-header">
-            <span>🔒 AUTOMATIC CRC32 & AES-256 INTEGRITY</span>
+            <span> AUTOMATIC CRC32 & AES-256 INTEGRITY</span>
           </div>
           <p style="font-size:13px; color:var(--p5-muted); margin-bottom:12px;">
             Change of Heart maintains byte-for-byte save integrity across primary and mirror (+0x18510) offsets.
@@ -693,7 +690,7 @@
         <div id="bottomStatus" style="font-size:14px; font-weight:700; color:var(--p5-muted);">
           Ready. Load a save file to begin.
         </div>
-        <span id="stagedDirtyBadge" style="display:none; font-size:11px; font-weight:900; color:#000; background:#FFD54F; padding:3px 8px; border-radius:999px;">● STAGED</span>
+        <span id="stagedDirtyBadge" style="display:none; font-size:11px; font-weight:900; color:#000; background:var(--p5-gold); padding:3px 8px; border-radius:999px;">● STAGED</span>
       </div>
 
       <div style="display:flex; gap:8px; align-items:center;">
@@ -724,7 +721,7 @@
   <div id="sequenceBreakSafetyModal" class="p5-modal-backdrop" onclick="closeSafetyModal(event)">
     <div class="p5-modal-content" style="max-width:580px;" onclick="event.stopPropagation()">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-        <h3 style="font-family:var(--font-p5); font-size:22px; color:var(--p5-white); margin:0;">⚠️ STORY PACING & SAFETY CHECK</h3>
+        <h3 style="font-family:var(--font-p5); font-size:22px; color:var(--p5-white); margin:0;"> STORY PACING & SAFETY CHECK</h3>
         <button class="p5-btn-action secondary" style="padding:4px 10px; font-size:12px;" onclick="closeSafetyModal()"><span>✕ CANCEL</span></button>
       </div>
       
