@@ -304,7 +304,7 @@ body {
 .p5-select, .p5-input {
   background: #101018;
   border: 2px solid #333348;
-  border-left: 5px solid var(--stage-accent, var(--p5-crimson));
+  border-left: 5px solid var(--p5-crimson);
   color: var(--p5-white);
   padding: 10px 14px;
   font-family: var(--font-body);
@@ -313,7 +313,6 @@ body {
   outline: none;
   border-radius: 0;
   box-shadow: 3px 3px 0 #000;
-  transform: skew(-4deg);
   transition: all 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
@@ -321,39 +320,8 @@ body {
   border-color: var(--p5-white);
   border-left-color: var(--p5-white);
   background: #1C1C2C;
-  box-shadow: 5px 5px 0 var(--stage-accent, var(--p5-crimson));
-  transform: skew(-4deg) translateY(-2px);
-}
-
-.p5-chip {
-  background: #14141E;
-  border: 2px solid #000;
-  color: #A0A0B5;
-  padding: 6px 14px;
-  font-family: var(--font-p5);
-  font-size: 13px;
-  font-weight: 900;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  cursor: pointer;
-  transform: skew(-10deg);
-  box-shadow: 3px 3px 0 #000;
-  border-radius: 0;
-  transition: all 0.15s;
-}
-
-.p5-chip:hover {
-  background: var(--p5-white);
-  color: #000;
-  box-shadow: 4px 4px 0 var(--p5-crimson);
-}
-
-.p5-chip.active {
-  background: var(--stage-accent, var(--p5-cyan));
-  color: #000;
-  border-color: #000;
-  box-shadow: 4px 4px 0 #000;
-  transform: skew(-10deg) translateY(-2px);
+  box-shadow: 5px 5px 0 var(--p5-crimson), 0 0 15px rgba(255, 230, 0, 0.2);
+  transform: translateY(-2px);
 }
 
 .p5-btn-action {

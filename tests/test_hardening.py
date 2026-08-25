@@ -443,7 +443,7 @@ class TestVirtualScrollPerfGate(unittest.TestCase):
         # Disabled button must carry NO onclick handler (byte-level safety).
         self.assertIn('disabled title="Outfit writability frozen', self.src,
                       "frozen rows must render disabled with zero onclick")
-        self.assertIn('"><span>FROZEN</span></button>', self.src)
+        self.assertIn('"><span>🔒 FROZEN</span></button>', self.src)
         # Key items get a guarded ADD (S4), never an unwired block.
         key_idx = self.src.find("} else if (isKey) {")
         unwired_idx = self.src.find("} else if (isUnwired) {")
