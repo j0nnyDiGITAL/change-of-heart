@@ -29,14 +29,14 @@
 - Equipment ownership all 4 categories verified
 
 ## Next Action
-- Stage 1 P5R mouse status engine complete; 176/176 tests green
+- Full-bleed native menu engine wired (sidebar eliminated, bottom ribbon ticker active); 176/176 tests green
 
 ## Blockers
 - None.
 
 ## Recent Session
+- 2026-08-25: Ground-up Native Menu Engine — eliminated left sidebar, expanded canvas to 100vw full-bleed viewport, wired bottom ribbon navigation ticker (ref: 12558.jpg / 63559.jpg). 176/176 tests green.
 - 2026-08-25: Stage 1 P5R mouse status engine — speech bubble view switchers, neon combat shards, interactive leader deck (ref: 27809.jpg / 76684.jpg). 176/176 tests green.
-- 2026-08-25: Stage 1 (Leader Profile & Daily Life) 1:1 Atlus redesign — white hero name polygon, leader art showcase, and P5R telemetry (ref: 27809.jpg). 176/176 tests green.
 - 2026-08-25: UI Phase 4 pass — ransom-note command typography (multi-font cut-paper display banners across all stages; 176/176 tests green).
 - 2026-08-25: UI Phase 3 pass — global geometry & hard shadow pass (skewed inputs, sharp chips, zero border-radius, 176/176 tests green).
 - 2026-08-24: UI-liveness watchdog + v1.1.1 release
