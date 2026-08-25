@@ -29,13 +29,13 @@
 - Equipment ownership all 4 categories verified
 
 ## Next Action
-- UI Phase 3 geometry & hard shadow pass complete; 176/176 tests green
+- Owner visual review of P2 captures in screenshots/current_state/ vs design/reference contact sheets (ledger GATE G8 handoff).
+- Open judgments for owner review: category cluster label colors (mixed accents on one stage), money yellow retention.
 
 ## Blockers
 - None.
 
 ## Recent Session
-- 2026-08-25: UI Phase 3 pass — global geometry & hard shadow pass (skewed inputs, sharp chips, zero border-radius, 176/176 tests green).
 - 2026-08-25: UI P2 pass — stage accent theming, emoji purge, kinetic motion, search consolidation; 176/176 tests green, 10/10 captures. Ledger .unlazy/ui-p2/GATES.md (8/9 gates met).
 - 2026-08-24: UI-liveness watchdog + v1.1.1 release
 - 2026-08-21: inventory UX pass R1-R9 (memory/2026-08-21-inventory-ux-pass.md)
