@@ -90,195 +90,81 @@ body {
 }
 
 /* =========================================================================
-   SIDEBAR NAVIGATION (Slanted Punk Zine Masthead)
+   FULL-BLEED 1:1 ATLUS P5R VIEWPORT & BOTTOM RIBBON TICKER
    ========================================================================= */
-.p5-sidebar {
-  width: 310px;
+.p5-app-container {
+  width: 100vw;
   min-height: 100vh;
-  background: linear-gradient(180deg, #12121B 0%, #060608 100%);
-  border-right: 6px solid var(--p5-crimson);
   display: flex;
   flex-direction: column;
-  box-shadow: 15px 0 50px rgba(0, 0, 0, 0.95);
   position: relative;
-  z-index: 100;
+  overflow-x: hidden;
 }
 
-.p5-sidebar::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-image: repeating-linear-gradient(
-    -45deg,
-    rgba(230, 0, 18, 0.04) 0,
-    rgba(230, 0, 18, 0.04) 10px,
-    transparent 10px,
-    transparent 20px
-  );
-  pointer-events: none;
-}
-
-.p5-sidebar-header {
-  padding: 30px 20px 25px 20px;
-  background: var(--p5-crimson);
-  clip-path: polygon(0 0, 100% 0, 100% 82%, 0 100%);
-  box-shadow: 0 6px 25px rgba(230, 0, 18, 0.8);
-  margin-bottom: 25px;
-  position: relative;
-}
-
-.p5-sidebar-header::after {
-  content: 'TAKE YOUR HEART';
-  position: absolute;
-  bottom: 4px;
-  right: 14px;
-  font-family: var(--font-p5);
-  font-size: 11px;
-  letter-spacing: 2px;
-  color: #000;
-  font-weight: 900;
-  transform: rotate(-3deg);
-}
-
-.brand-badge {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.brand-badge img {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  border: 3px solid var(--p5-white);
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.85);
-  transform: rotate(-4deg);
-}
-
-.brand-text h1 {
-  font-family: var(--font-p5);
-  font-size: 34px;
-  letter-spacing: 2.5px;
-  line-height: 0.95;
-  color: var(--p5-white);
-  text-shadow: 3px 3px 0 #000, -1px -1px 0 #000;
-  transform: rotate(-2deg);
-}
-
-.brand-text p {
-  font-size: 10px;
-  font-weight: 900;
-  color: var(--p5-white);
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  background: #000;
-  padding: 2px 6px;
-  display: inline-block;
-  margin-top: 4px;
-  transform: rotate(1deg);
-}
-
-/* Slanted Nav Menu Items */
-.p5-nav-list {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  padding: 0 16px;
-}
-
-.p5-nav-item {
-  position: relative;
-  background: #181824;
-  color: var(--p5-white);
-  border: 2px solid #000;
-  padding: 14px 20px;
-  font-family: var(--font-p5);
-  font-size: 22px;
-  letter-spacing: 2px;
-  text-align: left;
-  cursor: pointer;
-  transform: skew(-12deg);
-  transition: all 0.18s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  box-shadow: 4px 4px 0px #000;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.p5-nav-item span {
-  transform: skew(12deg);
-  font-weight: 900;
-  text-shadow: 1px 1px 0 #000;
-}
-
-.p5-nav-item:hover {
-  background: var(--p5-white);
-  color: #000;
-  border-color: #000;
-  transform: skew(-12deg) translateX(14px) scale(1.03);
-  box-shadow: 6px 6px 0px var(--p5-crimson);
-}
-
-.p5-nav-item:hover span {
-  text-shadow: none;
-}
-
-.p5-nav-item.active {
-  background: var(--p5-cyan);
-  color: #000;
-  border-color: #000;
-  transform: skew(-12deg) translateX(10px);
-  box-shadow: 5px 5px 0 var(--p5-blue), 8px 8px 0px #000;
-}
-
-.p5-nav-item.active::after {
-  content: '★';
-  position: absolute;
-  right: 14px;
-  color: var(--p5-white);
-  font-size: 18px;
-  transform: skew(12deg);
-  text-shadow: 1px 1px 0 #000;
-}
-
-.p5-sidebar-footer {
-  margin-top: auto;
-  padding: 20px 16px;
-  border-top: 3px solid rgba(230, 0, 18, 0.3);
-  background: rgba(0, 0, 0, 0.5);
-}
-
-.status-pill {
-  background: #0A0A0F;
-  border: 2px solid #000;
-  padding: 8px 12px;
-  font-size: 11px;
-  font-weight: 800;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--p5-muted);
-  box-shadow: 3px 3px 0 #000;
-}
-
-.status-pill.ok {
-  color: var(--p5-green);
-  border-color: var(--p5-green);
-}
-
-/* =========================================================================
-   MAIN STAGE & TOP BAR (Authentic Atlus P5 Layout)
-   ========================================================================= */
 .p5-main-stage {
   flex: 1;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  padding-bottom: 90px; /* Space for bottom ribbon */
   position: relative;
-  overflow-y: auto;
+}
+
+/* Authentic Shinjuku Scramble Bottom Navigation Ticker (Ref: 12558.jpg & 63559.jpg) */
+.p5-bottom-nav-ribbon {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100vw;
+  height: 80px;
+  background: linear-gradient(180deg, rgba(10, 10, 16, 0.95) 0%, #000 100%);
+  border-top: 4px solid var(--stage-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 0 20px;
+  z-index: 9999;
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.95);
+}
+
+.p5-ribbon-btn {
+  background: #14141E;
+  color: var(--p5-white);
+  border: 3px solid #000;
+  padding: 10px 22px;
+  font-family: var(--font-p5);
+  font-size: 22px;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transform: skew(-12deg);
+  box-shadow: 4px 4px 0 #000;
+  transition: all 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.p5-ribbon-btn span {
+  transform: skew(12deg);
+  display: inline-block;
+  font-weight: 900;
+}
+
+.p5-ribbon-btn:hover {
+  background: var(--p5-white);
+  color: #000;
+  border-color: #000;
+  transform: skew(-12deg) translateY(-6px) scale(1.05);
+  box-shadow: 6px 6px 0 var(--p5-crimson);
+}
+
+.p5-ribbon-btn.active {
+  background: var(--p5-cyan);
+  color: #000;
+  border-color: #000;
+  transform: skew(-12deg) translateY(-8px) scale(1.08);
+  box-shadow: 5px 5px 0 var(--p5-blue), 8px 8px 0 #000;
 }
 
 .p5-top-strip {

@@ -3424,7 +3424,7 @@ async function restoreSelectedBackup() {
 // Navigation Stages (Snappy, Instant P5R Switching)
 function switchStage(stageId, btnEl) {
   P5Audio.playSwitch();
-  document.querySelectorAll(".p5-nav-item").forEach((el) => el.classList.remove("active"));
+  document.querySelectorAll(".p5-nav-item, .p5-ribbon-btn").forEach((el) => el.classList.remove("active"));
 
   // Stage accent theming (North Star law 4): body[data-stage] drives --stage-accent
   document.body.dataset.stage = stageId;
@@ -3447,7 +3447,7 @@ function switchStage(stageId, btnEl) {
   if (btnEl) {
     btnEl.classList.add("active");
   } else {
-    const defaultBtn = document.querySelector(`.p5-nav-item[onclick*="'${stageId}'"]`);
+    const defaultBtn = document.querySelector(`.p5-ribbon-btn[onclick*="'${stageId}'"]`);
     if (defaultBtn) defaultBtn.classList.add("active");
   }
 
@@ -3465,11 +3465,11 @@ function updateIntegrityBadge(rep) {
   if (!rep) return;
 
   if (rep.ok) {
-    pill.className = "status-pill ok";
-    text.textContent = "✔ AES + CRC SIGNED & VERIFIED";
+    if (pill) pill.className = "status-pill ok";
+    if (text) text.textContent = "✔ AES + CRC SIGNED & VERIFIED";
   } else {
-    pill.className = "status-pill";
-    text.textContent = "✘ INTEGRITY MISMATCH";
+    if (pill) pill.className = "status-pill";
+    if (text) text.textContent = "✘ INTEGRITY MISMATCH";
   }
 }
 
