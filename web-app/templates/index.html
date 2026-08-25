@@ -55,7 +55,7 @@
         <span>●</span> <span id="sidebarHealthText">SCANNING SAVE...</span>
       </div>
       <!-- Persona Full Art Hover Spotlight Modal -->
-      <div id="personaArtSpotlight" style="display:none; position:fixed; pointer-events:none; z-index:99999; background:rgba(10,10,16,0.95); border:2px solid var(--p5-crimson); border-radius:8px; padding:12px; box-shadow:0 10px 30px rgba(0,0,0,0.9); transform:translate(15px, 15px); max-width:280px;">
+      <div id="personaArtSpotlight" style="display:none; position:fixed; pointer-events:none; z-index:99999; background:rgba(10,10,16,0.95); border:2px solid var(--p5-crimson);  padding:12px; box-shadow:0 10px 30px rgba(0,0,0,0.9); transform:translate(15px, 15px); max-width:280px;">
         <div style="text-align:center;">
           <img id="personaSpotlightImg" src="" style="width:220px; height:260px; object-fit:contain; filter:drop-shadow(0 4px 10px rgba(0,0,0,0.8));">
           <div id="personaSpotlightTitle" style="font-family:var(--font-p5); font-size:16px; color:#FFF; margin-top:8px; letter-spacing:0.5px;"></div>
@@ -67,7 +67,7 @@
         <div class="status-indicator"></div>
         <span id="status-text">INITIALIZING SYSTEM...</span>
       </div>
-      <a href="https://ko-fi.com/j0nnydigital" target="_blank" style="display:flex; align-items:center; justify-content:center; gap:6px; background:rgba(255,94,91,0.12); border:1px solid #FF5E5B; color:#FF5E5B; padding:5px 8px; border-radius:4px; font-size:11px; font-weight:800; text-decoration:none; transition:all 0.2s ease;">
+      <a href="https://ko-fi.com/j0nnydigital" target="_blank" style="display:flex; align-items:center; justify-content:center; gap:6px; background:rgba(255,94,91,0.12); border:1px solid #FF5E5B; color:#FF5E5B; padding:5px 8px;  font-size:11px; font-weight:800; text-decoration:none; transition:all 0.2s ease;">
         <span></span> <span>SUPPORT j0nny DiGITAL</span>
       </a>
     </div>
@@ -236,10 +236,10 @@
               </select>
               
               <!-- Party Member Evolution Tier Selector -->
-              <div id="partyEvolutionContainer" style="display:none; margin-top:10px; padding:10px; background:rgba(0,229,255,0.08); border:1px solid var(--p5-cyan); border-radius:4px;">
+              <div id="partyEvolutionContainer" style="display:none; margin-top:10px; padding:10px; background:rgba(0,229,255,0.08); border:1px solid var(--p5-cyan); ">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
                   <label style="font-size:11px; font-weight:900; color:var(--p5-cyan); letter-spacing:1px;"> AWAKENING EVOLUTION TIER</label>
-                  <span id="partyEvolutionTierBadge" style="font-size:10px; color:#FFF; font-weight:800; background:var(--p5-cyan); color:#000; padding:2px 6px; border-radius:3px;">TIER 1 (BASE)</span>
+                  <span id="partyEvolutionTierBadge" style="font-size:10px; color:#FFF; font-weight:800; background:var(--p5-cyan); color:#000; padding:2px 6px; ">TIER 1 (BASE)</span>
                 </div>
                 <select id="partyEvolutionSelect" class="p5-select" style="width:100%; font-size:14px; font-weight:700; background:#0A0A12; border:1px solid var(--p5-cyan);" onchange="onPartyEvolutionChange()">
                   <option value="1"> Tier 1: Base Persona (Initial Awakening)</option>
@@ -401,9 +401,9 @@
 
       <!-- Dual View Toggle — Owned Pouch vs Full Catalog (S5b) -->
       <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px; flex-wrap:wrap;">
-        <div class="filter-pill" style="display:flex; padding:2px; background:#0A0A12; border:2px solid #222; border-radius:8px;">
-          <button id="viewPouchBtn" class="filter-pill active" style="border-radius:6px;" onclick="setInventoryView('pouch')"> Owned Pouch</button>
-          <button id="viewCatalogBtn" class="filter-pill" style="border-radius:6px;" onclick="setInventoryView('catalog')"> Full Catalog</button>
+        <div class="filter-pill" style="display:flex; padding:2px; background:#0A0A12; border:2px solid #222; ">
+          <button id="viewPouchBtn" class="filter-pill active" style="" onclick="setInventoryView('pouch')"> Owned Pouch</button>
+          <button id="viewCatalogBtn" class="filter-pill" style="" onclick="setInventoryView('catalog')"> Full Catalog</button>
         </div>
         <span id="viewScopeHint" style="font-size:11px; color:var(--p5-muted);">Owned items only — fix your bag.</span>
         <span style="flex:1"></span>
@@ -690,7 +690,7 @@
         <div id="bottomStatus" style="font-size:14px; font-weight:700; color:var(--p5-muted);">
           Ready. Load a save file to begin.
         </div>
-        <span id="stagedDirtyBadge" style="display:none; font-size:11px; font-weight:900; color:#000; background:var(--p5-gold); padding:3px 8px; border-radius:999px;">● STAGED</span>
+        <span id="stagedDirtyBadge" style="display:none; font-size:11px; font-weight:900; color:#000; background:var(--p5-gold); padding:3px 8px; ">● STAGED</span>
       </div>
 
       <div style="display:flex; gap:8px; align-items:center;">
@@ -710,8 +710,8 @@
         <h3 id="lightboxCharName" style="font-family:var(--font-p5); font-size:24px; color:var(--p5-crimson); margin:0;">CHARACTER</h3>
         <button class="p5-btn-action secondary" style="padding:4px 10px; font-size:12px;" onclick="closePortraitModal()"><span>✕ CLOSE</span></button>
       </div>
-      <div style="text-align:center; padding:10px; background:radial-gradient(circle, #252535 0%, #101018 100%); border-radius:6px; border:2px solid var(--p5-border);">
-        <img id="lightboxImg" src="" alt="Full Character Portrait" style="max-height:480px; max-width:100%; border-radius:4px; box-shadow:0 0 25px rgba(230,0,18,0.3);">
+      <div style="text-align:center; padding:10px; background:radial-gradient(circle, #252535 0%, #101018 100%);  border:2px solid var(--p5-border);">
+        <img id="lightboxImg" src="" alt="Full Character Portrait" style="max-height:480px; max-width:100%;  box-shadow:0 0 25px rgba(230,0,18,0.3);">
       </div>
       <div id="lightboxRole" style="margin-top:10px; font-size:13px; font-weight:700; color:var(--p5-white); text-align:center;">ROLE</div>
     </div>
