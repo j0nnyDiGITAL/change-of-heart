@@ -518,19 +518,57 @@ body {
   margin-bottom: 25px;
 }
 
-.stage-headline h2 {
+.stage-headline h2, .p5-ransom-banner {
   font-family: var(--font-p5);
-  font-size: 44px;
-  letter-spacing: 3.5px;
+  font-size: 42px;
+  letter-spacing: 3px;
   color: var(--p5-white);
   text-transform: uppercase;
   text-shadow: 4px 4px 0 #000, 6px 6px 0 var(--stage-accent);
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
   background: #000;
-  padding: 4px 16px 2px 14px;
+  padding: 6px 16px 4px 14px;
   transform: skew(-8deg) rotate(-1deg);
   border-left: 6px solid var(--stage-accent);
   box-shadow: 6px 6px 0px #000;
+}
+
+.ransom-word {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.ransom-tile {
+  display: inline-block;
+  padding: 1px 6px;
+  font-family: var(--font-p5);
+  font-weight: 900;
+  line-height: 1;
+  transform: skew(8deg);
+  border: 1px solid #000;
+  box-shadow: 2px 2px 0 #000;
+}
+
+.ransom-tile.white {
+  background: var(--p5-white);
+  color: #000;
+  transform: skew(8deg) rotate(1.5deg);
+}
+
+.ransom-tile.accent {
+  background: var(--stage-accent);
+  color: #000;
+  transform: skew(8deg) rotate(-2deg);
+}
+
+.ransom-tile.punk {
+  font-family: var(--font-punk);
+  font-size: 0.85em;
+  transform: skew(8deg) rotate(-1.5deg);
 }
 
 .stage-headline p {
