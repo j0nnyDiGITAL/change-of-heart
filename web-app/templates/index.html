@@ -98,31 +98,39 @@
 
     <!-- STAGE 1: Daily Life & Social Stats (1:1 Atlus Status Layout — Ref: 27809.jpg) -->
     <section id="stage-daily_life" class="p5-stage-view active">
-      <div class="stage-headline">
-        <h2>★ DAILY LIFE & PHANTOM IDENTITY</h2>
-        <p>Manage Joker's school profile, Phantom Thief calling name, Yen balance, and Social Stats.</p>
+      <div class="stage-headline" style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:12px;">
+        <div>
+          <h2>★ DAILY LIFE & PHANTOM IDENTITY</h2>
+          <p>Manage Joker's school profile, Phantom Thief calling name, Yen balance, and Social Stats.</p>
+        </div>
+        <!-- Authentic Speech-Bubble Subview Switchers (Ref: 27809.jpg) -->
+        <div style="display:flex; gap:10px;">
+          <button id="btnSubviewDossier" class="p5-speech-bubble-btn active" onclick="switchStatusSubview('dossier')"><span>📋 IDENTITY & PROFILE</span></button>
+          <button id="btnSubviewSocial" class="p5-speech-bubble-btn" onclick="switchStatusSubview('social')"><span>★ SOCIAL STATS</span></button>
+          <button id="btnSubviewCombat" class="p5-speech-bubble-btn" onclick="switchStatusSubview('combat')"><span>⚔️ COMBAT TELEMETRY</span></button>
+        </div>
       </div>
 
       <div class="p5-status-stage-grid">
-        <!-- LEFT: Leader Identity & Shujin Dossier -->
+        <!-- LEFT: Asymmetric Shard Deck -->
         <div>
-          <!-- Hero Name Shard (Authentic White Angular Polygon) -->
-          <div class="p5-hero-name-shard">
+          <!-- Hero Name Shard (Clickable to edit Identity) -->
+          <div class="p5-hero-name-shard" style="cursor:pointer;" onclick="openIdentityEditModal()" title="Click to edit Name & Group Name">
             <div class="p5-hero-name-inner">
               <div>
-                <span style="font-size:10px; font-weight:900; letter-spacing:1px; color:#666;">PHANTOM THIEF LEADER</span>
+                <span style="font-size:10px; font-weight:900; letter-spacing:1px; color:#666;">PHANTOM THIEF LEADER (CLICK TO EDIT)</span>
                 <div class="p5-hero-name-label">
                   <span id="heroDisplayFname">REN</span> <span id="heroDisplayLname">AMAMIYA</span>
                 </div>
               </div>
-              <div style="font-family:var(--font-p5); font-size:20px; background:#000; color:#FFF; padding:2px 8px; border:2px solid #000;">
+              <div style="font-family:var(--font-p5); font-size:20px; background:#000; color:#FFF; padding:2px 10px; border:2px solid #000; display:flex; align-items:center; gap:6px;">
                 LV <span id="heroDisplayLevel">99</span>
               </div>
             </div>
           </div>
 
-          <!-- School Profile & Group Identity Card -->
-          <div class="p5-card" style="margin-bottom:20px;">
+          <!-- SUBVIEW A: Identity & Profile Form Card -->
+          <div id="subviewDossierCard" class="p5-card" style="margin-bottom:20px;">
             <div class="p5-card-header">
               <span> SHUJIN ACADEMY PROFILE</span>
               <span style="font-size:12px; color:var(--p5-muted);">2ND YEAR</span>
@@ -153,14 +161,41 @@
             </div>
           </div>
 
-          <!-- Social Stats Radar Deck -->
-          <div class="p5-card">
+          <!-- SUBVIEW B: Social Stats Radar Deck -->
+          <div id="subviewSocialCard" class="p5-card" style="display:none; margin-bottom:20px;">
             <div class="p5-card-header">
               <span> SOCIAL STATS (HUMAN PARAMETERS)</span>
               <button class="p5-btn-action" style="padding:4px 12px; font-size:12px;" onclick="maxAllSocialStats()"><span>MAX ALL (RANK 5)</span></button>
             </div>
             <div id="socialStatsList">
               <!-- Dynamically populated with 1-5 star rank nodes -->
+            </div>
+          </div>
+
+          <!-- SUBVIEW C: Combat Stats Telemetry -->
+          <div id="subviewCombatCard" class="p5-combat-shard-box" style="display:none;">
+            <div class="p5-combat-shard-inner">
+              <div class="p5-neon-bar-row">
+                <div>HP <span id="combatHpText" class="p5-hp-label">999 / 999</span></div>
+                <div>SP <span id="combatSpText" class="p5-sp-label">999 / 999</span></div>
+              </div>
+              <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; margin-top:15px; background:rgba(0,0,0,0.6); padding:12px; border:2px solid #000;">
+                <div>
+                  <div style="font-size:10px; color:var(--p5-muted); font-weight:800;">MELEE ATK</div>
+                  <div id="combatMeleeText" style="font-family:var(--font-p5); font-size:22px; color:var(--p5-white);">380</div>
+                </div>
+                <div>
+                  <div style="font-size:10px; color:var(--p5-muted); font-weight:800;">RANGED ATK</div>
+                  <div id="combatRangedText" style="font-family:var(--font-p5); font-size:22px; color:var(--p5-white);">410</div>
+                </div>
+                <div>
+                  <div style="font-size:10px; color:var(--p5-muted); font-weight:800;">DEFENSE</div>
+                  <div id="combatDefText" style="font-family:var(--font-p5); font-size:22px; color:var(--p5-white);">350</div>
+                </div>
+              </div>
+              <div style="margin-top:12px; display:flex; justify-content:flex-end;">
+                <button class="p5-btn-action" style="padding:4px 12px; font-size:12px;" onclick="quickRestoreHpSp()"><span>⚡ FULL HP / SP RESTORE</span></button>
+              </div>
             </div>
           </div>
         </div>
@@ -178,9 +213,9 @@
             </div>
           </div>
 
-          <div style="position:relative; z-index:2; margin-top:auto;">
+          <div style="position:relative; z-index:2; margin-top:auto; cursor:pointer;" onclick="setMaxYen()" title="Click to Max Yen">
             <div style="font-size:11px; font-weight:900; letter-spacing:1.5px; color:var(--p5-white); text-shadow:1px 1px 0 #000;">
-              CURRENT ASSETS
+              CURRENT ASSETS (CLICK TO MAX)
             </div>
             <div id="showcaseMoneyText" class="p5-total-exp-banner">
               ¥ 9,999,999

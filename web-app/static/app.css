@@ -666,6 +666,82 @@ body {
   transform: skew(6deg);
 }
 
+/* Authentic P5R Comic Speech-Bubble View Buttons (Ref: 27809.jpg) */
+.p5-speech-bubble-btn {
+  background: var(--p5-white);
+  color: #000;
+  border: 3px solid #000;
+  font-family: var(--font-p5);
+  font-size: 16px;
+  letter-spacing: 1.5px;
+  padding: 6px 16px;
+  cursor: pointer;
+  box-shadow: 4px 4px 0 #000;
+  transform: skew(-8deg);
+  transition: transform 0.1s ease, background 0.1s ease, color 0.1s ease;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.p5-speech-bubble-btn span {
+  transform: skew(8deg);
+  display: inline-block;
+}
+
+.p5-speech-bubble-btn:hover {
+  background: var(--p5-crimson);
+  color: var(--p5-white);
+  border-color: #000;
+  transform: skew(-8deg) translateY(-2px) scale(1.04);
+}
+
+.p5-speech-bubble-btn.active {
+  background: #000;
+  color: var(--p5-white);
+  border-color: var(--p5-crimson);
+  box-shadow: 4px 4px 0 var(--p5-crimson);
+}
+
+/* Combat Stats Deck (HP / SP neon bars & Melee / Ranged / Defense shards) */
+.p5-combat-shard-box {
+  background: #0D0D14;
+  border: 3px solid #000;
+  border-left: 6px solid var(--p5-crimson);
+  padding: 16px;
+  transform: skew(-6deg);
+  box-shadow: 6px 6px 0 #000;
+  margin-bottom: 16px;
+}
+
+.p5-combat-shard-inner {
+  transform: skew(6deg);
+}
+
+.p5-neon-bar-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-family: var(--font-p5);
+  letter-spacing: 1px;
+}
+
+.p5-hp-label {
+  color: #00E5FF;
+  font-size: 24px;
+  font-style: italic;
+  text-shadow: 2px 2px 0 #000;
+}
+
+.p5-sp-label {
+  color: #FF2A6D;
+  font-size: 24px;
+  font-style: italic;
+  text-shadow: 2px 2px 0 #000;
+}
+
 /* Filter Pills */
 .filter-pill {
   background: #14141E;

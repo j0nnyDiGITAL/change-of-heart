@@ -591,9 +591,38 @@ function maxAllSocialStats() {
 }
 
 function setMaxYen() {
-  document.getElementById("inputMoney").value = 9999999;
+  const moneyInput = document.getElementById("inputMoney");
+  if (moneyInput) moneyInput.value = 9999999;
   if (CURRENT_SAVE) CURRENT_SAVE.header.money = 9999999;
-  document.getElementById("topMoneyText").textContent = "¥9,999,999";
+  const topMoney = document.getElementById("topMoneyText");
+  const showcaseMoney = document.getElementById("showcaseMoneyText");
+  if (topMoney) topMoney.textContent = "¥9,999,999";
+  if (showcaseMoney) showcaseMoney.textContent = "¥ 9,999,999";
+}
+
+function switchStatusSubview(subview) {
+  const dossier = document.getElementById("subviewDossierCard");
+  const social = document.getElementById("subviewSocialCard");
+  const combat = document.getElementById("subviewCombatCard");
+
+  const btnDossier = document.getElementById("btnSubviewDossier");
+  const btnSocial = document.getElementById("btnSubviewSocial");
+  const btnCombat = document.getElementById("btnSubviewCombat");
+
+  if (dossier) dossier.style.display = subview === "dossier" ? "block" : "none";
+  if (social) social.style.display = subview === "social" ? "block" : "none";
+  if (combat) combat.style.display = subview === "combat" ? "block" : "none";
+
+  if (btnDossier) btnDossier.classList.toggle("active", subview === "dossier");
+  if (btnSocial) btnSocial.classList.toggle("active", subview === "social");
+  if (btnCombat) btnCombat.classList.toggle("active", subview === "combat");
+}
+
+function quickRestoreHpSp() {
+  const hp = document.getElementById("combatHpText");
+  const sp = document.getElementById("combatSpText");
+  if (hp) hp.textContent = "999 / 999";
+  if (sp) sp.textContent = "999 / 999";
 }
 
 // Party & Personas
