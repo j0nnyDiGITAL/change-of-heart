@@ -29,12 +29,13 @@
 - Equipment ownership all 4 categories verified
 
 ## Next Action
-- UI Phase 3 geometry & hard shadow pass complete; 176/176 tests green
+- UI Phase 4 ransom-note typography pass complete; 176/176 tests green
 
 ## Blockers
 - None.
 
 ## Recent Session
+- 2026-08-25: UI Phase 4 pass — ransom-note command typography (multi-font cut-paper display banners across all stages; 176/176 tests green).
 - 2026-08-25: UI Phase 3 pass — global geometry & hard shadow pass (skewed inputs, sharp chips, zero border-radius, 176/176 tests green).
 - 2026-08-25: UI P2 pass — stage accent theming, emoji purge, kinetic motion, search consolidation; 176/176 tests green, 10/10 captures. Ledger .unlazy/ui-p2/GATES.md (8/9 gates met).
 - 2026-08-24: UI-liveness watchdog + v1.1.1 release
