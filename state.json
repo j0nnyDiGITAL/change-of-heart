@@ -5,8 +5,8 @@
   "gate": "ready",
   "mode": "single-agent",
   "pinned_shas": {},
-  "last_session": "memory/2026-08-25-p5r-native-menu-engine.md",
-  "updated_at": "2026-08-25T22:48:00Z",
+  "last_session": "memory/2026-08-26-backup-zip-fix.md",
+  "updated_at": "2026-08-26T06:55:00Z",
   "version": "v1.1.1",
   "test_command": [
     "python",
@@ -16,9 +16,9 @@
     "-s",
     "tests"
   ],
-  "test_count": 176,
+  "test_count": 178,
   "blockers": [],
-  "next_action": "Full-bleed native menu engine wired (sidebar eliminated, bottom ribbon ticker active); 176/176 tests green",
+  "next_action": "Backup ZIP generation fix complete across local and uploaded saves; 178/178 tests green; redesign branched to redesign/p5r-native-menu",
   "active_owners": [],
   "frozen_offsets": [
     "0xA000+ Outfits save wiring (D008 \u2014 read-only in UI)"
