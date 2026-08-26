@@ -11,6 +11,7 @@ import sys
 import json
 import time
 import base64
+from datetime import datetime
 from pathlib import Path
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
@@ -40,6 +41,7 @@ from core.environment import (
     list_save_files,
     check_running_processes,
     create_timestamped_backup,
+    create_memory_backup_zip,
     list_backups,
     restore_backup,
 )
@@ -299,6 +301,7 @@ _REFERENCE_DB_GZ = _gzip.compress(_REFERENCE_DB_JSON, mtime=0)
 BUILD_ID = "audit-2026-08-16"
 CURRENT_EDITOR = None
 CURRENT_FILE_PATH = None
+CURRENT_ORIGINAL_BYTES = None
 
 def _build_loaded_save_payload(editor: SaveEditor, file_path: str) -> dict:
     hdr = editor.parser.header
@@ -510,7 +513,7 @@ class P5RWebHandler(SimpleHTTPRequestHandler):
         super().do_GET()
 
     def do_POST(self):
-        global CURRENT_EDITOR, CURRENT_FILE_PATH, LAST_REQUEST_TS
+        global CURRENT_EDITOR, CURRENT_FILE_PATH, CURRENT_ORIGINAL_BYTES, LAST_REQUEST_TS
         LAST_REQUEST_TS = time.time()
         if not self._origin_allowed():
             self.send_json(403, {"error": "Cross-origin requests are not allowed."})
@@ -539,6 +542,7 @@ class P5RWebHandler(SimpleHTTPRequestHandler):
                     raw = f.read()
                 CURRENT_EDITOR = SaveEditor(raw)
                 CURRENT_FILE_PATH = str(p)
+                CURRENT_ORIGINAL_BYTES = raw
                 instances.update_save(CURRENT_FILE_PATH)
                 resp = _build_loaded_save_payload(CURRENT_EDITOR, CURRENT_FILE_PATH)
                 self.send_json(200, resp)
@@ -555,6 +559,7 @@ class P5RWebHandler(SimpleHTTPRequestHandler):
                 raw_bytes = base64.b64decode(raw_b64)
                 CURRENT_EDITOR = SaveEditor(raw_bytes)
                 CURRENT_FILE_PATH = f"Uploaded ({filename})"
+                CURRENT_ORIGINAL_BYTES = raw_bytes
                 instances.update_save(CURRENT_FILE_PATH)
                 resp = _build_loaded_save_payload(CURRENT_EDITOR, CURRENT_FILE_PATH)
                 self.send_json(200, resp)
@@ -757,16 +762,30 @@ class P5RWebHandler(SimpleHTTPRequestHandler):
 
                 # 6. Repack & Sign
                 out_bytes = CURRENT_EDITOR.save_to_bytes()
+                backup_zip_b64 = None
+                backup_zip_filename = None
                 if p:
                     p.write_bytes(out_bytes)
                     CURRENT_EDITOR = SaveEditor(p.read_bytes())
                 else:
                     CURRENT_EDITOR = SaveEditor(out_bytes)
+                    # For uploaded files: generate in-memory timestamped .zip from pristine baseline
+                    orig_bytes = CURRENT_ORIGINAL_BYTES or out_bytes
+                    save_name = CURRENT_FILE_PATH.replace("Uploaded (", "").replace(")", "").strip() or "DATA.DAT"
+                    zip_bytes = create_memory_backup_zip(orig_bytes, filename=save_name)
+                    backup_zip_b64 = base64.b64encode(zip_bytes).decode("ascii")
+                    stem = Path(save_name).stem
+                    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                    backup_zip_filename = f"{stem}_backup_{timestamp}.zip"
+                    backup_path_name = backup_zip_filename
+
                 integrity = CURRENT_EDITOR.integrity_report()
 
                 resp = {
                     "status": "success",
                     "backup": backup_path_name,
+                    "backup_zip_name": backup_zip_filename,
+                    "backup_zip_data": backup_zip_b64,
                     "integrity": integrity,
                     "download_data": base64.b64encode(out_bytes).decode("ascii") if is_uploaded else None,
                     "message": "Save file successfully re-signed and saved!"

@@ -458,26 +458,10 @@ function renderSaveData() {
   if (!CURRENT_SAVE) return;
 
   // Header & Top Strip
-  const fname = CURRENT_SAVE.header.fname || "REN";
-  const lname = CURRENT_SAVE.header.lname || "AMAMIYA";
   document.getElementById("inputFname").value = CURRENT_SAVE.header.fname || "";
   document.getElementById("inputLname").value = CURRENT_SAVE.header.lname || "";
   document.getElementById("inputGroupName").value = CURRENT_SAVE.header.group_name || "";
   document.getElementById("inputMoney").value = CURRENT_SAVE.header.money || 0;
-
-  const heroFnameEl = document.getElementById("heroDisplayFname");
-  const heroLnameEl = document.getElementById("heroDisplayLname");
-  const heroLevelEl = document.getElementById("heroDisplayLevel");
-  const showcaseMoneyEl = document.getElementById("showcaseMoneyText");
-
-  if (heroFnameEl) heroFnameEl.textContent = fname.toUpperCase();
-  if (heroLnameEl) heroLnameEl.textContent = lname.toUpperCase();
-  if (heroLevelEl && CURRENT_SAVE.party && CURRENT_SAVE.party[0]) {
-    heroLevelEl.textContent = CURRENT_SAVE.party[0].level || 99;
-  }
-  if (showcaseMoneyEl) {
-    showcaseMoneyEl.textContent = `¥ ${(CURRENT_SAVE.header.money || 0).toLocaleString()}`;
-  }
 
   document.getElementById("topDayText").textContent = CURRENT_SAVE.header.day || "Unknown";
   document.getElementById("topPlaytimeText").textContent = CURRENT_SAVE.header.playtime || "Unknown";
@@ -591,38 +575,9 @@ function maxAllSocialStats() {
 }
 
 function setMaxYen() {
-  const moneyInput = document.getElementById("inputMoney");
-  if (moneyInput) moneyInput.value = 9999999;
+  document.getElementById("inputMoney").value = 9999999;
   if (CURRENT_SAVE) CURRENT_SAVE.header.money = 9999999;
-  const topMoney = document.getElementById("topMoneyText");
-  const showcaseMoney = document.getElementById("showcaseMoneyText");
-  if (topMoney) topMoney.textContent = "¥9,999,999";
-  if (showcaseMoney) showcaseMoney.textContent = "¥ 9,999,999";
-}
-
-function switchStatusSubview(subview) {
-  const dossier = document.getElementById("subviewDossierCard");
-  const social = document.getElementById("subviewSocialCard");
-  const combat = document.getElementById("subviewCombatCard");
-
-  const btnDossier = document.getElementById("btnSubviewDossier");
-  const btnSocial = document.getElementById("btnSubviewSocial");
-  const btnCombat = document.getElementById("btnSubviewCombat");
-
-  if (dossier) dossier.style.display = subview === "dossier" ? "block" : "none";
-  if (social) social.style.display = subview === "social" ? "block" : "none";
-  if (combat) combat.style.display = subview === "combat" ? "block" : "none";
-
-  if (btnDossier) btnDossier.classList.toggle("active", subview === "dossier");
-  if (btnSocial) btnSocial.classList.toggle("active", subview === "social");
-  if (btnCombat) btnCombat.classList.toggle("active", subview === "combat");
-}
-
-function quickRestoreHpSp() {
-  const hp = document.getElementById("combatHpText");
-  const sp = document.getElementById("combatSpText");
-  if (hp) hp.textContent = "999 / 999";
-  if (sp) sp.textContent = "999 / 999";
+  document.getElementById("topMoneyText").textContent = "¥9,999,999";
 }
 
 // Party & Personas
@@ -3353,7 +3308,7 @@ async function executeSavePayload(skipReview) {
     // mirror/conflict will refresh on next load
     if (result.notice) renderSameSaveNotice(result.notice);
     if (result.download_data) {
-      // Trigger instant browser download for uploaded files
+      // Trigger instant browser download for updated save file
       const blob = new Blob([Uint8Array.from(atob(result.download_data), c => c.charCodeAt(0))], { type: "application/octet-stream" });
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
@@ -3361,11 +3316,25 @@ async function executeSavePayload(skipReview) {
       document.body.appendChild(a);
       a.click();
       a.remove();
-      setStatus(`✔ Changes re-signed & downloaded as ${a.download}!`);
-      alert(`★ Save successful! Downloaded updated save file (${a.download}) with verified AES & CRCs.`);
+
+      // Trigger automatic backup .ZIP download if returned
+      if (result.backup_zip_data) {
+        setTimeout(() => {
+          const zipBlob = new Blob([Uint8Array.from(atob(result.backup_zip_data), c => c.charCodeAt(0))], { type: "application/zip" });
+          const zipLink = document.createElement("a");
+          zipLink.href = URL.createObjectURL(zipBlob);
+          zipLink.download = result.backup_zip_name || "DATA_backup.zip";
+          document.body.appendChild(zipLink);
+          zipLink.click();
+          zipLink.remove();
+        }, 250);
+      }
+
+      setStatus(`✔ Changes re-signed & downloaded as ${a.download}! Safety backup: ${result.backup}`);
+      alert(`★ Save successful! Downloaded re-signed save (${a.download}) and automatic safety backup ZIP (${result.backup_zip_name || result.backup}).`);
     } else {
       setStatus(`✔ Changes re-signed & saved! Auto-backup created: ${result.backup}`);
-      alert("★ Save successful! CRCs & AES integrity verified and re-signed.");
+      alert(`★ Save successful! CRCs & AES integrity verified. Auto-backup created: ${result.backup}`);
     }
   } catch (err) {
     console.error("Save error:", err);
@@ -3424,7 +3393,7 @@ async function restoreSelectedBackup() {
 // Navigation Stages (Snappy, Instant P5R Switching)
 function switchStage(stageId, btnEl) {
   P5Audio.playSwitch();
-  document.querySelectorAll(".p5-nav-item, .p5-ribbon-btn").forEach((el) => el.classList.remove("active"));
+  document.querySelectorAll(".p5-nav-item").forEach((el) => el.classList.remove("active"));
 
   // Stage accent theming (North Star law 4): body[data-stage] drives --stage-accent
   document.body.dataset.stage = stageId;
@@ -3447,7 +3416,7 @@ function switchStage(stageId, btnEl) {
   if (btnEl) {
     btnEl.classList.add("active");
   } else {
-    const defaultBtn = document.querySelector(`.p5-ribbon-btn[onclick*="'${stageId}'"]`);
+    const defaultBtn = document.querySelector(`.p5-nav-item[onclick*="'${stageId}'"]`);
     if (defaultBtn) defaultBtn.classList.add("active");
   }
 
@@ -3465,11 +3434,11 @@ function updateIntegrityBadge(rep) {
   if (!rep) return;
 
   if (rep.ok) {
-    if (pill) pill.className = "status-pill ok";
-    if (text) text.textContent = "✔ AES + CRC SIGNED & VERIFIED";
+    pill.className = "status-pill ok";
+    text.textContent = "✔ AES + CRC SIGNED & VERIFIED";
   } else {
-    if (pill) pill.className = "status-pill";
-    if (text) text.textContent = "✘ INTEGRITY MISMATCH";
+    pill.className = "status-pill";
+    text.textContent = "✘ INTEGRITY MISMATCH";
   }
 }
 

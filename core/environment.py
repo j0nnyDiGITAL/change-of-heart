@@ -124,6 +124,18 @@ def check_running_processes() -> Tuple[bool, bool]:
     return p5r_running, steam_running
 
 
+def create_memory_backup_zip(raw_bytes: bytes, filename: str = "DATA.DAT") -> bytes:
+    """
+    Creates an in-memory timestamped ZIP archive from raw save bytes.
+    Used for uploaded/custom saves where no permanent server disk path exists.
+    """
+    import io
+    bio = io.BytesIO()
+    with zipfile.ZipFile(bio, "w", zipfile.ZIP_DEFLATED) as zf:
+        zf.writestr(filename, raw_bytes)
+    return bio.getvalue()
+
+
 def create_timestamped_backup(save_file: Path, backup_dir: Optional[Path] = None) -> Path:
     """
     Creates an automatic timestamped ZIP backup of the target save file.
