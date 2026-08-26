@@ -6,8 +6,8 @@
   "mode": "single-agent",
   "pinned_shas": {},
   "last_session": "memory/2026-08-26-backup-zip-fix.md",
-  "updated_at": "2026-08-26T06:55:00Z",
-  "version": "v1.1.1",
+  "updated_at": "2026-08-26T06:58:00Z",
+  "version": "v1.1.2",
   "test_command": [
     "python",
     "-m",

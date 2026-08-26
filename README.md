@@ -8,7 +8,7 @@
 
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Steam%20%7C%20Steam%20Deck-red?style=for-the-badge&logo=steam)](https://github.com/j0nnyDiGITAL/change-of-heart)
 [![Built With](https://img.shields.io/badge/Built%20With-100%25%20Vibecoded%20⚡-ff007f?style=for-the-badge)](https://github.com/j0nnyDiGITAL/change-of-heart)
-[![Tests](https://img.shields.io/badge/Tests-168%2F168%20Passing%20(100%25)-brightgreen?style=for-the-badge)](https://github.com/j0nnyDiGITAL/change-of-heart)
+[![Tests](https://img.shields.io/badge/Tests-178%2F178%20Passing%20(100%25)-brightgreen?style=for-the-badge)](https://github.com/j0nnyDiGITAL/change-of-heart)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
 [![Ko-fi](https://img.shields.io/badge/Ko--fi-Support%20j0nny%20DiGITAL-ff5e5b?style=for-the-badge&logo=kofi&logoColor=white)](https://ko-fi.com/j0nnydigital)
 
@@ -58,12 +58,6 @@ This project was built across intensive collaborative AI-assisted reverse-engine
 ### 🛡️ 2. "3rd Semester Rescue" & Story Guardrails
 * **1-Click 3rd Semester Unlock:** Missed the November 17 deadline? One click safely sets Maruki (Rank 9), Kasumi (Rank 5), and Akechi (Rank 8) to qualify for the Royal 3rd Semester without breaking story logic.
 * **Sequence-Breaking Protection:** Built-in validation prevents setting Kasumi past Rank 5 before January or Maruki after his departure deadline.
-
-### 🃏 3. All 23 Confidant Arcanas
-* Edit Confidant ranks (`0–10`) and underlying affinity points at `0x136A0`.
-* Human-first character dossiers with official Atlus character art and perk milestones.
-
-### ⚔️ 4. Velvet Room & 12-Slot Persona Deck
 * Customize Joker's full 12-slot Persona stock: Level (1–99), Core Stats (St, Ma, En, Ag, Lu), Special Traits, and 8 Custom Skill slots.
 * **1-Click God-Tier Builds:** Pre-configured tournament-legal movesets for *Yoshitsune (Hassou Tobi)*, *Izanagi-no-Okami Picaro (Myriad Truths)*, *Raoul (Phantom Show)*, *Alice (Die for Me!)*, and *Satanael*.
 * Real-time **Elemental Affinity Engine** calculating Phys, Gun, Fire, Ice, Elec, Wind, Psy, Nuke, Bless, Curse resistances based on equipped passive skills.
@@ -104,13 +98,15 @@ No Python or terminal required! Just grab the latest standalone release:
 
 ## 📋 Changelog
 
-### v1.1.1 (upcoming) — Security Audit & Robustness Fixes
-> External full-project audit: every finding fixed.
+### v1.1.2 — Save Backup ZIP Fix & Upload Safety
+- **🛡️ In-Memory Backup ZIP Creation:** Resolved bug report where saving custom or uploaded save files (`BROWSE...`) failed to create a `.zip` backup archive. The backend now creates an in-memory timestamped `.zip` containing the original baseline save and downloads it automatically to the user's browser alongside the re-signed save.
+- **🧪 178/178 Unit Tests Passing:** Added dedicated automated test suite (`tests/test_backup_fix.py`).
+- **🌿 Redesign Feature Branch:** Full-bleed P5R menu overhaul safely branched to `redesign/p5r-native-menu` for ongoing development.
 
-- **🔒 CSRF Hardening:** The local API now validates browser `Origin` headers (loopback only); foreign origins get `403`. Replaced wildcard `Access-Control-Allow-Origin: *` with validated reflection — malicious web pages can no longer drive the local save API while the editor runs.
-- **🧰 Fresh-Clone Reproducibility:** `scripts/roundtrip_harness.py` and the `lint:context` shim (`tools/lint_context.js`) are now tracked — the test suite and lint gate no longer break on a fresh clone.
-- **🕵️ Privacy:** Username/Steam-ID paths removed from tracked tests (glob-based Steam save discovery + `P5R_ORACLE_DIR` env override).
-- **📦 Dependencies:** Dropped unused `bottle`; added `psutil`. Root legacy `HANDOFF.md` archived.
+### v1.1.1 — UI-Liveness Watchdog & Bond Points Preservation
+- **🩺 Automated UI Watchdog:** Pings `/api/ui-heartbeat`; if Edge WebView2 fails to check in within 30s, falls back cleanly to the system browser.
+- **🛡️ CSRF Hardening:** The local API now validates browser `Origin` headers (loopback only); foreign origins get `403`.
+- **🔒 Bond-Points Surplus Preservation:** Rank updates preserve accrued bond point surplus across all confidants.
 
 ### v1.1.0 — Party Evolutions, Romance Toggle & Save Discovery Hotfix
 - **⚡ Persona Evolution Tiers (1–3)** selector for all party members (Base/Awakened/Royal forms).
