@@ -53,15 +53,18 @@ venv.bak/
 # Local scratch dirs & internal engineering (never ship to GitHub)
 diff/
 tools/
-scripts/
-dev/
 research/
+dev/
 scratch/
 scratch_audit/
 p5r-game-client/
 releases/
 memory/
 archive/
+
+# Temporary script scratches (while scripts/check-invariants.py stays tracked)
+scripts/scratch/
+tools/scratch/
 
 # OS files
 .DS_Store
@@ -91,3 +94,17 @@ design/reference/gud_index.md
 # unlazy session ledgers (local-only artifacts)
 .unlazy/
 GATES.md
+# Secrets, Credentials & Local Environment Files (Strict Firewall)
+.env*
+*.env
+*.pem
+*.key
+*secret*
+*credentials*
+*service_account*.json
+
+# Large Raw Binary Dumps & Traces
+*.bin
+*.dump
+*.raw
+*.trace

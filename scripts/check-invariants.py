@@ -31,15 +31,67 @@ BANNED_PATTERNS = [
     (r"PS4.*offset|KHSaveEditor", "PS4 offset reference (PC != PS4)"),
 ]
 
+CURRENT_SCHEMA_VERSION = 2
+
+def migrate_state_json(data: dict) -> dict:
+    """Auto-migrate older state.json schemas seamlessly."""
+    version = data.get("schema_version", 1)
+    if version < 2:
+        old_cmd = data.get("test_command")
+        if old_cmd:
+            data["check_commands"] = [old_cmd] if isinstance(old_cmd, list) else [[old_cmd]]
+        elif "check_commands" not in data:
+            data["check_commands"] = [["python", "-m", "unittest", "discover", "-s", "tests"]]
+        if "banned_patterns" not in data:
+            data["banned_patterns"] = [
+                [r"slotIdx\s*<\s*30", "Quick-array 30-slot cap (was silently dropping items)"],
+                [r"0x3530.*merge|merge.*0x3530", "Quick-array merge (never merge with master counts)"],
+                [r"PS4.*offset|KHSaveEditor", "PS4 offset reference (PC != PS4)"]
+            ]
+        if "human_gate" not in data:
+            data["human_gate"] = "none"
+        data["schema_version"] = 2
+    return data
+
+def sync_status_md(state_data: dict):
+    """Auto-generate and sync the header block in STATUS.md from state.json."""
+    status_file = PROJECT_ROOT / "STATUS.md"
+    if not status_file.exists():
+        return
+    text = status_file.read_text(encoding="utf-8")
+    header_block = (
+        "<!-- GENERATED_STATE_HEADER_START -->\n"
+        f"- **Phase:** {state_data.get('phase', 'unknown')}\n"
+        f"- **Gate:** {state_data.get('gate', 'unknown')}\n"
+        f"- **Mode:** {state_data.get('mode', 'single-agent')}\n"
+        f"- **Version:** {state_data.get('version', 'v1.0.0')}\n"
+        f"- **Updated:** {state_data.get('updated_at', 'unknown')}\n"
+        "<!-- GENERATED_STATE_HEADER_END -->"
+    )
+    if "<!-- GENERATED_STATE_HEADER_START -->" in text:
+        new_text = re.sub(
+            r"<!-- GENERATED_STATE_HEADER_START -->.*?<!-- GENERATED_STATE_HEADER_END -->",
+            header_block,
+            text,
+            flags=re.DOTALL
+        )
+    else:
+        new_text = re.sub(
+            r"## Current State\n- \*\*Phase:\*\*.*?\n- \*\*Gate:\*\*.*?\n- \*\*Mode:\*\*.*?\n",
+            f"## Current State\n{header_block}\n",
+            text
+        )
+    status_file.write_text(new_text, encoding="utf-8")
+    print("  [SYNC] STATUS.md header synchronized with state.json")
+
 
 def check_required_files():
     """Verify all required project files exist."""
-    errors = []
-    for f in REQUIRED_FILES:
-        path = PROJECT_ROOT / f
-        if not path.exists():
-            errors.append(f"MISSING: {f}")
-    return errors
+    required = ["AGENTS.md", "STATUS.md", "state.json", "MEMORY.md", "SAFETY.md", "GOALS.md", ".gitignore", "scripts/check-invariants.py"]
+    missing = [f for f in required if not (PROJECT_ROOT / f).exists()]
+    if missing:
+        return [f"MISSING: {f}" for f in missing]
+    return []
 
 
 def check_state_json_and_sync():
@@ -49,13 +101,17 @@ def check_state_json_and_sync():
     if not state_path.exists():
         return ["MISSING: state.json"], None
     try:
-        with open(state_path, encoding="utf-8") as f:
-            data = json.load(f)
-    except json.JSONDecodeError as e:
+        raw_data = json.loads(state_path.read_text(encoding="utf-8"))
+        data = migrate_state_json(raw_data)
+        if data != raw_data:
+            state_path.write_text(json.dumps(data, indent=2), encoding="utf-8")
+            print("  [MIGRATE] state.json upgraded to latest schema version")
+    except Exception as e:
         return [f"INVALID JSON: state.json — {e}"], None
 
+    required_fields = ["schema_version", "phase", "gate", "updated_at"]
     errors = []
-    for field in REQUIRED_STATE_FIELDS:
+    for field in required_fields:
         if field not in data:
             errors.append(f"MISSING FIELD: state.json.{field}")
 
@@ -65,7 +121,6 @@ def check_state_json_and_sync():
     # Verify Dual-State Synchronization between state.json and STATUS.md
     if status_path.exists():
         try:
-            import re
             status_text = status_path.read_text(encoding="utf-8")
             phase_m = re.search(r"\*\*Phase:\*\*\s*([^\n\r]+)", status_text)
             gate_m = re.search(r"\*\*Gate:\*\*\s*([^\n\r]+)", status_text)
@@ -81,36 +136,36 @@ def check_state_json_and_sync():
         except Exception as e:
             errors.append(f"STATUS.md parse error: {e}")
 
-    return errors, data.get("test_command")
+    return errors, data
 
 
-def check_test_suite(test_cmd=None):
-    """Run the test suite dynamically from state.json and report pass/fail."""
-    if not test_cmd:
-        test_cmd = [sys.executable, "-m", "unittest", "discover", "-s", "tests"]
-    try:
-        r = subprocess.run(
-            test_cmd,
-            capture_output=True,
-            text=True,
-            encoding="utf-8",
-            errors="replace",
-            cwd=str(PROJECT_ROOT),
-            timeout=120
-        )
-        if r.returncode != 0:
-            lines = r.stdout.strip().split("\n")
-            last_line = lines[-1] if lines else "unknown"
-            return [f"TESTS FAILED (exit {r.returncode}): {last_line}"]
-        return []
-    except subprocess.TimeoutExpired:
-        return ["TESTS TIMEOUT: suite exceeded 120s"]
-    except Exception as e:
-        return [f"TESTS ERROR: {e}"]
+def check_commands_gate(data: dict):
+    """Run all check_commands from state.json."""
+    commands = data.get("check_commands", [])
+    if not commands:
+        commands = [["python", "-m", "unittest", "discover", "-s", "tests"]]
+    for cmd in commands:
+        cmd_list = cmd if isinstance(cmd, list) else [cmd]
+        print(f"  [RUN] {' '.join(cmd_list)}")
+        try:
+            res = subprocess.run(cmd_list, cwd=PROJECT_ROOT, capture_output=True, text=True)
+            if res.returncode != 0:
+                print(f"  [FAIL] Command failed (exit {res.returncode}): {' '.join(cmd_list)}")
+                if res.stdout:
+                    print("--- stdout ---\n" + res.stdout[-800:])
+                if res.stderr:
+                    print("--- stderr ---\n" + res.stderr[-800:])
+                return False
+        except Exception as e:
+            print(f"  [FAIL] Execution error on {' '.join(cmd_list)}: {e}")
+            return False
+    print("  [OK] All check & test commands passed")
+    return True
 
 
-def check_git_diff_banned_patterns():
+def check_git_diff_banned_patterns(data: dict):
     """Scan recent git diff for banned patterns in source code additions."""
+    banned = data.get("banned_patterns", BANNED_PATTERNS)
     try:
         result = subprocess.run(
             ["git", "diff", "HEAD", "--unified=0"],
@@ -122,33 +177,40 @@ def check_git_diff_banned_patterns():
             timeout=10,
         )
         if result.returncode != 0:
-            return []  # git diff failed, skip
+            return True
         diff_text = result.stdout
-        # Only inspect lines added/modified in source code (excluding test files and check-invariants.py)
         filtered_lines = []
         current_file = ""
         for line in diff_text.splitlines():
             if line.startswith("+++ b/"):
                 current_file = line[6:]
             elif line.startswith("+") and not line.startswith("+++"):
-                if "check-invariants.py" not in current_file and not current_file.startswith("tests/"):
+                if "check-invariants.py" not in current_file and not current_file.startswith("tests/") and "state.json" not in current_file:
                     filtered_lines.append(line[1:])
 
         scan_target = "\n".join(filtered_lines)
-        errors = []
-        for pattern, description in BANNED_PATTERNS:
+        for pattern, description in banned:
             if re.search(pattern, scan_target, re.IGNORECASE):
-                errors.append(f"BANNED PATTERN in source diff: {description}")
-        return errors
+                print(f"  [FAIL] Banned pattern detected: {description} ('{pattern}')")
+                return False
+        print("  [OK] No banned patterns in recent diff")
+        return True
     except Exception:
-        return []  # git not available, skip
+        return True
 
 
 def main():
+    if "--sync" in sys.argv:
+        state_file = PROJECT_ROOT / "state.json"
+        if state_file.exists():
+            data = migrate_state_json(json.loads(state_file.read_text(encoding="utf-8")))
+            sync_status_md(data)
+            sys.exit(0)
+
     quick = "--quick" in sys.argv
     all_errors = []
 
-    print("=== P5R Invariant Check ===")
+    print("=== AGY-OS Invariant Verification Gate ===")
 
     # 1. Required files
     print("\n[1/4] Required files...")
@@ -162,39 +224,31 @@ def main():
 
     # 2. state.json validity & Dual-State Sync
     print("\n[2/4] state.json & STATUS.md sync...")
-    errors, test_cmd = check_state_json_and_sync()
-    all_errors.extend(errors)
-    if errors:
-        for e in errors:
+    s_errors, data = check_state_json_and_sync()
+    all_errors.extend(s_errors)
+    if s_errors:
+        for e in s_errors:
             print(f"  [FAIL] {e}")
     else:
         print("  [OK] state.json valid and in sync with STATUS.md")
 
-    # 3. Test suite
-    print("\n[3/4] Test suite...")
-    errors = check_test_suite(test_cmd)
-    all_errors.extend(errors)
-    if errors:
-        for e in errors:
-            print(f"  [FAIL] {e}")
-    else:
-        print("  [OK] All tests pass")
+    # 3. Test & check commands gate
+    print("\n[3/4] Test & check commands gate...")
+    c_ok = check_commands_gate(data) if data else False
+    if not c_ok:
+        all_errors.append("Test commands failed")
 
     # 4. Git diff banned patterns
     if not quick:
         print("\n[4/4] Git diff banned patterns...")
-        errors = check_git_diff_banned_patterns()
-        all_errors.extend(errors)
-        if errors:
-            for e in errors:
-                print(f"  [FAIL] {e}")
-        else:
-            print("  [OK] No banned patterns in recent diff")
+        b_ok = check_git_diff_banned_patterns(data) if data else True
+        if not b_ok:
+            all_errors.append("Banned patterns detected")
     else:
         print("\n[4/4] Git diff scan — SKIPPED (--quick)")
 
     # Summary
-    print(f"\n{'='*40}")
+    print(f"\n{'='*42}")
     if all_errors:
         print(f"FAILED: {len(all_errors)} violation(s)")
         sys.exit(1)
