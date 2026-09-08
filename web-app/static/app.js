@@ -1462,6 +1462,142 @@ function selectConfidantArcana(arcana) {
   renderActiveConfidantSpotlight(arcana);
 }
 
+function getConfidantEventReadyPoints(arcana, rank) {
+  // Rank button clicks intentionally stage a high affinity value so the
+  // next natural hangout/event can trigger after saving. Keep this explicit
+  // instead of hiding the 99 sentinel inside stepConfidantRank().
+  if (!arcana || rank <= 0 || rank >= 10) return 0;
+  return 99;
+}
+
+function getConfidantAffinityState(arcana, info) {
+  const rank = Math.max(0, Math.min(10, parseInt(info?.rank || 0, 10)));
+  const points = Math.max(0, parseInt(info?.points || 0, 10));
+  const thresholds = DB.point_thresholds?.[arcana] || {};
+  const nextRank = rank < 10 ? rank + 1 : null;
+  const nextThreshold = nextRank ? thresholds[nextRank] : null;
+  const hasPointGate = nextThreshold !== null && nextThreshold !== undefined;
+  const eventReady = rank > 0 && rank < 10 && hasPointGate && points >= nextThreshold;
+  const missing = hasPointGate ? Math.max(0, nextThreshold - points) : null;
+  const pct = hasPointGate && nextThreshold > 0
+    ? Math.max(0, Math.min(100, Math.round((points / nextThreshold) * 100)))
+    : (eventReady || nextThreshold === 0 ? 100 : 0);
+
+  return { rank, points, nextRank, nextThreshold, hasPointGate, eventReady, missing, pct };
+}
+
+function renderConfidantAffinityMeter(arcana, info) {
+  const state = getConfidantAffinityState(arcana, info);
+  const { rank, points, nextRank, nextThreshold, hasPointGate, eventReady, missing, pct } = state;
+  const inputId = `affinityPointsInput_${arcana.replace(/\W/g, "_")}`;
+  const inputHtml = `
+    <label class="affinity-edit-box" for="${inputId}">
+      <span>CURRENT</span>
+      <input
+        id="${inputId}"
+        class="affinity-points-input"
+        type="number"
+        min="0"
+        max="65535"
+        step="1"
+        value="${points}"
+        onchange="setConfidantAffinityPoints('${arcana}', this.value)"
+        onkeydown="if(event.key === 'Enter') this.blur();"
+      >
+      <span>PTS</span>
+    </label>
+  `;
+
+  if (rank >= 10) {
+    return `
+      <div class="affinity-meter-card maxed">
+        <div class="affinity-meter-head">
+          <span>AFFINITY POINTS</span>
+          <span class="affinity-state-badge maxed">BOND MAXED</span>
+        </div>
+        <div class="affinity-meter-main">
+          ${inputHtml}
+          <div class="affinity-copy">Rank 10 has no next event gate, but the stored point value can still be edited if you want exact save parity.</div>
+        </div>
+        <div class="affinity-quick-actions">
+          <button class="affinity-mini-btn" onclick="stepConfidantAffinityPoints('${arcana}', -1)">-1</button>
+          <button class="affinity-mini-btn" onclick="stepConfidantAffinityPoints('${arcana}', 1)">+1</button>
+          <button class="affinity-mini-btn white" onclick="setConfidantAffinityPoints('${arcana}', 99)">SET 99</button>
+        </div>
+      </div>
+    `;
+  }
+
+  if (!hasPointGate) {
+    return `
+      <div class="affinity-meter-card story-locked">
+        <div class="affinity-meter-head">
+          <span>AFFINITY POINTS</span>
+          <span class="affinity-state-badge story">STORY / SPECIAL</span>
+        </div>
+        <div class="affinity-meter-main">
+          ${inputHtml}
+          <div class="affinity-copy">No reliable point gate is defined for this Arcana/rank. You can still write the stored points manually.</div>
+        </div>
+        <div class="affinity-quick-actions">
+          <button class="affinity-mini-btn" onclick="stepConfidantAffinityPoints('${arcana}', -1)">-1</button>
+          <button class="affinity-mini-btn" onclick="stepConfidantAffinityPoints('${arcana}', 1)">+1</button>
+          <button class="affinity-mini-btn white" onclick="setConfidantAffinityPoints('${arcana}', 99)">SET 99</button>
+        </div>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="affinity-meter-card ${eventReady ? 'ready' : 'building'}">
+      <div class="affinity-meter-head">
+        <span>AFFINITY POINTS</span>
+        <span class="affinity-state-badge ${eventReady ? 'ready' : 'building'}">${eventReady ? 'EVENT READY' : `${missing} PTS TO EVENT`}</span>
+      </div>
+      <div class="affinity-meter-main">
+        ${inputHtml}
+        <div class="affinity-copy">
+          ${eventReady
+            ? `Next hangout should trigger the Rank ${nextRank} event. Saving after rank-click staging writes these points.`
+            : `Needs ${nextThreshold} affinity points for the Rank ${nextRank} event trigger.`}
+        </div>
+      </div>
+      <div class="affinity-track" title="${points} / ${nextThreshold} points toward Rank ${nextRank}">
+        <div class="affinity-fill" style="width:${pct}%;"></div>
+        <div class="affinity-threshold-mark"></div>
+      </div>
+      <div class="affinity-meter-foot">
+        <span><strong>${points}</strong> / ${nextThreshold} pts</span>
+        <span>Current Rank ${rank} → Event Rank ${nextRank}</span>
+      </div>
+      <div class="affinity-quick-actions">
+        <button class="affinity-mini-btn" onclick="stepConfidantAffinityPoints('${arcana}', -10)">-10</button>
+        <button class="affinity-mini-btn" onclick="stepConfidantAffinityPoints('${arcana}', -1)">-1</button>
+        <button class="affinity-mini-btn" onclick="stepConfidantAffinityPoints('${arcana}', 1)">+1</button>
+        <button class="affinity-mini-btn" onclick="stepConfidantAffinityPoints('${arcana}', 10)">+10</button>
+        <button class="affinity-mini-btn ready" onclick="setConfidantAffinityPoints('${arcana}', ${nextThreshold})">EVENT READY</button>
+        <button class="affinity-mini-btn white" onclick="setConfidantAffinityPoints('${arcana}', 99)">SET 99</button>
+      </div>
+    </div>
+  `;
+}
+
+function setConfidantAffinityPoints(arcana, value) {
+  if (!CURRENT_SAVE?.confidants?.[arcana]) return;
+  const parsed = parseInt(value, 10);
+  const nextPoints = Math.max(0, Math.min(65535, Number.isFinite(parsed) ? parsed : 0));
+  CURRENT_SAVE.confidants[arcana].points = nextPoints;
+  renderActiveConfidantSpotlight(arcana);
+  renderConfidants();
+  const state = getConfidantAffinityState(arcana, CURRENT_SAVE.confidants[arcana]);
+  setStatus(`★ ${arcana} affinity points set to ${nextPoints}${state.eventReady ? ` — Rank ${state.nextRank} event ready.` : "."}`);
+}
+
+function stepConfidantAffinityPoints(arcana, delta) {
+  const cur = parseInt(CURRENT_SAVE?.confidants?.[arcana]?.points || 0, 10);
+  setConfidantAffinityPoints(arcana, cur + delta);
+}
+
 function renderActiveConfidantSpotlight(arcana) {
   const spotlight = document.getElementById("confidantHeroSpotlight");
   if (!spotlight || !CURRENT_SAVE?.confidants?.[arcana]) return;
@@ -1513,6 +1649,7 @@ function renderActiveConfidantSpotlight(arcana) {
       <div>${warning.badge}</div>
     </div>
   ` : "";
+  const affinityMeterHtml = renderConfidantAffinityMeter(arcana, info);
 
   spotlight.innerHTML = `
     <!-- Top Hero Banner with Huge Slanted Portrait & Nameplate -->
@@ -1568,6 +1705,8 @@ function renderActiveConfidantSpotlight(arcana) {
         </div>
       ` : ''}
     </div>
+
+    ${affinityMeterHtml}
 
     ${warningHtml}
 
@@ -1632,8 +1771,11 @@ function stepConfidantRank(arcana, delta) {
   const cur = CURRENT_SAVE.confidants[arcana].rank || 0;
   const newRank = Math.max(0, Math.min(10, cur + delta));
   CURRENT_SAVE.confidants[arcana].rank = newRank;
-  CURRENT_SAVE.confidants[arcana].points = 99;
+  const stagedPoints = getConfidantEventReadyPoints(arcana, newRank);
+  CURRENT_SAVE.confidants[arcana].points = stagedPoints;
   renderConfidants();
+  const state = getConfidantAffinityState(arcana, CURRENT_SAVE.confidants[arcana]);
+  setStatus(`★ ${arcana} Rank ${newRank} staged with ${state.points} affinity points${state.eventReady ? ` — Rank ${state.nextRank} event ready.` : "."}`);
 }
 
 function getConfidantSafetyWarning(arcana, newRank) {

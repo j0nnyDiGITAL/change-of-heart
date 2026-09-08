@@ -613,8 +613,15 @@ class P5RWebHandler(SimpleHTTPRequestHandler):
                     if cname in CONFIDANT_ARCANA_MAP:
                         arc_id = CONFIDANT_ARCANA_MAP[cname]
                         rank = int(cdata.get("rank", 0)) if isinstance(cdata, dict) else int(cdata)
+                        points = int(cdata["points"]) if isinstance(cdata, dict) and "points" in cdata else None
                         romance = bool(cdata.get("romance", False)) if isinstance(cdata, dict) and "romance" in cdata else None
-                        CURRENT_EDITOR.set_confidant_rank(arc_id, rank, romance=romance, auto_unlock=True)
+                        CURRENT_EDITOR.set_confidant_rank(
+                            arc_id,
+                            rank,
+                            points=points,
+                            romance=romance,
+                            auto_unlock=True,
+                        )
 
                 # 5. Apply Party & Persona
                 party_in = data.get("party", [])

@@ -807,6 +807,245 @@ body {
   text-shadow: 2px 2px 0 var(--p5-crimson);
 }
 
+/* Affinity Point Event Meter */
+.affinity-meter-card {
+  background: linear-gradient(135deg, #161622 0%, #09090E 100%);
+  border: 3px solid #000;
+  border-left: 7px solid var(--p5-yellow);
+  padding: 12px 16px 14px;
+  margin: -6px 0 18px 10px;
+  box-shadow: 5px 5px 0 #000;
+  position: relative;
+  transform: skew(-3deg);
+  overflow: hidden;
+}
+
+.affinity-meter-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(135deg, rgba(255,255,255,0.035) 0 5px, transparent 5px 12px);
+  pointer-events: none;
+}
+
+.affinity-meter-card.ready {
+  border-left-color: var(--p5-white);
+  box-shadow: 5px 5px 0 #000, 8px 8px 0 var(--p5-crimson);
+}
+
+.affinity-meter-card.maxed {
+  border-left-color: var(--p5-white);
+}
+
+.affinity-meter-card.story-locked {
+  border-left-color: var(--p5-cyan);
+}
+
+.affinity-meter-head,
+.affinity-meter-main,
+.affinity-meter-foot,
+.affinity-track {
+  transform: skew(3deg);
+  position: relative;
+  z-index: 1;
+}
+
+.affinity-meter-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+  font-family: var(--font-p5);
+  color: var(--p5-white);
+  font-size: 17px;
+  letter-spacing: 1.5px;
+  text-shadow: 2px 2px 0 #000;
+}
+
+.affinity-state-badge {
+  background: #000;
+  border: 2px solid #000;
+  color: var(--p5-muted);
+  padding: 3px 9px;
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  box-shadow: 2px 2px 0 #000;
+}
+
+.affinity-state-badge.ready {
+  background: var(--p5-yellow);
+  color: #000;
+}
+
+.affinity-state-badge.building {
+  background: #241300;
+  color: #FFB84D;
+  border-color: #FF9F1C;
+}
+
+.affinity-state-badge.maxed {
+  background: var(--p5-white);
+  color: #000;
+}
+
+.affinity-state-badge.story {
+  background: #001A22;
+  color: var(--p5-cyan);
+  border-color: var(--p5-cyan);
+}
+
+.affinity-meter-main {
+  display: grid;
+  grid-template-columns: 118px 1fr;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.affinity-current-points {
+  background: #000;
+  border: 2px solid var(--p5-white);
+  color: var(--p5-white);
+  font-family: var(--font-p5);
+  font-size: 34px;
+  line-height: 1;
+  text-align: center;
+  padding: 7px 8px 4px;
+  box-shadow: 3px 3px 0 var(--p5-crimson);
+}
+
+.affinity-edit-box {
+  background: #000;
+  border: 2px solid var(--p5-white);
+  box-shadow: 3px 3px 0 var(--p5-crimson);
+  display: grid;
+  grid-template-rows: auto auto auto;
+  justify-items: center;
+  gap: 2px;
+  padding: 5px 8px;
+  cursor: text;
+}
+
+.affinity-edit-box span {
+  color: var(--p5-muted);
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+.affinity-points-input {
+  width: 92px;
+  background: transparent;
+  border: 0;
+  color: var(--p5-white);
+  font-family: var(--font-p5);
+  font-size: 34px;
+  line-height: 1;
+  text-align: center;
+  outline: none;
+  text-shadow: 2px 2px 0 var(--p5-crimson);
+  user-select: text;
+}
+
+.affinity-points-input:focus {
+  color: var(--p5-yellow);
+}
+
+.affinity-points-input::-webkit-inner-spin-button,
+.affinity-points-input::-webkit-outer-spin-button {
+  opacity: 1;
+}
+
+.affinity-copy {
+  color: #E0E0EE;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.affinity-track {
+  height: 16px;
+  background: #000;
+  border: 2px solid #000;
+  box-shadow: inset 0 0 0 2px #191925, 3px 3px 0 #000;
+  overflow: hidden;
+}
+
+.affinity-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--p5-crimson), var(--p5-yellow), var(--p5-white));
+  box-shadow: 0 0 14px rgba(255, 230, 0, 0.45);
+  transition: width 0.2s var(--ease-p5-snap);
+}
+
+.affinity-threshold-mark {
+  position: absolute;
+  top: -3px;
+  right: 0;
+  width: 4px;
+  height: 22px;
+  background: var(--p5-white);
+  box-shadow: -2px 0 0 #000;
+}
+
+.affinity-meter-foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--p5-muted);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-top: 7px;
+}
+
+.affinity-meter-foot strong {
+  color: var(--p5-white);
+}
+
+.affinity-quick-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+  transform: skew(3deg);
+  position: relative;
+  z-index: 1;
+}
+
+.affinity-mini-btn {
+  background: #14141E;
+  color: var(--p5-white);
+  border: 2px solid #000;
+  box-shadow: 2px 2px 0 #000;
+  padding: 4px 8px;
+  font-size: 10px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: all 0.12s var(--ease-p5-snap);
+}
+
+.affinity-mini-btn:hover {
+  background: var(--p5-crimson);
+  color: var(--p5-white);
+  transform: translateY(-2px);
+}
+
+.affinity-mini-btn.ready {
+  background: var(--p5-yellow);
+  color: #000;
+}
+
+.affinity-mini-btn.white {
+  background: var(--p5-white);
+  color: #000;
+}
+
 /* Warning & Consequence Boxes */
 .spotlight-warning-box {
   background: rgba(255, 159, 28, 0.2);
