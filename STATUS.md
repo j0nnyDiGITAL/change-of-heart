@@ -1,7 +1,7 @@
 # STATUS.md — P5R Save Editor (Change of Heart)
 
 > Human-readable current state. Synced from state.json on every exit.
-> Updated: 2026-08-26 02:58 EDT
+> Updated: 2026-09-22 00:42 EDT
 
 ## Current State
 <!-- GENERATED_STATE_HEADER_START -->
@@ -9,10 +9,11 @@
 - **Gate:** ready
 - **Mode:** single-agent
 - **Version:** v1.1.2
-- **Updated:** 2026-09-02T17:07:00Z
+- **Updated:** 2026-09-22T04:40:00Z
 <!-- GENERATED_STATE_HEADER_END -->
 
 ## Last Completed
+- 2026-09-22: Resolved Reddit community bug reports (`u/dotsacrum`, `u/Competitive-Hand5758`): filtered Atlus table RESERVE/blank placeholder items from inventory read/write, added Satanael NG+ ONLY badge and guidance in compendium, verified confidant romance bit 0x02 flag clearing with in-game cutscene skip warning, verified Yen vs EXP offset isolation, and optimized category table reading with in-memory caching to pass 100ms SLA. 182/182 tests green.
 - 2026-08-26: Fixed save backup ZIP creation bug for uploaded/custom save files (`create_memory_backup_zip` + auto-download on save). Preserved redesign on `redesign/p5r-native-menu` branch and restored stable v1.1.1 baseline to `main`. 178/178 tests green.
 - 2026-08-24 (later): FIXED bond-points wipe bug (zamasu2020, r/Persona5Royale) — social-stat edits were resetting ALL confidants' accumulated bond points to rank thresholds via the full-confidant re-save loop; same-rank rewrites now preserve exact points, rank-ups preserve carryover (max logic), social stats same treatment. 4 regression tests (174/174). EXE rebuilt.
 - 2026-08-24 (later): UI Atlus-fidelity pass R1 — rainbow progress → flat yellow angular, 27 green literals → P5 yellow, hex IDs removed from persona cards, star ladder → horizontal yellow meter, sidebar emoji → flat SVG icons, subtitle weight demoted. 10/10 captures re-baselined, 170/170 tests. R2 candidates in memory/2026-08-24-ui-atlas-pass.md.

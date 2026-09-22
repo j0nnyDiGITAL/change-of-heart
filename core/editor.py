@@ -5,6 +5,7 @@ Stat De-Bloater / Normalizer, SteamID Re-Binder, and Compendium / Item Unlockers
 """
 
 import os
+import re
 import struct
 from pathlib import Path
 from typing import Dict, Any, Optional, List, Tuple
@@ -1359,41 +1360,72 @@ class SaveEditor:
         0xA000: ("Outfits.txt", "Outfit"),
     }
 
+    _CATEGORY_TABLE_CACHE: Dict[str, Dict[int, Tuple[str, str]]] = {}
+
+    def _get_category_table(self, fname: str, prefix: int, cat: str) -> Dict[int, Tuple[str, str]]:
+        if fname in SaveEditor._CATEGORY_TABLE_CACHE:
+            return SaveEditor._CATEGORY_TABLE_CACHE[fname]
+        p_dir = Path(__file__).parent.parent / "data" / fname
+        table: Dict[int, Tuple[str, str]] = {}
+        if p_dir.exists():
+            char_map = {
+                "主人公": "Joker", "坂本龙司": "Ryuji", "摩尔加纳": "Morgana",
+                "高卷杏": "Ann", "喜多川佑介": "Yusuke", "新岛真": "Makoto",
+                "奥村春": "Haru", "佐仓双叶": "Futaba", "明智吾郎": "Akechi",
+                "芳泽霞": "Kasumi", "ALL": "All"
+            }
+            try:
+                with open(p_dir, encoding="utf-8", errors="replace") as f:
+                    for line_idx, line in enumerate(f):
+                        parts = line.strip().split("\t")
+                        name = parts[3].strip() if len(parts) >= 4 else parts[0].strip()
+                        if prefix == 0x5000 and len(parts) >= 5 and parts[4].strip() and parts[4].strip() != "-":
+                            role = parts[4].strip()
+                            eng_role = char_map.get(role, role)
+                            if eng_role:
+                                name = f"{name} ({eng_role})"
+                        table[line_idx] = (name, cat)
+            except Exception:
+                pass
+        SaveEditor._CATEGORY_TABLE_CACHE[fname] = table
+        return table
+
     def _resolve_item_info(self, item_id: int) -> Tuple[str, str]:
         prefix = item_id & 0xF000
         idx = item_id & 0x0FFF
         info = self.CATEGORY_MAP.get(prefix)
         if info:
             fname, cat = info
-            table = self._load_table(fname)
-            # Check row index in table
-            if fname in SaveEditor._TABLE_CACHE:
-                t = SaveEditor._TABLE_CACHE[fname]
-                if idx in t:
-                    return t[idx], cat
-            p_dir = Path(__file__).parent.parent / "data" / fname
-            if p_dir.exists():
-                try:
-                    with open(p_dir, encoding="utf-8", errors="replace") as f:
-                        for line_idx, line in enumerate(f):
-                            if line_idx == idx:
-                                parts = line.strip().split("\t")
-                                name = parts[3].strip() if len(parts) >= 4 else parts[0].strip()
-                                if prefix == 0x5000 and len(parts) >= 5 and parts[4].strip() and parts[4].strip() != "-":
-                                    role = parts[4].strip()
-                                    char_map = {
-                                        "主人公": "Joker", "坂本龙司": "Ryuji", "摩尔加纳": "Morgana",
-                                        "高卷杏": "Ann", "喜多川佑介": "Yusuke", "新岛真": "Makoto",
-                                        "奥村春": "Haru", "佐仓双叶": "Futaba", "明智吾郎": "Akechi",
-                                        "芳泽霞": "Kasumi", "ALL": "All"
-                                    }
-                                    eng_role = char_map.get(role, role)
-                                    if eng_role:
-                                        name = f"{name} ({eng_role})"
-                                return name, cat
-                except Exception:
-                    pass
+            tbl = self._get_category_table(fname, prefix, cat)
+            if idx in tbl:
+                return tbl[idx]
         return f"Item 0x{item_id:04X}", "Consumable"
+
+    @staticmethod
+    def is_placeholder_item(name: str) -> bool:
+        """Check if an item name represents an unused Atlus table placeholder.
+        
+        Authentic in-game items like 'Reserve Ammo' or 'Blank Card' are preserved.
+        Only pure placeholder tokens ('RESERVE', 'BLANK', 'リザーブ', '使用禁止', 'Unused',
+        '0x...', 'Item 0x...') are identified as placeholders.
+        """
+        if not name:
+            return True
+        s = name.strip()
+        # Exact placeholder names
+        if s.upper() in ("RESERVE", "BLANK", "----------", "使用禁止", "UNUSED", "UNUSED ITEM", "空栏"):
+            return True
+        if "リザーブ" in s:
+            return True
+        if s.startswith("Item 0x") or s.startswith("item_"):
+            return True
+        if re.match(r"^0x[0-9A-Fa-f]+$", s):
+            return True
+        # Check name before any parenthetical character tag (e.g. "RESERVE (Joker)")
+        base_name = s.split(" (")[0].strip()
+        if base_name.upper() in ("RESERVE", "BLANK", "使用禁止", "UNUSED"):
+            return True
+        return False
 
     TOOL_OFFSET_BY_DB_ID = {
         0x6001: 0x2547,  # Vanish Ball
@@ -1576,7 +1608,9 @@ class SaveEditor:
                 # canonical is primary; clamp 0..99 on read
                 clamped = max(0, min(int(qty), 99))
                 if clamped > 0:
-                    out["stacks"][iid] = clamped
+                    name, _ = self._resolve_item_info(iid)
+                    if not self.is_placeholder_item(name):
+                        out["stacks"][iid] = clamped
 
         # Unique Gear: owned-flag bytes (Melee 0x1000, Ranged 0x7000, Outfits 0xA000)
         probe_gear_ids: List[int] = []
@@ -1627,6 +1661,9 @@ class SaveEditor:
             is_owned = flag == 1
             # Only surface owned gear (S1: flag 0x01 -> Owned, 0x00 -> not)
             # but record the bool for the caller.
+            name, _ = self._resolve_item_info(iid)
+            if self.is_placeholder_item(name):
+                continue
             if is_owned:
                 out["owned_gear"][iid] = True
             else:
@@ -1696,13 +1733,7 @@ class SaveEditor:
             if qty <= 0:
                 continue
             name, cat = self._resolve_item_info(iid)
-            if not name or name in ["EN_NAME", "BLANK", "RESERVE", "----------",
-                                     "使用禁止", "Unused", "unused", "Unused Item"] \
-               or "RESERVE" in name or "BLANK" in name \
-               or name.startswith("Item 0x") or name.startswith("item_") \
-               or name.lower().startswith("unused"):
-                continue
-            if name.startswith("0x"):
+            if self.is_placeholder_item(name):
                 continue
             out.append({"slot": len(out), "item_id": iid, "name": name,
                         "category": cat, "quantity": qty, "active": True})
@@ -1711,13 +1742,7 @@ class SaveEditor:
             if not owned:
                 continue
             name, cat = self._resolve_item_info(iid)
-            if not name or name in ["EN_NAME", "BLANK", "RESERVE", "----------",
-                                     "使用禁止", "Unused", "unused", "Unused Item"] \
-               or "RESERVE" in name or "BLANK" in name \
-               or name.startswith("Item 0x") or name.startswith("item_") \
-               or name.lower().startswith("unused"):
-                continue
-            if name.startswith("0x"):
+            if self.is_placeholder_item(name):
                 continue
             out.append({"slot": len(out), "item_id": iid, "name": name,
                         "category": cat, "quantity": 1, "active": True,
@@ -1733,6 +1758,10 @@ class SaveEditor:
         """
         if not self.is_real_save():
             return {"status": "noop", "message": "PC payload required"}
+        name, _ = self._resolve_item_info(item_id)
+        if self.is_placeholder_item(name):
+            return {"status": "unsupported",
+                    "message": f"Item 0x{item_id:04X} ({name}) is a placeholder/RESERVE entry — refusing."}
         prefix = item_id & 0xF000
         # Gear -> owned flag path (clears on 0, sets on >0)
         if prefix in (0x1000, 0x7000, 0xA000):

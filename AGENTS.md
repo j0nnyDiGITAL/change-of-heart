@@ -18,7 +18,7 @@
 
 ## Startup Protocol (in order)
 1. **Loop-First Execution (Mandatory, HARNESS-AGNOSTIC):** Resuming from `handoff.md` or cold, the resume contract is `GOALS.md` → **CURRENT POSITION** → "do this next". This loop works for ANY agent (Pi, Claude Code, Codex, OpenCode, fresh session) — the contract is plain files, no harness mechanism. `handoff.md` is a *stable trigger only* — do not trust its detail to be current. Read `GOALS.md`, act on its CURRENT POSITION, and treat `state.json`/`STATUS.md` as synced FROM `GOALS.md` (never authoritative on their own — they lag the loop). Note: `.pi/` is Pi-specific — non-Pi harnesses IGNORE it and read root `handoff.md` + `GOALS.md`.
-2. If cold and `GOALS.md` is missing/empty, read `state.json` and recent decisions in `MEMORY.md`.
+2. **Cold Start Ground Truth Verification:** If cold and `GOALS.md` is missing/empty, run host & toolchain calibration: `python scripts/check-invariants.py --probe`. Verify all anchored ground truths in `PROJECT_BOOTSTRAP.md` before assuming any tool or compiler exists.
 3. Run `git status -s` (protect context window from unbounded output).
 4. Run invariant check & test gates: `python scripts/check-invariants.py`.
 
@@ -31,6 +31,11 @@
 6. Verify working tree cleanliness (`git status -s` shows no stray scratch files).
 
 ## Architectural Invariants
+0. **Phase 0 Ground Truth Calibration (The Bootstrap Law):** NEVER write or modify application code (`src/` or `core/`) based on theoretical assumptions or hallucinated tool syntax. On any new project, new phase, or unknown toolchain:
+   - **Step 1 (Host Probe):** Run `python scripts/check-invariants.py --probe` to verify compilers, interpreters, and paths.
+   - **Step 2 (Anchor Probe):** Verify reference artifacts (CPK headers, golden save backups, master item tables) via `hashlib.sha256()` or deterministic binary probe. Pin verified hashes in `data/` or `PROJECT_BOOTSTRAP.md`.
+   - **Step 3 (Smoke Proof):** Compile/run a minimal 1-line hello/null executable or syntax check (`node --check`, `python -m PyInstaller --version`) through the exact toolchain before building complex modules.
+   - **Step 4 (Ledger Registration):** Record all verified commands and machine quirks in `PROJECT_BOOTSTRAP.md`. Code synthesis begins ONLY after calibration passes.
 1. **Save/State Integrity:** Write primary + mirror (+0x18510), read must warn on mismatch (`test_mirror_sync.py`).
 2. **Ground Truth Verification:** Never guess data structures from web assumptions; verify via real diffs (`tools/diff_mapper.py`).
 3. **3-Phase Execution Cadence (Self-Driving & Anti-Analysis Paralysis):**

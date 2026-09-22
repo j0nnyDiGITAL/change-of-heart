@@ -6,12 +6,12 @@
   "mode": "single-agent",
   "version": "v1.1.2",
   "pinned_shas": {},
-  "last_session": "memory/2026-08-26-backup-zip-fix.md",
-  "updated_at": "2026-09-02T17:07:00Z",
+  "last_session": "memory/2026-09-22-reddit-bugfixes.md",
+  "updated_at": "2026-09-22T04:40:00Z",
   "check_commands": [
     ["python", "-m", "unittest", "discover", "-s", "tests"]
   ],
-  "test_count": 178,
+  "test_count": 182,
   "banned_patterns": [
     ["slotIdx\\s*<\\s*30", "Quick-array 30-slot cap (was silently dropping items)"],
     ["0x3530.*merge|merge.*0x3530", "Quick-array merge (never merge with master counts)"],

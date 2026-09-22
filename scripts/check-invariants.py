@@ -87,7 +87,7 @@ def sync_status_md(state_data: dict):
 
 def check_required_files():
     """Verify all required project files exist."""
-    required = ["AGENTS.md", "STATUS.md", "state.json", "MEMORY.md", "SAFETY.md", "GOALS.md", ".gitignore", "scripts/check-invariants.py"]
+    required = ["AGENTS.md", "PROJECT_BOOTSTRAP.md", "STATUS.md", "state.json", "MEMORY.md", "SAFETY.md", "GOALS.md", ".gitignore", "scripts/check-invariants.py"]
     missing = [f for f in required if not (PROJECT_ROOT / f).exists()]
     if missing:
         return [f"MISSING: {f}" for f in missing]
@@ -199,7 +199,43 @@ def check_git_diff_banned_patterns(data: dict):
         return True
 
 
+def run_probe():
+    """Ultra-fast (<100ms) host and ground-truth calibration probe for cold agent start."""
+    print("=== AGY-OS Host & Ground Truth Probe (p5r-save-editor) ===")
+    bootstrap_file = PROJECT_ROOT / "PROJECT_BOOTSTRAP.md"
+    if not bootstrap_file.exists():
+        print("  [WARN] PROJECT_BOOTSTRAP.md not found. Create it to pin ground truth.")
+    else:
+        print("  [OK] PROJECT_BOOTSTRAP.md present")
+
+    # Probe Python runtime
+    print(f"  [PROBE] Python: {sys.version.split()[0]} ({sys.executable})")
+
+    # Probe Git cleanliness
+    try:
+        res = subprocess.run(["git", "status", "-s"], cwd=PROJECT_ROOT, capture_output=True, text=True)
+        untracked = [l for l in res.stdout.splitlines() if l.startswith("??")]
+        modified = [l for l in res.stdout.splitlines() if not l.startswith("??")]
+        print(f"  [PROBE] Git Tree: {len(modified)} modified, {len(untracked)} untracked files")
+    except Exception as e:
+        print(f"  [WARN] Git probe failed: {e}")
+
+    # Check required core files
+    errors = check_required_files()
+    if not errors:
+        print("==========================================")
+        print("CALIBRATION PASSED: Host environment ready.")
+        sys.exit(0)
+    else:
+        print(f"==========================================")
+        print(f"CALIBRATION FAILED: {errors}")
+        sys.exit(1)
+
+
 def main():
+    if "--probe" in sys.argv:
+        run_probe()
+
     if "--sync" in sys.argv:
         state_file = PROJECT_ROOT / "state.json"
         if state_file.exists():

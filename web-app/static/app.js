@@ -1651,7 +1651,7 @@ function getConfidantSafetyWarning(arcana, newRank) {
     return {
       type: "romance",
       badge: ` CUTSCENE SKIP: You will permanently skip ${prof.name}'s Rank 9 Confession Scene! (Romance route dialogue choice will not trigger in-game).`,
-      detail: `Setting ${prof.name || arcana} to Rank ${newRank} bypasses the romantic confession cutscene. You will get the perks immediately, but you will miss the romance dialogue choice.`
+      detail: `Setting ${prof.name || arcana} to Rank ${newRank} bypasses the romantic confession cutscene. If you keep the RELATIONSHIP toggle on 'FRIEND', bit 0x02 is unset; however, skipping Rank 9's cutscene means the in-game event flag choice was not seen. Play through Rank 9 in-game if you want full cutscene story parity.`
     };
   }
 
@@ -1909,15 +1909,17 @@ function filterCompendiumGrid() {
       if (spot) spot.style.display = "none";
     };
 
+    const isNgPlus = (pid === 170);
+
     const left = document.createElement("div");
     left.style.cssText = "display:flex; align-items:center; gap:12px;";
     left.innerHTML = `
       <img src="/assets/personas/${pid}.png" onerror="this.style.display='none'" style="width:56px; height:56px; object-fit:contain; background:#0B0B10; border:1px solid #333; padding:3px; border-radius:4px; filter:${isSpecial ? 'grayscale(0.6) opacity(0.7)' : 'drop-shadow(0 2px 6px rgba(0,0,0,0.7))'}; flex-shrink:0;">
       <div>
         <div style="font-family:var(--font-p5); font-size:15px; letter-spacing:0.5px; color:${isSpecial ? '#888' : isReg ? '#FFF' : '#777'};">
-          ${name} ${isDlc ? '<span style="font-size:9px; font-family:var(--font-body); font-weight:900; background:#FF2A6D; color:#FFF; padding:2px 5px; border-radius:2px;">DLC</span>' : ''} ${isTreasure ? '<span style="font-size:9px; font-family:var(--font-body); font-weight:900; background:#FFFFFF; color:#000; padding:2px 5px; border-radius:2px;">DEMON</span>' : ''}
+          ${name} ${isDlc ? '<span style="font-size:9px; font-family:var(--font-body); font-weight:900; background:#FF2A6D; color:#FFF; padding:2px 5px; border-radius:2px;">DLC</span>' : ''} ${isTreasure ? '<span style="font-size:9px; font-family:var(--font-body); font-weight:900; background:#FFFFFF; color:#000; padding:2px 5px; border-radius:2px;">DEMON</span>' : ''} ${isNgPlus ? '<span style="font-size:9px; font-family:var(--font-body); font-weight:900; background:#FFE600; color:#000; padding:2px 5px; border-radius:2px;">NG+ ONLY</span>' : ''}
         </div>
-        <div style="font-size:11px; color:var(--p5-muted); font-family:monospace; margin-top:2px;"><span style="color:#555;">No.${pid}</span>${isDlc ? ' · DLC' : ''}</div>
+        <div style="font-size:11px; color:var(--p5-muted); font-family:monospace; margin-top:2px;"><span style="color:#555;">No.${pid}</span>${isDlc ? ' · DLC' : ''}${isNgPlus ? ' · NG+ STORY / FUSION' : ''}</div>
       </div>
     `;
 
