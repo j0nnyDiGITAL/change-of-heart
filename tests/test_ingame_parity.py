@@ -17,6 +17,9 @@ class TestInGameParityFixes(unittest.TestCase):
         if not cls.oracle_path.exists():
             # fallback to tests/oracle_saves
             oracle_files = list((ROOT / "tests" / "oracle_saves").glob("**/DATA.DAT"))
+            if not oracle_files:
+                raise unittest.SkipTest(
+                    "no oracle save on this machine — corpus tests auto-skip")
             cls.oracle_path = oracle_files[0]
 
     def test_name_change_persists_in_payload_structs(self):

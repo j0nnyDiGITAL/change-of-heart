@@ -40,11 +40,9 @@ class TestKasumiPreJoin(unittest.TestCase):
     def test_joined_roster_june_save(self):
         """Live June save must show exactly the 5 joined members."""
         appdata = os.environ.get("APPDATA", "")
-        pth = (
-            sorted(glob.glob(os.path.join(appdata, "SEGA", "P5R", "Steam", "*",
-                                          "savedata", "DATA01", "backups")))[0]
-            if appdata else None
-        )
+        candidates = sorted(glob.glob(os.path.join(
+            appdata, "SEGA", "P5R", "Steam", "*", "savedata", "DATA01", "backups"))) if appdata else []
+        pth = candidates[0] if candidates else None
         zips = sorted(os.listdir(pth)) if pth and os.path.isdir(pth) else []
         if not zips:
             self.skipTest("no backups on disk")

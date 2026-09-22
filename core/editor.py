@@ -1958,6 +1958,201 @@ class SaveEditor:
                 "message": f"Set {count} confidants to Rank {rank}."}
 
     # -------------------------------------------------------------------------
+    # Deadline Escape Hatch (ADR 0003 Tier 2, 2026-09-21)
+    # -------------------------------------------------------------------------
+    # Solves the classic failure (r/Persona5, Steam thread 3470612993482636987):
+    # the player reaches 11/18+ with Councillor < Rank 9, and 3rd semester is
+    # permanently locked. The game evaluates the gate ON its pinned date, so
+    # editing Maruki's rank after 11/18 does nothing (verified field report:
+    # rank edit on 11/18 was ignored; next sleep jumped to the booked 11/19).
+    # The working strategy is to ROLLBACK the save to a pre-deadline backup —
+    # the game then re-evaluates its own gate on the earlier date — and apply
+    # the missing rank(s) with D016 preserve-surplus semantics BEFORE that
+    # date. Reuses the backup vault + confidant write machinery; never touches
+    # the event-flag matrix (D008/D009).
+    #
+    # Confidant slot writes are calendar-safe ONLY for these two gates: the
+    # rank-up scene/points bookkeeping is player-side, not event-flag side.
+    # The 1/12 Faith gate is deliberately NOT escape-hatchable: her block is
+    # renumbered (33->36) and 3rd-semester entry flags are deeply entangled
+    # with the event matrix.
+    #
+    # IMPORTANT (scope honesty, from field reports): if the player keeps
+    # playing PAST the missed deadline and saves again, those later days add
+    # event flags the restored save's calendar cannot replay — the game will
+    # fast-forward/re-run its booked schedule. The escape hatch restores a
+    # PRE-deadline backup, which by construction predates those days.
+    ESCAPE_HATCH_GATES = {
+        "Councillor": {"confidant": "Councillor", "arcana_id": 22, "deadline": (11, 18), "required_rank": 9,
+                       "gate_key": "councillor_gate"},
+        "Justice":    {"confidant": "Justice", "arcana_id": 8,  "deadline": (11, 17), "required_rank": 8,
+                       "gate_key": "justice_gate"},
+    }
+
+    def deadline_gate_status(self) -> Dict[str, Any]:
+        """Read-only status of the two escape-hatchable gates.
+
+        Deadline date logic mirrors confidant_guardrails(): (month == 11 and
+        day > 18) or month == 12 or month <= 3 is past the 11/18 wall.
+        """
+        gates = []
+        date = self._game_date()
+        ranks = self.get_confidant_ranks()
+        for name, cfg in self.ESCAPE_HATCH_GATES.items():
+            info = ranks.get(name) or {}
+            rank = info.get("rank")
+            current_rank = rank if isinstance(rank, int) else None
+            unlocked = bool(info.get("unlocked"))
+            m, d = cfg["deadline"]
+            if date is None:
+                past = False
+            else:
+                month, day = date
+                # Game year runs Apr(20XX)→Mar(20XX+1): months AFTER a
+                # November deadline are Dec (month > m) and Jan/Feb/Mar
+                # (month <= m - 8). Mirrors confidant_guardrails() logic.
+                past = (month == m and day > d) or month > m or month <= m - 8
+            gates.append({
+                "confidant": name,
+                "gate_key": cfg["gate_key"],
+                "arcana_id": cfg["arcana_id"],
+                "required_rank": cfg["required_rank"],
+                "current_rank": current_rank,
+                "unlocked": unlocked,
+                "deadline": f"{m}/{d}",
+                "deadline_passed": past,
+                "met": current_rank is not None and current_rank >= cfg["required_rank"],
+            })
+        return {"gates": gates,
+                "today": date,
+                "date_known": date is not None}
+
+    def plan_deadline_escape(self, gate_key: str) -> Dict[str, Any]:
+        """Dry-run: return the exact operations the escape hatch will perform.
+
+        Pure read of CURRENT in-memory state — callers pass backup list from
+        the vault; this method validates feasibility and computes rank/point
+        semantics. No mutation.
+        """
+        cfg = self.ESCAPE_HATCH_GATES.get(
+            next((k for k, v in self.ESCAPE_HATCH_GATES.items() if v["gate_key"] == gate_key), ""))
+        if not cfg:
+            return {"status": "invalid", "message": f"Unknown gate: {gate_key}"}
+        gate_name = cfg["confidant"]
+        status = self.deadline_gate_status()
+        gate = next((g for g in status["gates"] if g["gate_key"] == gate_key), None)
+        if not gate:
+            return {"status": "invalid", "message": "Gate not found."}
+        if gate["met"]:
+            return {"status": "noop",
+                    "message": f"{gate_name} already meets Rank {gate['required_rank']} — no escape needed."}
+        if not self.is_real_save():
+            return {"status": "unsupported",
+                    "message": "Not a native PC (0x31) save — escape hatch refused."}
+        if gate["current_rank"] is None or not gate["unlocked"]:
+            # Maruki's block exists from 5/13 (story), Akechi's from 6/10-ish.
+            # If the block itself is absent the save predates the confidant:
+            # writing requires auto_unlock allocation which is safe (slot init)
+            # but the planner flags it for transparency.
+            allocate = True
+        else:
+            allocate = False
+        arcana_id = cfg["arcana_id"]
+        th = self.CONFIDANT_POINT_THRESHOLDS.get(gate_name, {})
+        target_points = th.get(gate["required_rank"])
+        return {
+            "status": "ok",
+            "gate": gate,
+            "ops": [
+                {"op": "restore_backup", "description":
+                    "Restore the selected pre-deadline backup "
+                    "(a reversible safety backup of the current state is made first)."},
+                {"op": "write_rank", "confidant": gate_name,
+                 "rank": gate["required_rank"], "allocate_slot": allocate,
+                 "points_semantics": ("preserve-surplus: max(current, threshold)" if target_points else
+                                      "exact threshold"),
+                 "description":
+                    f"Set {gate_name} to Rank {gate['required_rank']} with D016-safe "
+                    "bond points so the game's own gate passes on its scheduled date."},
+                {"op": "resign_and_write", "description":
+                    "Re-sign dual CRC32 + AES and write to disk (new timestamped backup included)."},
+            ],
+            "warning": (
+                "After the hatch: play from the restored day forward. Do NOT keep the "
+                "post-deadline days — they are gone by design. The game re-runs its "
+                "own schedule from the restored date and will evaluate the gate "
+                "legitimately."),
+        }
+
+    def apply_deadline_escape(self, gate_key: str, backup_zip: Optional[str] = None,
+                              save_file: Optional[str] = None,
+                              confirm: bool = False) -> Dict[str, Any]:
+        """Execute the escape hatch: optional vault restore + rank write.
+
+        Two-step safety: callers MUST call plan_deadline_escape() first and
+        pass confirm=True to execute. When backup_zip is provided AND differs
+        from the CURRENT on-disk state's date, the file is restored from the
+        vault first (with the vault's own reversible safety backup). The rank
+        write uses set_confidant_rank() with points=None → D016 semantics
+        (preserve surplus on raise, exact points untouched on same-rank).
+        """
+        if not confirm:
+            return {"status": "confirm_required",
+                    "message": "Call again with confirm=true after reviewing the dry-run plan."}
+        cfg = self.ESCAPE_HATCH_GATES.get(
+            next((k for k, v in self.ESCAPE_HATCH_GATES.items() if v["gate_key"] == gate_key), ""))
+        if not cfg:
+            return {"status": "invalid", "message": f"Unknown gate: {gate_key}"}
+        gate_name = cfg["confidant"]
+        arcana_id = cfg["arcana_id"]
+        target_rank = cfg["required_rank"]
+
+        restored_from = None
+        if backup_zip:
+            if not save_file:
+                return {"status": "invalid", "message": "save_file is required when backup_zip is given."}
+            from .environment import restore_backup
+            p = Path(save_file)
+            bz = Path(backup_zip)
+            if not p.exists():
+                return {"status": "invalid", "message": f"Save file not found: {save_file}"}
+            if not bz.exists():
+                return {"status": "invalid", "message": f"Backup not found: {bz.name}"}
+            if p.parent != bz.parent.parent or bz.parent.name != "backups":
+                return {"status": "invalid",
+                        "message": "Backup must live in <save dir>/backups/ (vault layout)."}
+            try:
+                restore_backup(p, bz)
+            except (ValueError, FileNotFoundError) as exc:
+                # Mismatched archive / missing file → structured refusal
+                # (endpoint layer also maps these to HTTP 400).
+                return {"status": "invalid", "message": str(exc)}
+            restored_from = bz.name
+            # Reload this editor from the restored bytes so subsequent writes
+            # land on the restored state (mirrors server /api/restore flow).
+            self.load_from_bytes(p.read_bytes())
+
+        # D016: points=None lets set_confidant_rank preserve surplus.
+        res = self.set_confidant_rank(arcana_id, target_rank, points=None,
+                                      romance=None, auto_unlock=True)
+        if res.get("status") != "success":
+            return {"status": res.get("status", "noop"),
+                    "message": f"Rank write failed: {res.get('message', 'unknown')}",
+                    "restored_from": restored_from}
+
+        out: Dict[str, Any] = {"status": "success",
+                               "gate_key": gate_key,
+                               "confidant": gate_name,
+                               "rank_written": target_rank,
+                               "points_written": res.get("points"),
+                               "restored_from": restored_from}
+        if save_file:
+            # Persist-ready bytes for the mutated state (server layer wraps
+            # this with its own timestamped backup + integrity report).
+            out["bytes"] = self.save_to_bytes()
+        return out
+
+    # -------------------------------------------------------------------------
     # Party Stats API
     # -------------------------------------------------------------------------
 
