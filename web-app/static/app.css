@@ -1,4 +1,152 @@
 /* =========================================================================
+   TIME TRAVEL PLANNER (read-only, ADR 0003 Tier 0)
+   ========================================================================= */
+
+.calendar-month-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.cal-cell {
+  aspect-ratio: 1 / 1;
+  min-height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-p5);
+  font-size: 17px;
+  letter-spacing: 0.5px;
+  border: 1px solid #23232F;
+  background: var(--p5-surface-alt);
+  color: var(--p5-white);
+  transform: skewX(-6deg);
+}
+
+.cal-cell.cal-open { border-color: #2E2E3D; }
+
+.cal-cell.cal-story {
+  background: #1A0507;
+  color: var(--p5-muted);
+  border-color: #3A0003;
+}
+
+.cal-cell.cal-deadline {
+  background: var(--p5-crimson);
+  color: #FFF;
+  border-color: #FF5A4A;
+  font-weight: 900;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.55);
+}
+
+.cal-cell.cal-is-today {
+  outline: 2px solid var(--p5-cyan);
+  outline-offset: 1px;
+  color: var(--p5-cyan);
+}
+
+.cal-cell.cal-deadline.cal-is-today {
+  color: #FFF;
+  outline-color: var(--p5-yellow);
+}
+
+.calendar-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 14px;
+  font-size: 11px;
+  color: var(--p5-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.cal-legend-item { display: inline-flex; align-items: center; gap: 6px; }
+
+.cal-chip {
+  width: 12px;
+  height: 12px;
+  display: inline-block;
+  transform: skewX(-6deg);
+  border: 1px solid #23232F;
+}
+
+.cal-chip.cal-open { background: var(--p5-surface-alt); }
+.cal-chip.cal-story { background: #1A0507; border-color: #3A0003; }
+.cal-chip.cal-deadline { background: var(--p5-crimson); border-color: #FF5A4A; }
+.cal-chip.cal-today { background: transparent; outline: 2px solid var(--p5-cyan); outline-offset: 0; }
+
+.cal-deadline-row {
+  border: 1px solid #23232F;
+  border-left: 4px solid var(--p5-crimson);
+  background: var(--p5-surface-alt);
+  padding: 10px 12px;
+}
+
+.cal-deadline-row.row-risk { border-left-color: var(--p5-yellow); }
+
+.cal-deadline-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+
+.cal-date {
+  font-family: var(--font-p5);
+  font-size: 18px;
+  letter-spacing: 1px;
+  color: var(--p5-white);
+}
+
+.cal-date small { color: var(--p5-muted); font-size: 12px; }
+
+.cal-count {
+  font-size: 11px;
+  font-weight: 900;
+  color: #000;
+  background: var(--p5-yellow);
+  padding: 2px 8px;
+}
+
+.cal-count.cal-today { background: var(--p5-cyan); }
+
+.cal-status {
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.6px;
+  padding: 2px 8px;
+  border: 1px solid currentColor;
+}
+
+.cal-status.cal-met { color: #7CE38B; }
+.cal-status.cal-risk { color: var(--p5-yellow); }
+.cal-status.cal-unknown { color: var(--p5-muted); }
+
+.cal-deadline-label {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--p5-white);
+}
+
+.cal-deadline-note {
+  font-size: 11px;
+  color: var(--p5-muted);
+  margin-top: 2px;
+  line-height: 1.5;
+}
+
+.calendar-empty {
+  padding: 18px;
+  text-align: center;
+  color: var(--p5-muted);
+  font-size: 13px;
+  border: 1px dashed #23232F;
+}
+
+/* =========================================================================
    PERSONA 5 ROYAL — THE AUTHENTIC 1:1 ATLUS IN-GAME CO-OP & MENU SYSTEM
    ========================================================================= */
 
@@ -1199,4 +1347,14 @@ body {
   vertical-align: -2px;
   margin-right: 6px;
   filter: drop-shadow(1px 1px 0 #000);
+}
+
+/* ADR 0004 — branch resolution card (warp v2) */
+.warp-branch-card {
+  border: 1px solid var(--p5-yellow);
+  border-left-width: 4px;
+  background: rgba(0, 0, 0, 0.55);
+  padding: 10px 14px;
+  margin: 8px 0;
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
 }

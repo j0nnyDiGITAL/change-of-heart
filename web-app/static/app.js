@@ -3396,8 +3396,13 @@ function switchStage(stageId, btnEl) {
     renderConfidants();
   } else if (stageId === "compendium") {
     renderCompendium();
+  } else if (stageId === "calendar") {
+    loadCalendar();
+    loadEscapeHatch();
+    loadPalaceSkipCatalog();
   }
 }
+
 function updateIntegrityBadge(rep) {
   const pill = document.getElementById("sidebarHealthPill");
   const text = document.getElementById("sidebarHealthText");

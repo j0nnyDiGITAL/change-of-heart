@@ -41,6 +41,9 @@
       <button class="p5-nav-item" onclick="switchStage('compendium', this)">
         <span><svg class="nav-ico" viewBox="0 0 16 16" width="15" height="15"><path d="M2 2 H7 Q8 2 8 3 V14 Q8 13 7 13 H2 Z" fill="currentColor"/><path d="M14 2 H9 Q8 2 8 3 V14 Q8 13 9 13 H14 Z" fill="currentColor"/></svg> COMPENDIUM</span>
       </button>
+      <button class="p5-nav-item" onclick="switchStage('calendar', this)">
+        <span><svg class="nav-ico" viewBox="0 0 16 16" width="15" height="15"><rect x="1.5" y="2.5" width="13" height="12" fill="none" stroke="currentColor" stroke-width="1.6"/><rect x="1.5" y="2.5" width="13" height="3.2" fill="currentColor"/><rect x="4" y="0.5" width="1.6" height="3" fill="currentColor"/><rect x="10.4" y="0.5" width="1.6" height="3" fill="currentColor"/></svg> TIME TRAVEL PLANNER</span>
+      </button>
       <button class="p5-nav-item" onclick="switchStage('god_presets', this)">
         <span><svg class="nav-ico" viewBox="0 0 16 16" width="15" height="15"><path d="M9 1 L3 9 H7 L6 15 L13 6 H9 Z" fill="currentColor"/></svg> GOD-TIER BUILDS</span>
       </button>
@@ -588,6 +591,115 @@
       </div>
     </section>
 
+    <!-- STAGE: Time Travel Planner (READ-ONLY — ADR 0003 Tier 0) -->
+    <section id="stage-calendar" class="p5-stage-view">
+      <div class="stage-headline">
+        <div style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:10px;">
+          <div>
+            <h2>★ TIME TRAVEL PLANNER</h2>
+            <p>Read-only view of P5R's fixed calendar: story-locked days, Palace deadlines and confidant gates. The in-game date itself cannot be edited (ADR 0003).</p>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <select id="calendarMonthSelect" class="p5-select" style="min-width:150px;" onchange="renderCalendarMonth()"></select>
+            <button class="p5-btn-action secondary" style="padding:6px 16px; font-size:14px;" onclick="loadCalendar()"><span>REFRESH</span></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="p5-card">
+          <div class="p5-card-header">
+            <span>📅 CALENDAR</span>
+            <span id="calendarTodayBadge" style="font-size:12px; color:var(--p5-yellow); font-weight:800;"></span>
+          </div>
+          <div id="calendarMonthGrid" class="calendar-month-grid">
+            <!-- month day cells rendered by app.js -->
+          </div>
+          <div class="calendar-legend">
+            <span class="cal-legend-item"><i class="cal-chip cal-open"></i>Free day</span>
+            <span class="cal-legend-item"><i class="cal-chip cal-story"></i>Story / locked</span>
+            <span class="cal-legend-item"><i class="cal-chip cal-deadline"></i>Deadline</span>
+            <span class="cal-legend-item"><i class="cal-chip cal-today"></i>Today</span>
+          </div>
+        </div>
+
+        <div class="p5-card">
+          <div class="p5-card-header">
+            <span>⚠️ REMAINING DEADLINES &amp; GATES</span>
+          </div>
+          <div id="calendarDeadlinesList" style="display:flex; flex-direction:column; gap:10px;">
+            <!-- deadline rows rendered by app.js -->
+          </div>
+          <p style="font-size:11px; color:var(--p5-muted); margin-top:15px;">
+            ℹ️ Read-only planner. The game evaluates confidant gates on their pinned dates —
+            this panel shows whether you already meet them. Palace deadlines use the earliest
+            hard date (conservative). Partial-free days are shown as free.
+          </p>
+        </div>
+      </div>
+
+      <!-- TIME WARP (CHRONOS — script-derived engine) -->
+      <div class="p5-card" style="margin-top:20px;">
+        <div class="p5-card-header">
+          <span>⏩ TIME WARP</span>
+          <span style="font-size:11px; color:var(--p5-muted);">FORWARD-ONLY DATE ADVANCE — VALIDATED AGAINST THE GAME'S OWN CALENDAR MODEL</span>
+        </div>
+        <div id="timeWarpBody" style="font-size:13px;">
+          <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+            <select id="warpMonth" class="p5-select" style="min-width:130px;"></select>
+            <select id="warpDay" class="p5-select" style="min-width:90px;"></select>
+            <button class="p5-btn-action secondary" style="padding:6px 16px; font-size:13px;" onclick="planTimeWarp()"><span>PLAN WARP</span></button>
+          </div>
+          <div id="timeWarpResult" style="margin-top:12px;"></div>
+          <p style="font-size:11px; color:var(--p5-muted); margin-top:10px;">
+            ℹ️ Safe route: only skips days the game's scheduler scripts classify as story-free
+            (or resolves a verified branch with your acknowledgement). For ANY date, forward or
+            backward, use the FULL TIME WARP below — it syncs palace + event flags in one pass.
+          </p>
+        </div>
+      </div>
+
+      <!-- FULL TIME WARP (CHRONOS V3 — forward AND backward, full flag sync) -->
+      <div class="p5-card" style="margin-top:20px;">
+        <div class="p5-card-header">
+          <span>🌀 FULL TIME WARP</span>
+          <span style="font-size:11px; color:var(--p5-muted);">ANY DATE, FORWARD + BACKWARD — CLOCKS, PALACES &amp; EVENT FLAGS SYNCED IN ONE PASS</span>
+        </div>
+        <div id="ftwBody" style="font-size:13px;">
+          <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+            <select id="ftwMonth" class="p5-select" style="min-width:130px;"></select>
+            <select id="ftwDay" class="p5-select" style="min-width:90px;"></select>
+            <button class="p5-btn-action secondary" style="padding:6px 16px; font-size:13px;" onclick="planFullTimeWarp()"><span>PLAN WARP</span></button>
+          </div>
+          <div id="ftwResult" style="margin-top:12px;"></div>
+          <p style="font-size:11px; color:var(--p5-muted); margin-top:10px;">
+            ⚠️ Writes the destination date's full state (clock, palace guard/discovery bits,
+            daily event flags). Verified in-game: the engine runs whatever date the save holds.
+            Close P5R first — a timestamped backup is taken automatically.
+          </p>
+        </div>
+      </div>
+
+      <!-- DEADLINE ESCAPE HATCH (ADR 0003 Tier 2) -->
+      <div class="p5-card" style="margin-top:20px;">
+        <div class="p5-card-header">
+          <span>🚪 DEADLINE ESCAPE HATCH</span>
+          <span style="font-size:11px; color:var(--p5-muted);">MISSED MARUKI 11/18 OR AKECHI 11/17? ROLL BACK &amp; FIX IT</span>
+        </div>
+        <div id="escapeHatchBody" style="font-size:13px; color:var(--p5-muted);">Loading gate status…</div>
+      </div>
+
+      <!-- PALACE SKIP (CHRONOS — set guard bit + warp to deadline) -->
+      <div class="p5-card" style="margin-top:20px;">
+        <div class="p5-card-header">
+          <span>🏛️ PALACE SKIP</span>
+          <span style="font-size:11px; color:var(--p5-muted);">SET GUARD BIT + WARP TO DEADLINE — ENGINE REPLAY SCENES</span>
+        </div>
+        <div id="palaceSkipBody" style="font-size:13px; color:var(--p5-muted);">Loading palace status…</div>
+        <div id="palaceSkipResult" style="margin-top:12px;"></div>
+      </div>
+    </section>
+
     <!-- STAGE 4: God-Tier Build Injectors -->
     <section id="stage-god_presets" class="p5-stage-view">
       <div class="stage-headline">
@@ -745,6 +857,7 @@
     </div>
   </div>
 
-  <script src="/app.js?v=20260819_compfix"></script>
+  <script src="/app.js?v=20260921_tier2"></script>
+  <script src="/planner.js?v=20260922_chronos3b"></script>
 </body>
 </html>

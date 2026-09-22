@@ -34,6 +34,7 @@ else:
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from core.editor import SaveEditor, CONFIDANT_ARCANA_MAP, ROMANCEABLE_CONFIDANTS
+from core.calendar_data import build_calendar_plan
 from core import instances  # noqa: E402
 from core.environment import (
     discover_steam_save_dirs,
@@ -506,6 +507,41 @@ class P5RWebHandler(SimpleHTTPRequestHandler):
             backups = [p.name for p in list_backups(Path(CURRENT_FILE_PATH))]
             self.send_json(200, {"backups": backups})
             return
+        elif parsed.path == "/api/calendar":
+            # READ-ONLY Time Travel Planner (ADR 0003 Tier 0).
+            # Pure data projection of the fixed P5R schedule; performs no
+            # save mutation and never touches the event-flag matrix.
+            today_label = None
+            ranks = None
+            if CURRENT_EDITOR is not None:
+                try:
+                    if CURRENT_EDITOR.is_real_save():
+                        qi = CURRENT_EDITOR.get_quick_info() or {}
+                        today_label = qi.get("day")
+                        ranks = CURRENT_EDITOR.get_confidant_ranks()
+                except Exception:
+                    today_label = None  # degrade to year view, never 500
+            self.send_json(200, build_calendar_plan(today_label, ranks))
+            return
+        elif parsed.path == "/api/deadline-status":
+            # Read-only escape-hatch status (ADR 0003 Tier 2).
+            status = {"gates": [], "today": None, "date_known": False,
+                      "available_backups": [], "is_uploaded": False,
+                      "save_loaded": CURRENT_EDITOR is not None}
+            if CURRENT_EDITOR is not None:
+                try:
+                    status.update(CURRENT_EDITOR.deadline_gate_status())
+                except Exception:
+                    pass
+            is_uploaded = bool(CURRENT_FILE_PATH and CURRENT_FILE_PATH.startswith("Uploaded ("))
+            status["is_uploaded"] = is_uploaded
+            if CURRENT_FILE_PATH and not is_uploaded and os.path.exists(CURRENT_FILE_PATH):
+                try:
+                    status["available_backups"] = [p.name for p in list_backups(Path(CURRENT_FILE_PATH))]
+                except Exception:
+                    status["available_backups"] = []
+            self.send_json(200, status)
+            return
 
         super().do_GET()
 
@@ -796,6 +832,342 @@ class P5RWebHandler(SimpleHTTPRequestHandler):
                 self.send_json(200, {"status": "success", "safety_backup": safety.name})
             except Exception as e:
                 self.send_json(500, {"error": f"Restore failed: {str(e)}"})
+
+        elif parsed.path == "/api/deadline-escape":
+            # ADR 0003 Tier 2: deadline escape hatch.
+            # confirm=false → dry-run plan (read-only). confirm=true →
+            # optional vault restore + D016-compliant rank write + re-sign,
+            # always preceded by a timestamped backup (vault restore already
+            # makes its own reversible safety backup of the current state).
+            if not CURRENT_EDITOR or not CURRENT_FILE_PATH:
+                self.send_json(400, {"error": "No save file loaded."})
+                return
+            gate_key = (data.get("gate_key") or "").strip()
+            confirm = data.get("confirm") is True
+            backup_name = (data.get("backup_name") or "").strip()
+            is_uploaded = CURRENT_FILE_PATH.startswith("Uploaded (")
+            try:
+                if not confirm:
+                    plan = CURRENT_EDITOR.plan_deadline_escape(gate_key)
+                    backups = []
+                    if not is_uploaded and Path(CURRENT_FILE_PATH).exists():
+                        backups = [p.name for p in list_backups(Path(CURRENT_FILE_PATH))]
+                    plan["available_backups"] = backups
+                    plan["is_uploaded"] = is_uploaded
+                    self.send_json(200, plan)
+                    return
+
+                p5r_run, _ = check_running_processes()
+                if p5r_run:
+                    self.send_json(409, {"error": "P5R.exe is currently running! Close the game before using the escape hatch."})
+                    return
+                if backup_name:
+                    if is_uploaded:
+                        self.send_json(400, {"error": "Uploaded saves have no backup vault — reload the real save file first."})
+                        return
+                    if not re.fullmatch(r"[A-Za-z0-9_.\-]+", backup_name):
+                        self.send_json(400, {"error": "Invalid backup name."})
+                        return
+                    backup_zip = str(Path(CURRENT_FILE_PATH).parent / "backups" / backup_name)
+                else:
+                    backup_zip = None
+
+                res = CURRENT_EDITOR.apply_deadline_escape(
+                    gate_key, backup_zip=backup_zip,
+                    save_file=None if is_uploaded else CURRENT_FILE_PATH,
+                    confirm=True)
+                if res.get("status") != "success":
+                    self.send_json(res.get("http", 400), {"error": res.get("message", "Escape hatch refused."),
+                                                          "status": res.get("status")})
+                    return
+
+                resp = {"status": "success",
+                        "gate_key": res.get("gate_key"),
+                        "confidant": res.get("confidant"),
+                        "rank_written": res.get("rank_written"),
+                        "restored_from": res.get("restored_from")}
+                if is_uploaded:
+                    out_bytes = res.get("bytes")
+                    CURRENT_EDITOR = SaveEditor(out_bytes)
+                    CURRENT_FILE_PATH = f"Uploaded (escaped)"
+                    resp["download_data"] = base64.b64encode(out_bytes).decode("ascii")
+                    resp["integrity"] = CURRENT_EDITOR.integrity_report()
+                else:
+                    p = Path(CURRENT_FILE_PATH)
+                    # Guarantee: backup before every disk write.
+                    bkp = create_timestamped_backup(p)
+                    p.write_bytes(res["bytes"])
+                    CURRENT_EDITOR = SaveEditor(p.read_bytes())
+                    instances.update_save(CURRENT_FILE_PATH)
+                    resp["backup"] = bkp.name
+                    resp["integrity"] = CURRENT_EDITOR.integrity_report()
+                resp["gate_status"] = CURRENT_EDITOR.deadline_gate_status()
+                self.send_json(200, resp)
+            except FileNotFoundError as e:
+                self.send_json(400, {"error": str(e)})
+            except ValueError as e:
+                self.send_json(400, {"error": str(e)})
+            except Exception as e:
+                self.send_json(500, {"error": f"Escape hatch failed: {str(e)}"})
+
+        elif parsed.path == "/api/palace-skip":
+            # CHRONOS Palace Skip: set guard + discovery bits, warp to
+            # deadline day. Engine replays post-clearance scenes on arrival.
+            if not CURRENT_EDITOR or not CURRENT_FILE_PATH:
+                self.send_json(400, {"error": "No save file loaded."})
+                return
+            try:
+                from core.chronos import (
+                    build_palace_skip_plan, apply_palace_skip,
+                    PALACE_SKIP_CATALOG, load_model, MODEL_PATH,
+                )
+                if not os.path.exists(MODEL_PATH):
+                    self.send_json(503, {"error": "chronos_model.json missing."})
+                    return
+                palace_id = (data.get("palace_id") or "").strip()
+                mode = data.get("mode") or "deadline"
+                confirm = data.get("confirm") is True
+
+                if not palace_id:
+                    # List available palaces
+                    catalog = []
+                    for p in PALACE_SKIP_CATALOG:
+                        cat_entry = {
+                            "palace_id": p["palace_id"],
+                            "label": p["label"],
+                            "deadline": "%d/%d" % p["deadline"],
+                            "earliest_entry": "%d/%d" % p["earliest_entry"],
+                            "party_unlock": p.get("party_unlock", ""),
+                        }
+                        # Check current state
+                        try:
+                            from core.chronos import (
+                                day_index, _bit_location)
+                            cur_day = CURRENT_EDITOR.parser.header.day
+                            deadline_idx = day_index(*p["deadline"])
+                            entry_idx = day_index(*p["earliest_entry"])
+                            payload = CURRENT_EDITOR.parser.data_payload
+                            g_byte, g_bit = _bit_location(
+                                p["guard_bit"]["table"], p["guard_bit"]["index"])
+                            cleared = bool(payload[g_byte] & (1 << g_bit))
+                            cat_entry["status"] = (
+                                "cleared" if cleared else
+                                "too_late" if cur_day >= deadline_idx else
+                                "too_early" if cur_day < entry_idx else
+                                "available"
+                            )
+                        except Exception:
+                            cat_entry["status"] = "unknown"
+                        catalog.append(cat_entry)
+                    self.send_json(200, {"catalog": catalog})
+                    return
+
+                if not confirm:
+                    plan = build_palace_skip_plan(CURRENT_EDITOR, palace_id,
+                                                  mode=mode)
+                    self.send_json(200, plan)
+                    return
+
+                p5r_run, _ = check_running_processes()
+                if p5r_run:
+                    self.send_json(409, {"error": "P5R.exe is currently running! Close the game before skipping a palace."})
+                    return
+
+                res = apply_palace_skip(CURRENT_EDITOR, palace_id, mode=mode)
+                if res.get("status") != "success":
+                    self.send_json(400, {"status": res.get("status"),
+                                         "plan": res.get("plan")})
+                    return
+
+                out_bytes = CURRENT_EDITOR.save_to_bytes()
+                resp = {"status": "success", "plan": res["plan"],
+                        "wrote": res["wrote"],
+                        "bits_written": res.get("bits_written", [])}
+                is_uploaded = CURRENT_FILE_PATH.startswith("Uploaded (")
+                if is_uploaded:
+                    CURRENT_EDITOR = SaveEditor(out_bytes)
+                    CURRENT_FILE_PATH = "Uploaded (palace-skipped)"
+                    resp["download_data"] = base64.b64encode(out_bytes).decode("ascii")
+                    resp["integrity"] = CURRENT_EDITOR.integrity_report()
+                else:
+                    p = Path(CURRENT_FILE_PATH)
+                    bkp = create_timestamped_backup(p)
+                    p.write_bytes(out_bytes)
+                    CURRENT_EDITOR = SaveEditor(p.read_bytes())
+                    instances.update_save(CURRENT_FILE_PATH)
+                    resp["backup"] = bkp.name
+                    resp["integrity"] = CURRENT_EDITOR.integrity_report()
+                self.send_json(200, resp)
+            except ValueError as e:
+                self.send_json(400, {"error": str(e)})
+            except Exception as e:
+                self.send_json(500, {"error": f"Palace skip failed: {str(e)}"})
+
+        elif parsed.path == "/api/time-travel":
+            # CHRONOS: calendar time travel (ADR 0003 Tier-1 upgrade).
+            # confirm=false -> read-only plan (per-day classification from the
+            # bundled calendar model). confirm=true -> hdr.day + 0x3D70
+            # mirror write, re-sign, timestamped backup before every disk write.
+            if not CURRENT_EDITOR or not CURRENT_FILE_PATH:
+                self.send_json(400, {"error": "No save file loaded."})
+                return
+            try:
+                from core.chronos import (apply_time_travel, build_time_travel_plan,
+                                          build_time_travel_plan_v2,
+                                          apply_time_travel_v2,
+                                          load_model, MODEL_PATH)
+                if not os.path.exists(MODEL_PATH):
+                    self.send_json(503, {"error": "chronos_model.json missing."})
+                    return
+                model = load_model()
+                t_month = int(data.get("target_month") or 0)
+                t_day = int(data.get("target_day") or 0)
+                confirm = data.get("confirm") is True
+                if not confirm:
+                    # V2 plan (ADR 0004): adds branch_choices for known story
+                    # windows (status blocked_resolvable) instead of a bare
+                    # refusal; ok/invalid unchanged.
+                    plan = build_time_travel_plan_v2(
+                        model, CURRENT_EDITOR.parser.header.day, t_month, t_day)
+                    self.send_json(200, plan)
+                    return
+                p5r_run, _ = check_running_processes()
+                if p5r_run:
+                    self.send_json(409, {"error": "P5R.exe is currently running! Close the game before time travel."})
+                    return
+                is_uploaded = CURRENT_FILE_PATH.startswith("Uploaded (")
+                choice_ids = data.get("choice_ids") or None
+                if choice_ids:
+                    res = apply_time_travel_v2(CURRENT_EDITOR, model, t_month,
+                                               t_day, choice_ids=choice_ids)
+                else:
+                    res = apply_time_travel_v2(CURRENT_EDITOR, model, t_month, t_day)
+                if res.get("status") == "confirm_required":
+                    self.send_json(400, {"status": "confirm_required",
+                                         "plan": res.get("plan"),
+                                         "message": res.get("message")})
+                    return
+                if res.get("status") != "success":
+                    self.send_json(400, {"status": res.get("status"), "plan": res.get("plan")})
+                    return
+                out_bytes = CURRENT_EDITOR.save_to_bytes()
+                resp = {"status": "success", "plan": res["plan"], "wrote": res["wrote"]}
+                if res.get("bits_written"):
+                    resp["bits_written"] = res["bits_written"]
+                if is_uploaded:
+                    CURRENT_EDITOR = SaveEditor(out_bytes)
+                    CURRENT_FILE_PATH = "Uploaded (time-traveled)"
+                    resp["download_data"] = base64.b64encode(out_bytes).decode("ascii")
+                    resp["integrity"] = CURRENT_EDITOR.integrity_report()
+                else:
+                    p = Path(CURRENT_FILE_PATH)
+                    # Guarantee: backup before every disk write.
+                    bkp = create_timestamped_backup(p)
+                    p.write_bytes(out_bytes)
+                    CURRENT_EDITOR = SaveEditor(p.read_bytes())
+                    instances.update_save(CURRENT_FILE_PATH)
+                    resp["backup"] = bkp.name
+                    resp["integrity"] = CURRENT_EDITOR.integrity_report()
+                self.send_json(200, resp)
+            except ValueError as e:
+                self.send_json(400, {"error": str(e)})
+            except Exception as e:
+                self.send_json(500, {"error": f"Time travel failed: {str(e)}"})
+
+        elif parsed.path == "/api/full-time-warp":
+            # CHRONOS V3: full time warp with complete flag sync.
+            # Sets clock fields + palace guard/discovery bits + daily event flags.
+            # confirm=false -> read-only plan; confirm=true -> apply + re-sign.
+            if not CURRENT_EDITOR or not CURRENT_FILE_PATH:
+                self.send_json(400, {"error": "No save file loaded."})
+                return
+            try:
+                from core.chronos import (
+                    apply_full_time_warp, load_model, MODEL_PATH,
+                    day_index, index_to_month_day,
+                )
+                if not os.path.exists(MODEL_PATH):
+                    self.send_json(503, {"error": "chronos_model.json missing."})
+                    return
+                model = load_model()
+                t_month = int(data.get("target_month") or 0)
+                t_day = int(data.get("target_day") or 0)
+                direction = data.get("direction", "auto")
+                confirm = data.get("confirm") is True
+
+                if not confirm:
+                    # Build read-only plan
+                    from core.chronos import _palace_state_for_day, _event_flags_for_day
+                    cur_day = CURRENT_EDITOR.parser.header.day
+                    cur_m, cur_d = index_to_month_day(cur_day)
+                    try:
+                        tgt_idx = day_index(t_month, t_day)
+                    except KeyError:
+                        self.send_json(400, {"error": "Invalid target date."})
+                        return
+                    if direction == "auto":
+                        d = "forward" if tgt_idx > cur_day else "backward"
+                    else:
+                        d = direction
+                    palace_state = _palace_state_for_day(tgt_idx)
+                    event_flags = _event_flags_for_day(model, tgt_idx)
+                    from core.chronos import plan_full_time_warp_changes
+                    changes = plan_full_time_warp_changes(CURRENT_EDITOR.parser, model, tgt_idx)
+                    plan = {
+                        "current": {"hdr_day": cur_day, "date": "%d/%d" % (cur_m, cur_d)},
+                        "target": {"hdr_day": tgt_idx, "date": "%d/%d" % (t_month, t_day)},
+                        "direction": d,
+                        "palaces": {pid: {"guard": ps["guard"], "discovery": ps["discovery"]}
+                                    for pid, ps in palace_state.items()},
+                        "summary": {
+                            "guards_set": [pid for pid, ps in palace_state.items() if ps["guard"]],
+                            "guards_cleared": [pid for pid, ps in palace_state.items() if not ps["guard"]],
+                            "discoveries_set": [pid for pid, ps in palace_state.items() if ps["discovery"]],
+                            "discoveries_cleared": [pid for pid, ps in palace_state.items() if not ps["discovery"]],
+                            "event_flags_on": len(event_flags["bits_on"]),
+                            "event_flags_off": len(event_flags["bits_off"]),
+                        },
+                        "changes": changes,
+                    }
+                    self.send_json(200, plan)
+                    return
+
+                p5r_run, _ = check_running_processes()
+                if p5r_run:
+                    self.send_json(409, {"error": "P5R.exe is currently running! Close the game before time warp."})
+                    return
+
+                res = apply_full_time_warp(CURRENT_EDITOR, model, t_month, t_day,
+                                           direction=direction)
+                if res.get("status") != "success":
+                    self.send_json(400, {"status": res.get("status"),
+                                         "reason": res.get("reason")})
+                    return
+
+                out_bytes = CURRENT_EDITOR.save_to_bytes()
+                resp = {"status": "success", "plan": res["plan"],
+                        "wrote": res["wrote"]}
+                if res.get("bits_written"):
+                    resp["bits_written"] = res["bits_written"]
+                is_uploaded = CURRENT_FILE_PATH.startswith("Uploaded (")
+                if is_uploaded:
+                    CURRENT_EDITOR = SaveEditor(out_bytes)
+                    CURRENT_FILE_PATH = "Uploaded (full-time-warp)"
+                    resp["download_data"] = base64.b64encode(out_bytes).decode("ascii")
+                    resp["integrity"] = CURRENT_EDITOR.integrity_report()
+                else:
+                    p = Path(CURRENT_FILE_PATH)
+                    bkp = create_timestamped_backup(p)
+                    p.write_bytes(out_bytes)
+                    CURRENT_EDITOR = SaveEditor(p.read_bytes())
+                    instances.update_save(CURRENT_FILE_PATH)
+                    resp["backup"] = bkp.name
+                    resp["integrity"] = CURRENT_EDITOR.integrity_report()
+                self.send_json(200, resp)
+            except ValueError as e:
+                self.send_json(400, {"error": str(e)})
+            except Exception as e:
+                self.send_json(500, {"error": f"Full time warp failed: {str(e)}"})
 
     def send_json(self, code, payload):
         self.send_response(code)

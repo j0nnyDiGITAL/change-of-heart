@@ -76,6 +76,14 @@ This project was built across intensive collaborative AI-assisted reverse-engine
 * **Live Item Dossier (Right Pane):** In-game effect text, hex ID, bag quantity counter (`[-10] [-1] [+1] [+10]`), `SET TO 99x (MAX)`, and `DISCARD (REMOVE)`.
 * **1-Click Batch Presets:** Max Current Tab, 99x Leblanc Curry & Coffee, Infiltration Kit, Clinic Meds, Reset Bag.
 
+### 🕰️ 7. Time Travel & Calendar Suite (new in v1.2)
+* **Time Travel Planner (read-only):** full year calendar — free/story day classification, every Palace deadline and confidant gate with countdowns.
+* **⏩ Time Warp (safe route):** forward-only date advance validated day-by-day against the bundled calendar model; story windows either refuse with exact blocker dates or resolve through explicit, user-acknowledged branch choices.
+* **🌀 Full Time Warp (any date):** complete time machine — rewrites the clock, all Palace guard/discovery flags and daily event flags for the destination date in one pass, **forward and backward**; the plan shows only the bits that actually change on your save.
+* **🚪 Deadline Escape Hatch:** missed Maruki R9 (11/18) or Akechi R8 (11/17)? Restores a pre-deadline vault backup, re-applies the missing rank with point-preserving semantics, and lets the game's own gate pass.
+* **🏛 Palace Skip (two modes):** ⚔ *Skip Grind, Keep Calendar* — clear the Palace without playing it while keeping every remaining day before the deadline free (objective flips to "wait for the change of heart"; all pinned scenes play on schedule) — or ⏭ *Jump to Deadline* — one-day compression straight to the deadline day.
+* All write paths: timestamped backup → verified writes only → dual-CRC re-sign, and refuse to run while P5R is open. See `docs/TIME_TRAVEL_GUIDE.md`.
+
 ### 🔒 6. Bulletproof Safety & Cryptography
 * **100% Native AES-256-CBC Decryption & Encryption** matching Atlus PC standards.
 * **Dual-Layer CRC32 Checksum Calculator:** Recalculates both header (`0x00000000`) and data payload (`0x00000020`) checksums on every save.
@@ -104,7 +112,14 @@ No Python or terminal required! Just grab the latest standalone release:
 
 ## 📋 Changelog
 
-### v1.1.1 (upcoming) — Security Audit & Robustness Fixes
+### v1.2.0 (upcoming) — Time Travel & Calendar Suite
+- **🕰️ Calendar stage:** read-only Time Travel Planner (year grid, deadlines, gate status) + ⏩ Time Warp + 🌀 Full Time Warp + 🚪 Deadline Escape Hatch + 🏛 Palace Skip cards.
+- **Engine:** `core/chronos.py` + bundled `chronos_model.json` calendar model — per-day story/ambient classification, branch-bit resolution across story windows, full flag-sync warps in both directions, fail-closed planning with exact blocker reporting.
+- **🏛 Palace Skip two modes:** grind-skip with calendar preservation (bits only) or deadline-day jump (bits + clock warp).
+- **Format:** header `day` = 0-based day index from April 1; payload day counter `0x3D70 = max(0, hdr.day − 52)` (through 12/31); event-flag matrix mapped per table with corpus-verified transforms. April→December warp envelope (cross-year semantics unverified).
+- **+106 tests** (280 total) incl. real signed-container roundtrips for every engine.
+
+### v1.1.1 — Security Audit & Robustness Fixes
 > External full-project audit: every finding fixed.
 
 - **🔒 CSRF Hardening:** The local API now validates browser `Origin` headers (loopback only); foreign origins get `403`. Replaced wildcard `Access-Control-Allow-Origin: *` with validated reflection — malicious web pages can no longer drive the local save API while the editor runs.
