@@ -14,12 +14,12 @@
 
 
 ## CURRENT POSITION -- realign here, then act
-- **Milestone:** Scaffolding upgrade to AIY-OS standards (Schema v2, GOALS.md, Invariant Guardian) & resume Ground-Up Redesign.
-- **You are at:** Implementation phase (Scaffolding alignment active on main).
-- **Last done:** Save backup ZIP generation fix verified across local and uploaded saves (178/178 tests green, v1.1.2 baseline).
-- **Do this next:** Complete AGY-OS scaffolding sync (scripts/check-invariants.py, state.json schema v2, STATUS.md auto-sync header, AGENTS.md update).
-- **DONE WHEN:** `python scripts/check-invariants.py` passes with all 4 gates green, schema v2 active, and 178/178 unit tests pass.
-- **Live caveats (trust, don't re-verify):** Full-bleed redesign work is safely preserved on branch `redesign/p5r-native-menu`; `main` maintains the stable v1.1.2 release baseline.
+- **Milestone:** Ship v1.1.2 release (stale EXE), then resume Ground-Up Redesign on `redesign/p5r-native-menu`.
+- **You are at:** Implementation phase (AGY-OS Tier 2 active; ledger resynced after Antigravity quota death).
+- **Last done:** v1.1.2 EXE rebuilt from HEAD (41.7MB, sha256 897e0df5cbf17172, includes reddit bugfixes).
+- **Do this next:** User hands-on test of fresh EXE -> D011 process smoke test -> GitHub v1.1.2 release upload.
+- **DONE WHEN:** Process smoke test passes (Origin guard 403 + heartbeat ever_seen=true), GitHub release v1.1.2 published with asset, STATUS.md Build/GitHub lines match release.
+- **Live caveats (trust, don't re-verify):** Full-bleed redesign preserved on branch `redesign/p5r-native-menu`; Outfits `0xA000+` wiring frozen (D008) until 2-save diff proves offsets; current shipped EXE predates reddit bugfixes.
 
 
 ## Project goals (durable)
@@ -31,15 +31,15 @@
 ## Phase Plan
 
 ### PHASE 1 -- AGY-OS Scaffolding Alignment
-- [ ] Upgrade state.json to Schema v2 with `check_commands`, `banned_patterns`, and `human_gate`.
+- [x] Upgrade state.json to Schema v2 with `check_commands`, `banned_patterns`, and `human_gate`.
   - **Gate:** `python scripts/check-invariants.py` validates schema v2.
-- [ ] Upgrade `scripts/check-invariants.py` with auto-sync, auto-migration, and banned pattern checks.
+- [x] Upgrade `scripts/check-invariants.py` with auto-sync, auto-migration, and banned pattern checks.
   - **Gate:** `python scripts/check-invariants.py --sync` executes cleanly.
-- [ ] Rescaffold `AGENTS.md` and `STATUS.md` to latest AGY-OS Tier 2 standards.
+- [x] Rescaffold `AGENTS.md` and `STATUS.md` to latest AGY-OS Tier 2 standards.
   - **Gate:** Invariant check passes 100% with no missing files or desyncs.
 
 
-3## PHASE 2 -- Ground-Up P5R UI Redesign (`redesign/p5r-native-menu`)
+## PHASE 2 -- Ground-Up P5R UI Redesign (`redesign/p5r-native-menu`)
 - [ ] Stage 1: Full-Bleed Joker Status Canvas (character cutout on canvas, angled polygonal shards, tactile stat controls).
   - **Gate:** Headless UI capture matches reference `27809.jpg` / `76684.jpg`.
 - [ ] Stage 2: Compendium & Velvet Room Register (blue accent theme, 232-record view).
@@ -51,8 +51,10 @@
 
 
 ## Progress Log
+- 2026-09-22: v1.1.2 EXE rebuilt from HEAD `174d35a` (PyInstaller 6.22.0 / Python 3.14.6, 28.6s, 41.7MB, sha256 897e0df5cbf17172) — reddit bugfixes now in binary. Ledger synced pre-build per crash-safety rule.
+- 2026-09-22: Reddit community bugfixes shipped (RESERVE item filter, Satanael NG+ badge, romance bit 0x02 verify, Yen/EXP isolation, category-table cache ~4ms) + AGY-OS Tier 2 scaffolding committed. 182/182 tests green. Antigravity session died on quota mid-reflex-audit; ledger desyncs repaired + next direction (v1.1.2 EXE rebuild) chosen via reflex.
 - 2026-09-02: Rescaffolding project according to AGY-OS Tier 2 standard (GOALS.md initialized).
 - 2026-08-26: Fixed save backup ZIP creation bug for uploaded/custom save files (`create_memory_backup_zip` + auto-download on save). Preserved redesign on `redesign/p5r-native-menu` branch and restored stable v1.1.1 baseline to `main`. 178/178 tests green.
 - 2026-08-25: Ground-up Native Menu Engine -- eliminated left sidebar, expanded canvas to 100vw full-bleed viewport, wired bottom ribbon navigation ticker (ref: 12558.jpg / 63559.jpg). 176/176 tests green.
-- 2026-08-24: Fixed bond-points wipe bug +zamasu2020, r/Persona5Royale). 174/174 tests green.
+- 2026-08-24: Fixed bond-points wipe bug (zamasu2020, r/Persona5Royale). 174/174 tests green.
 - 2026-08-24: UI-liveness watchdog shipped. 170/170 tests green.

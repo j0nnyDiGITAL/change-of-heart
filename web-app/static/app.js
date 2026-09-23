@@ -2117,7 +2117,7 @@ function hydrateItemOwnerMap() {
 // Canonical Category Visual Themes & Glyph Badges
 const P5R_CATEGORY_THEMES = {
   Consumable: { glyph: "HP", color: "var(--p5-cyan)", bg: "#002B33", name: "Consumable / Healing" },
-  Infiltration: { glyph: "TOOL", color: "#FFD600", bg: "#332B00", name: "Infiltration Tool" },
+  Infiltration: { glyph: "TOOL", color: "#FFD600", bg: "#332B00", name: "Infiltration Tools & Materials" },
   SkillCard: { glyph: "CARD", color: "#E040FB", bg: "#2E0033", name: "Skill Card" },
   Melee: { glyph: "BLD", color: "#FF3D00", bg: "#330D00", name: "Melee Weapon" },
   Ranged: { glyph: "GUN", color: "#76FF03", bg: "#133300", name: "Firearm / Gun" },
@@ -2166,10 +2166,22 @@ const P5R_ITEM_DESCRIPTIONS = {
   'Master Curry': 'Restores 50 SP to all allies. Masterfully aged secret recipe.',
   'Lockpick': 'Picks standard Palace and Mementos locked treasure chests.',
   'Eternal Lockpick': 'Infinite use lockpick. Opens any Palace locked chest without breaking.',
+  'Perma-Pick': 'Infinite use lockpick. Opens any Palace locked chest without breaking.',
   'Vanish Ball': 'Guarantees immediate escape from standard shadow encounters in Palaces.',
   'Spotlight': 'Draws enemy attacks to the user for 3 turns.',
   'Goho-M': 'Instantly teleports the party back to the Palace safe room entrance.',
   'Megido Bomb': 'Deals 150 Almighty damage to all foes.',
+  'Liquid Mercury': 'Rare infiltration tool crafting material. Needed to craft the Eternal Lockpick.',
+  'Red Phosphorus': 'Rare infiltration tool crafting material. Needed to craft advanced tools at the workdesk.',
+  'Aluminum Sheet': 'Infiltration tool crafting material. Used for workdesk tools and bombs.',
+  'Tanned Leather': 'Infiltration tool crafting material. Used for workdesk tools and lockpicks.',
+  'Iron Sand': 'Infiltration tool crafting material. Collected in Mementos and Palaces.',
+  'Condenser Lens': 'Infiltration tool crafting material. Used for workdesk optical tools.',
+  'Silk Yarn': 'Infiltration tool crafting material. Used for workdesk infiltration gear.',
+  'Thick Parchment': 'Infiltration tool crafting material. Used for workdesk infiltration gear.',
+  'Tin Clasp': 'Infiltration tool crafting material. Used for lockpicks and mechanical tools.',
+  'Plant Balm': 'Infiltration tool crafting material. Extracted plant oils for aromas.',
+  'Cork Bark': 'Infiltration tool crafting material. Used for buoyant and insulated tools.',
   'SP Adhesive 3': 'Accessory. Automatically restores 7 SP at the start of every combat turn.',
   'Omnipotent Orb': 'Legendary accessory. Nullifies all magical and physical attacks except Almighty.',
   'Crystal of Greed': 'Will Seed ring. Grants Attack Master and Charge to the wearer.',
@@ -2185,7 +2197,7 @@ function getItemDescription(item) {
   if (item.category === "Ranged") return `Firearm equipment. Fires high-potency elemental/standard rounds.`;
   if (item.category === "Protector") return `Protective armor equipment. Enhances Defense and Magic Evade.`;
   if (item.category === "Accessory") return `Accessory. Grants passive buffs or active combat skills.`;
-  if (item.category === "Infiltration") return `Infiltration tool crafted at Joker’s hideout workdesk.`;
+  if (item.category === "Infiltration") return `Infiltration tool / crafting material for Joker’s hideout workdesk.`;
   if (item.category === "Treasure") return `Valuable shadow loot item. Sellable to Iwai at Untouchable for yen.`;
   if (item.category === "KeyItem") return `Story essential item, book, or confidant bond keepsake.`;
   return `Persona 5 Royal consumable inventory item.`;
@@ -2313,7 +2325,7 @@ function getItemSortRank(item) {
 // Render the In-Game Active Carried Items Roster — S5b dual view + UX pass:
 // R3 global search (grouped by category), R7 incremental batches, R2 per-item
 // revert, R8 Outfit read-only branch, R5 context-menu/keyboard hooks.
-const CATEGORY_LABELS = { Consumable: " CONSUMABLES", Infiltration: " INFILTRATION TOOLS", SkillCard: " SKILL CARDS", Melee: " MELEE", Ranged: " GUNS", Protector: " ARMOR", Accessory: " ACCESSORIES", Treasure: " TREASURE", Outfit: " OUTFITS", KeyItem: " KEY ITEMS" };
+const CATEGORY_LABELS = { Consumable: " CONSUMABLES", Infiltration: " INFILTRATION TOOLS & MATERIALS", SkillCard: " SKILL CARDS", Melee: " MELEE", Ranged: " GUNS", Protector: " ARMOR", Accessory: " ACCESSORIES", Treasure: " TREASURE", Outfit: " OUTFITS", KeyItem: " KEY ITEMS" };
 function catLabel(cat) { return CATEGORY_LABELS[cat] || cat.toUpperCase(); }
 
 function renderUnifiedItemList() {

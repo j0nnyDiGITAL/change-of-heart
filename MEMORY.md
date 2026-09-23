@@ -1,7 +1,7 @@
 # MEMORY.md — P5R Save Editor (Change of Heart)
 
 > Canonical memory. Read this before any work. Update at end of every session.
-> Updated: 2026-08-24
+> Updated: 2026-09-22
 
 ## Project Identity
 - **Title:** Change of Heart — P5R Save Editor
@@ -30,6 +30,8 @@
 | D014 | 2026-08-24 | UI-liveness watchdog: native window must heartbeat `/api/ui-heartbeat` within 30s of launch, else main.py auto-falls-back to the system browser | Broken WebView2 Runtimes cause silent dead UIs (r/Persona5Royale u/Gruphius case); app must self-heal with zero user homework |
 | D015 | 2026-08-24 | Browser `--app` mode REJECTED as fallback tier — tested in a prior build, rejected in practice: Edge profile bleed (imported-extension config prompts), session-restore nagging, clunky window behavior | Plain default-browser tab is the final fallback tier; do not re-propose app-mode |
 | D016 | 2026-08-24 | Point-based fields (confidant bond, social stats) must NEVER be written to bare thresholds on same-rank rewrites — preserve-surplus semantics: max(current, threshold) on raise, untouched on keep, threshold only on explicit lowering | Threshold-exact rewrites wiped players' accrued progress (zamasu2020 bug: one social-stat edit reset every confidant's bond surplus) |
+| D017 | 2026-09-22 | Atlus table placeholder rows (RESERVE / BLANK / リザーブ / `Item 0x…`) are NEVER surfaced in inventory reads and NEVER writable via `set_item_quantity` | Community bug reports (u/dotsacrum): placeholder dummies leaked into editor inventory |
+| D018 | 2026-09-22 | Delivery order: v1.1.2 EXE rebuild + release FIRST, then next feature = confidant event-flag paired writes (SAFETY #1 undetected corruption); chosen via reflex (2/2 unanimous) over outfits unlock / redesign Stage 2 / NG+ deadline advisor | Shipped binary predates HEAD; unpaired rank writes = story-content permanent loss |
 
 ## Core Domain Rules
 - Save is 4 paradigms + mirror `+0x18510`: Gear owned-flag, Stacks count-array, Key Items owned-flag/bitfield, Outfits owned-flag
@@ -107,3 +109,4 @@
 - 2026-08-24 (later): UI-liveness watchdog shipped after r/Persona5Royale field report (u/Gruphius: all versions silently dead on his machine = broken WebView2 runtime) — heartbeat + auto browser fallback; 170 tests; EXE rebuilt (520a1c5a)
 - 2026-08-24 (evening): UI Atlus-fidelity pass R1+R1.9 — screenshot audit vs official game screenshots (gameuidatabase.com, pixel-sampled): rainbow gradient → flat white bar, green/yellow slabs → authentic red/white/black/cyan palette (D016-adjacent), hex IDs removed from persona cards, star ladder → horizontal meters, sidebar emoji → flat SVGs, type hierarchy demoted; v1.1.1 released with watchdog build
 - 2026-08-24 (night): Bond-points wipe bug FIXED (zamasu2020) — social-stat edits reset all confidants' surplus via full-confidant re-save loop; preserve-surplus semantics in set_confidant_rank + set_social_stats (D016); 4 regression tests (174/174); EXE rebuilt
+- 2026-09-22: Reddit bugfixes (RESERVE filter D017, Satanael NG+ badge, romance bit verify, Yen/EXP isolation, category-table cache ~4ms) + AGY-OS Tier 2 scaffolding committed (174d35a, 0da3ecf); 182/182 tests. Antigravity session died on quota mid-reflex-audit (steps 18126-18131, 429 x6); OpenCode resumed: audit completed, 4 ledger desyncs repaired, direction set D018; exit protocol closed this session

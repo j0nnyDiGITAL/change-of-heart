@@ -37,7 +37,7 @@ in-game-verified project knowledge. Read this before editing saves.
 ## Editor safety guarantees (as of 2026-08-23)
 
 - All writes bounds-checked; PC payload passed through verbatim except verified offsets.
-- Every repack re-signs CRC + AES correctly (168/168 regression unit tests).
+- Every repack re-signs CRC + AES correctly (182/182 regression unit tests, 2026-09-22).
 - Teammate party personas scoped to authentic Tier 1 / 2 / 3 evolution lines; arbitrary cross-character persona assignment blocked to prevent battle animation crashes.
 - Unsupported operations return `{"status": "unsupported"}` — never fake success.
 - Persona stock writes validate ids against `data/Personas.txt` and `data/Skill ID.txt`.

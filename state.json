@@ -7,7 +7,7 @@
   "version": "v1.1.2",
   "pinned_shas": {},
   "last_session": "memory/2026-09-22-reddit-bugfixes.md",
-  "updated_at": "2026-09-22T04:40:00Z",
+  "updated_at": "2026-09-23T16:55:00Z",
   "check_commands": [
     ["python", "-m", "unittest", "discover", "-s", "tests"]
   ],
@@ -19,7 +19,7 @@
   ],
   "human_gate": "none",
   "blockers": [],
-  "next_action": "Complete AGY-OS scaffolding sync (check-invariants.py, STATUS.md, AGENTS.md, CLAUDE.md)",
+  "next_action": "User test fresh v1.1.2 EXE (41.7MB, sha 897e0df5cbf17172), then D011 process smoke test + GitHub release upload",
   "active_owners": [],
   "frozen_offsets": [
     "0xA000+ Outfits save wiring (D008 \u2014 read-only in UI)"
