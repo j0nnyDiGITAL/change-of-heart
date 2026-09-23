@@ -8,7 +8,7 @@
 
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Steam%20%7C%20Steam%20Deck-red?style=for-the-badge&logo=steam)](https://github.com/j0nnyDiGITAL/change-of-heart)
 [![Built With](https://img.shields.io/badge/Built%20With-100%25%20Vibecoded%20⚡-ff007f?style=for-the-badge)](https://github.com/j0nnyDiGITAL/change-of-heart)
-[![Tests](https://img.shields.io/badge/Tests-178%2F178%20Passing%20(100%25)-brightgreen?style=for-the-badge)](https://github.com/j0nnyDiGITAL/change-of-heart)
+[![Tests](https://img.shields.io/badge/Tests-182%2F182%20Passing%20(100%25)-brightgreen?style=for-the-badge)](https://github.com/j0nnyDiGITAL/change-of-heart)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
 [![Ko-fi](https://img.shields.io/badge/Ko--fi-Support%20j0nny%20DiGITAL-ff5e5b?style=for-the-badge&logo=kofi&logoColor=white)](https://ko-fi.com/j0nnydigital)
 
@@ -98,9 +98,13 @@ No Python or terminal required! Just grab the latest standalone release:
 
 ## 📋 Changelog
 
-### v1.1.2 — Save Backup ZIP Fix & Upload Safety
+### v1.1.2 — Save Backup ZIP Fix, Reddit Community Fixes & In-Memory Caching
 - **🛡️ In-Memory Backup ZIP Creation:** Resolved bug report where saving custom or uploaded save files (`BROWSE...`) failed to create a `.zip` backup archive. The backend now creates an in-memory timestamped `.zip` containing the original baseline save and downloads it automatically to the user's browser alongside the re-signed save.
-- **🧪 178/178 Unit Tests Passing:** Added dedicated automated test suite (`tests/test_backup_fix.py`).
+- **🧹 Atlus Dummy/RESERVE Item Filtering:** Filtered unused table placeholders (`RESERVE`, `BLANK`, `リザーブ`, etc.) from inventory lists and write endpoints while preserving authentic items like `Reserve Ammo` and `Blank Card`.
+- **⚡ Category Table Caching (~4ms read):** Added in-memory class caching for master data tables, eliminating per-item disk hits and beating the 100ms virtual scroll SLA.
+- **🏷️ Tools & Materials UI Clarity:** Renamed Infiltration tab to "Tools & Mats" with rich in-game descriptions for crafting components (Liquid Mercury, Red Phosphorus, Aluminum Sheet, etc.).
+- **🎭 Satanael NG+ Badge & Confidant Safety Warning:** Added clear NG+ badge for Satanael in compendium and cutscene skip advisory for Rank 9 romance flags.
+- **🧪 182/182 Unit Tests Passing:** Complete automated test suite coverage with zero regressions.
 - **🌿 Redesign Feature Branch:** Full-bleed P5R menu overhaul safely branched to `redesign/p5r-native-menu` for ongoing development.
 
 ### v1.1.1 — UI-Liveness Watchdog & Bond Points Preservation

@@ -25,7 +25,7 @@ in-game-verified project knowledge. Read this before editing saves.
 2. Never copy event-flag zones or confidant blocks between different saves/playthroughs.
 3. Never write a persona/skill ID that is not in the data tables. Keep stock slot 0 valid. (Enforced by the editor since 2026-08-13.)
 4. Never invent flag bit 0x1000 on persona slots — preserve existing bits.
-5. Never exceed 0..9,999,999 money; both fields (0x35C0 and 0x3C) are always written together. (Enforced.)
+5. Never exceed 0..9,999,999 money; Yen is written to 0x35C0 (Joker EXP at 0x3C is preserved). (Enforced.)
 6. Never set HP/SP above the real derived max (max is NOT stored in the save — derived from level + persona in-game; proven 2026-08-13). Set to 1 if unsure.
 7. Never rank a confidant before they appear in the confidant block.
 8. Pre-ranking confidants accepts missing rank-up scenes. Confidants must be ranked before their in-game story deadlines (e.g. Maruki Rank 9 on/before 11/18 for 3rd semester); rank edits past a deadline cannot retroactively replay story events. (Updated 2026-08-21).
