@@ -118,6 +118,17 @@ class TestBondPointsPreservation(unittest.TestCase):
         # Confidant untouched by the whole flow
         self.assertEqual(read_confidant(ed, DEATH)["points"], 100)
 
+    def test_server_forwards_explicit_bond_points_from_ui_payload(self):
+        """The UI stages explicit bond points when rank arrows are used; the
+        save endpoint must forward them instead of silently preserving the old
+        value for a same-rank round trip (for example 3 -> 4 -> 3)."""
+        root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        with open(os.path.join(root, "server.py"), encoding="utf-8") as f:
+            server_src = f.read()
+
+        self.assertIn('points = int(cdata["points"])', server_src)
+        self.assertIn("points=points", server_src)
+
 
 if __name__ == "__main__":
     unittest.main()
