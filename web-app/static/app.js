@@ -1720,6 +1720,24 @@ function executeSaveAfterSafetyCheck() {
   executeSavePayload();
 }
 
+function openFaqModal() {
+  const modal = document.getElementById("faqHelpModal");
+  if (modal) modal.classList.add("open");
+  if (window.P5Audio) P5Audio.playSwitch();
+}
+
+function closeFaqModal(e) {
+  const modal = document.getElementById("faqHelpModal");
+  if (modal) modal.classList.remove("open");
+  if (window.P5Audio) P5Audio.playClick();
+}
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    closeFaqModal();
+  }
+});
+
 // =========================================================================
 // STAGE 3.75: COMPENDIUM REGISTRY LOGIC (GRANULAR & BATCH STUDIO)
 // =========================================================================

@@ -6,12 +6,12 @@
   "mode": "single-agent",
   "version": "v1.1.2",
   "pinned_shas": {},
-  "last_session": "memory/2026-09-22-reddit-bugfixes.md",
-  "updated_at": "2026-09-23T16:55:00Z",
+  "last_session": "memory/2026-10-05-reddit-bugfix-faq.md",
+  "updated_at": "2026-10-05T20:25:00Z",
   "check_commands": [
     ["python", "-m", "unittest", "discover", "-s", "tests"]
   ],
-  "test_count": 182,
+  "test_count": 183,
   "banned_patterns": [
     ["slotIdx\\s*<\\s*30", "Quick-array 30-slot cap (was silently dropping items)"],
     ["0x3530.*merge|merge.*0x3530", "Quick-array merge (never merge with master counts)"],
@@ -19,9 +19,9 @@
   ],
   "human_gate": "none",
   "blockers": [],
-  "next_action": "User test fresh v1.1.2 EXE (41.7MB, sha 897e0df5cbf17172), then D011 process smoke test + GitHub release upload",
+  "next_action": "Run invariant gate, audit project hygiene, and commit & push to GitHub",
   "active_owners": [],
   "frozen_offsets": [
-    "0xA000+ Outfits save wiring (D008 \u2014 read-only in UI)"
+    "0xA000+ Outfits save wiring (D008 — read-only in UI)"
   ]
 }

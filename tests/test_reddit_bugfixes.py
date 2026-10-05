@@ -66,5 +66,37 @@ class TestRedditBugFixes(unittest.TestCase):
         exp_after = struct.unpack_from("<I", d_after, 0x3C)[0]
         self.assertEqual(exp_before, exp_after, "set_money must never modify 0x3C (Joker EXP)!")
 
+    def test_homunculus_vs_takemedic_isolation(self):
+        """Homunculus (0x203F) must map to 0x2570 and Takemedic (0x2004) to 0x2534 without collision."""
+        off_homunculus = self.editor.get_item_count_offset(0x203F)
+        off_takemedic = self.editor.get_item_count_offset(0x2004)
+        
+        # In engine memory: Takemedic is main+02271558 -> 0x2534; Homunculus is main+02271594 -> 0x2570
+        self.assertEqual(off_homunculus, 0x2570, "Homunculus offset must be 0x2570 (addr - 0x0226F024)")
+        self.assertEqual(off_takemedic, 0x2534, "Takemedic offset must be 0x2534 (addr - 0x0226F024)")
+
+        # Verify editing Homunculus writes strictly to 0x2570 and does not alter Takemedic at 0x2534
+        d = bytearray(self.editor.parser.data_payload)
+        d[0x2534] = 5   # Seed Takemedic = 5
+        d[0x2534 + 0x18510] = 5
+        d[0x2570] = 0   # Homunculus = 0
+        d[0x2570 + 0x18510] = 0
+        self.editor.parser.data_payload = bytes(d)
+
+        res = self.editor.set_item_quantity(0x203F, 99)
+        self.assertEqual(res["status"], "success")
+        self.assertEqual(res["quantity"], 99)
+
+        d_after = self.editor.parser.data_payload
+        self.assertEqual(d_after[0x2570], 99, "Homunculus offset 0x2570 must be 99")
+        self.assertEqual(d_after[0x2570 + 0x18510], 99, "Homunculus mirror offset must be 99")
+        self.assertEqual(d_after[0x2534], 5, "Takemedic offset 0x2534 must remain untouched at 5")
+        self.assertEqual(d_after[0x2534 + 0x18510], 5, "Takemedic mirror offset must remain 5")
+
+        # Verify read model surfaces both correctly
+        norm = self.editor.get_normalized_inventory()
+        self.assertEqual(norm["stacks"].get(0x203F), 99)
+        self.assertEqual(norm["stacks"].get(0x2004), 5)
+
 if __name__ == "__main__":
     unittest.main()

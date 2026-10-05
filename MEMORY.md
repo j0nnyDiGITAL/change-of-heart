@@ -7,7 +7,7 @@
 - **Title:** Change of Heart — P5R Save Editor
 - **Goal:** Read and fix Persona 5 Royal (PC/Steam) save files — truthful read + safe lasting write
 - **Workspace:** `E:\ai-workspace\knowledge-base\projects\p5r-save-editor`
-- **Version:** v1.0.10-dev (153/153 tests passing, NOT pushed to GitHub)
+- **Version:** v1.1.2 (183/183 tests passing)
 - **Architecture:** Native PyWebView / Edge WebView2 window (`main.py`) over stdlib HTTP backend (`server.py`, binds `127.0.0.1:3000`). Frozen build: `P5R_Save_Editor.spec` (PyInstaller).
 
 ## Locked Decisions (Do Not Re-Debate Without User)
@@ -32,6 +32,8 @@
 | D016 | 2026-08-24 | Point-based fields (confidant bond, social stats) must NEVER be written to bare thresholds on same-rank rewrites — preserve-surplus semantics: max(current, threshold) on raise, untouched on keep, threshold only on explicit lowering | Threshold-exact rewrites wiped players' accrued progress (zamasu2020 bug: one social-stat edit reset every confidant's bond surplus) |
 | D017 | 2026-09-22 | Atlus table placeholder rows (RESERVE / BLANK / リザーブ / `Item 0x…`) are NEVER surfaced in inventory reads and NEVER writable via `set_item_quantity` | Community bug reports (u/dotsacrum): placeholder dummies leaked into editor inventory |
 | D018 | 2026-09-22 | Delivery order: v1.1.2 EXE rebuild + release FIRST, then next feature = confidant event-flag paired writes (SAFETY #1 undetected corruption); chosen via reflex (2/2 unanimous) over outfits unlock / redesign Stage 2 / NG+ deadline advisor | Shipped binary predates HEAD; unpaired rank writes = story-content permanent loss |
+| D019 | 2026-10-05 | Consumable item save offsets MUST route through static engine table `core/consumable_offsets.py` derived via Universal Engine Offset Formula (`save_offset = memory_address - 0x0226F024`), never piecewise linear arithmetic (`0x2530 + idx`) | Non-contiguous table gaps in `Items.txt` (Vanish Ball missing at row 23, etc.) desynchronized 309 of 338 items (>91% mismatch), causing Homunculus (`0x203F` -> `0x2570`) to write to Life Ointment (`0x256F`). Reported by u/Party-Consequence-71 |
+
 
 ## Core Domain Rules
 - Save is 4 paradigms + mirror `+0x18510`: Gear owned-flag, Stacks count-array, Key Items owned-flag/bitfield, Outfits owned-flag
@@ -110,3 +112,4 @@
 - 2026-08-24 (evening): UI Atlus-fidelity pass R1+R1.9 — screenshot audit vs official game screenshots (gameuidatabase.com, pixel-sampled): rainbow gradient → flat white bar, green/yellow slabs → authentic red/white/black/cyan palette (D016-adjacent), hex IDs removed from persona cards, star ladder → horizontal meters, sidebar emoji → flat SVGs, type hierarchy demoted; v1.1.1 released with watchdog build
 - 2026-08-24 (night): Bond-points wipe bug FIXED (zamasu2020) — social-stat edits reset all confidants' surplus via full-confidant re-save loop; preserve-surplus semantics in set_confidant_rank + set_social_stats (D016); 4 regression tests (174/174); EXE rebuilt
 - 2026-09-22: Reddit bugfixes (RESERVE filter D017, Satanael NG+ badge, romance bit verify, Yen/EXP isolation, category-table cache ~4ms) + AGY-OS Tier 2 scaffolding committed (174d35a, 0da3ecf); 182/182 tests. Antigravity session died on quota mid-reflex-audit (steps 18126-18131, 429 x6); OpenCode resumed: audit completed, 4 ledger desyncs repaired, direction set D018; exit protocol closed this session
+- 2026-10-05: Critical consumable offset desync fixed (u/Party-Consequence-71: Homunculus->Takemedic bug) via Universal Engine Offset Formula (`core/consumable_offsets.py`, D019); full FAQ knowledge base published (`docs/FAQ.md`) with in-app `❓ FAQ & HELP` modal (u/Aslanyiyenkedi save button, u/Antiwis- unmet confidants 0 stars vs ???); README updated with FAQ badge and changelog; 183/183 tests passing; invariants verified 4/4.

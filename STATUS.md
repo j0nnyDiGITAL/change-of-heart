@@ -1,7 +1,7 @@
 # STATUS.md — P5R Save Editor (Change of Heart)
 
 > Human-readable current state. Synced from state.json on every exit.
-> Updated: 2026-09-23 12:55 EDT
+> Updated: 2026-10-05 16:25 EDT
 
 ## Current State
 <!-- GENERATED_STATE_HEADER_START -->
@@ -9,10 +9,11 @@
 - **Gate:** ready
 - **Mode:** single-agent
 - **Version:** v1.1.2
-- **Updated:** 2026-09-23T16:55:00Z
+- **Updated:** 2026-10-05T20:25:00Z
 <!-- GENERATED_STATE_HEADER_END -->
 
 ## Last Completed
+- 2026-10-05: Resolved critical Reddit user bug report (`u/Party-Consequence-71`): mapped all 338 consumable items to their exact engine offsets via the Universal Engine Offset Formula (`save_offset = memory_address - 0x0226F024`), fixing the Homunculus (`0x2570`) vs Takemedic (`0x2534`) desync caused by non-contiguous memory gaps in Atlus tables. Published comprehensive FAQ knowledge base (`docs/FAQ.md`) and integrated in-app `❓ FAQ & HELP` modal in web UI addressing save button location (`u/Aslanyiyenkedi`), un-met confidants 0 stars vs ??? (`u/Antiwis-`), crafting materials location, and save backups. 183/183 tests green.
 - 2026-09-23: Resolved Reddit user query (`u/AbandedsMind`) regarding Liquid Mercury: Liquid Mercury is in `Infiltration` (ID 24597 / `0x6015`), which was previously labeled as just "Tools". Renamed tab to "Tools & Mats" and updated category labels/themes to "Infiltration Tools & Materials" with rich descriptions for all infiltration crafting components. 182/182 tests green.
 - 2026-09-22: Resolved Reddit community bug reports (`u/dotsacrum`, `u/Competitive-Hand5758`): filtered Atlus table RESERVE/blank placeholder items from inventory read/write, added Satanael NG+ ONLY badge and guidance in compendium, verified confidant romance bit 0x02 flag clearing with in-game cutscene skip warning, verified Yen vs EXP offset isolation, and optimized category table reading with in-memory caching to pass 100ms SLA. 182/182 tests green.
 - 2026-08-26: Fixed save backup ZIP creation bug for uploaded/custom save files (`create_memory_backup_zip` + auto-download on save). Preserved redesign on `redesign/p5r-native-menu` branch and restored stable v1.1.1 baseline to `main`. 178/178 tests green.

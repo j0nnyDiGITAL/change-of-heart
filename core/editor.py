@@ -12,6 +12,7 @@ from typing import Dict, Any, Optional, List, Tuple
 from .crypto import SaveContainer
 from .parser import GameDataParser, SaveHeader, PlayerNameBlock
 from .key_item_offsets import KEY_ITEM_OFFSET_BY_DB_ID
+from .consumable_offsets import CONSUMABLE_OFFSET_BY_DB_ID
 
 
 # Confidant Arcana Map
@@ -1469,13 +1470,11 @@ class SaveEditor:
         """
         prefix = item_id & 0xF000
         idx = item_id & 0x0FFF
-        if prefix == 0x2000:  # Consumables — verified sub-bases
-            if idx <= 0x60:  # Medicines & Battle Items (0x2001..0x2060)
+        if prefix == 0x2000:  # Consumables — Universal Engine Offset Formula (addr - 0x0226F024)
+            if item_id in CONSUMABLE_OFFSET_BY_DB_ID:
+                return CONSUMABLE_OFFSET_BY_DB_ID[item_id]
+            if 1 <= idx <= 696:
                 return 0x2530 + idx
-            elif 0x70 <= idx <= 0x85:  # Gym & Workout Proteins
-                return 0x25AA + idx
-            elif idx > 0x85:
-                return 0x2600 + idx
             return 0
         elif prefix == 0x3000:  # Accessories — stackable count byte (0x2330 + idx)
             return SaveEditor.PC31_ACCESSORY_OWNED_BASE + idx
@@ -1558,10 +1557,8 @@ class SaveEditor:
                 raw_stack_ids.append(iid)
         # If no REFERENCE_DB, fall back to brute sparse scan of known count sub-bases
         if not raw_stack_ids:
-            for idx in range(1, 0x300):
-                cand = 0x2000 | idx
-                off = self.get_item_count_offset(cand)
-                if off and off < len(d) and d[off] > 0:
+            for cand, off in CONSUMABLE_OFFSET_BY_DB_ID.items():
+                if off < len(d) and d[off] > 0:
                     raw_stack_ids.append(cand)
             for idx in range(1, 0x200):
                 cand = 0x3000 | idx

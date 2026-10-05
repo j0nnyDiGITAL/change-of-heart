@@ -8,7 +8,8 @@
 
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Steam%20%7C%20Steam%20Deck-red?style=for-the-badge&logo=steam)](https://github.com/j0nnyDiGITAL/change-of-heart)
 [![Built With](https://img.shields.io/badge/Built%20With-100%25%20Vibecoded%20⚡-ff007f?style=for-the-badge)](https://github.com/j0nnyDiGITAL/change-of-heart)
-[![Tests](https://img.shields.io/badge/Tests-182%2F182%20Passing%20(100%25)-brightgreen?style=for-the-badge)](https://github.com/j0nnyDiGITAL/change-of-heart)
+[![Tests](https://img.shields.io/badge/Tests-183%2F183%20Passing%20(100%25)-brightgreen?style=for-the-badge)](https://github.com/j0nnyDiGITAL/change-of-heart)
+[![FAQ](https://img.shields.io/badge/FAQ-Read%20Knowledge%20Base-orange?style=for-the-badge)](docs/FAQ.md)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
 [![Ko-fi](https://img.shields.io/badge/Ko--fi-Support%20j0nny%20DiGITAL-ff5e5b?style=for-the-badge&logo=kofi&logoColor=white)](https://ko-fi.com/j0nnydigital)
 
@@ -99,12 +100,14 @@ No Python or terminal required! Just grab the latest standalone release:
 ## 📋 Changelog
 
 ### v1.1.2 — Save Backup ZIP Fix, Reddit Community Fixes & In-Memory Caching
+- **🧪 Universal Engine Consumable Offset Formula (Fixes Homunculus -> Takemedic Bug):** Resolved critical inventory bug reported by Reddit user `u/Party-Consequence-71` where adding consumables wrote to the wrong slot (e.g. Homunculus giving Takemedic) due to non-contiguous table gaps in Atlus memory. Mapped all 338 consumable items to their exact engine offsets via `save_offset = memory_address - 0x0226F024`.
+- **❓ Comprehensive FAQ & In-App Help:** Added a comprehensive FAQ knowledge base ([`docs/FAQ.md`](docs/FAQ.md)) and an in-app help modal answering top Reddit community questions regarding inventory offsets, unmet confidants (0 stars vs ???), save button location, compendium records, and save integrity.
 - **🛡️ In-Memory Backup ZIP Creation:** Resolved bug report where saving custom or uploaded save files (`BROWSE...`) failed to create a `.zip` backup archive. The backend now creates an in-memory timestamped `.zip` containing the original baseline save and downloads it automatically to the user's browser alongside the re-signed save.
 - **🧹 Atlus Dummy/RESERVE Item Filtering:** Filtered unused table placeholders (`RESERVE`, `BLANK`, `リザーブ`, etc.) from inventory lists and write endpoints while preserving authentic items like `Reserve Ammo` and `Blank Card`.
 - **⚡ Category Table Caching (~4ms read):** Added in-memory class caching for master data tables, eliminating per-item disk hits and beating the 100ms virtual scroll SLA.
 - **🏷️ Tools & Materials UI Clarity:** Renamed Infiltration tab to "Tools & Mats" with rich in-game descriptions for crafting components (Liquid Mercury, Red Phosphorus, Aluminum Sheet, etc.).
 - **🎭 Satanael NG+ Badge & Confidant Safety Warning:** Added clear NG+ badge for Satanael in compendium and cutscene skip advisory for Rank 9 romance flags.
-- **🧪 182/182 Unit Tests Passing:** Complete automated test suite coverage with zero regressions.
+- **🧪 183/183 Unit Tests Passing:** Complete automated test suite coverage with zero regressions.
 - **🌿 Redesign Feature Branch:** Full-bleed P5R menu overhaul safely branched to `redesign/p5r-native-menu` for ongoing development.
 
 ### v1.1.1 — UI-Liveness Watchdog & Bond Points Preservation
@@ -214,6 +217,21 @@ If the editor launches but buttons are dead / saves aren't detected, your **Micr
 | `0x136A0` | 368 B | **Confidant Block** | 23 Arcanas × 16B stride (`[6 pad][u16 ID][u16 Rank][u16 Points]`) |
 | `0x139E0` | 20 B | **Social Stats** | Knowledge, Guts, Proficiency, Kindness, Charm points |
 | `0x2F200` | 5,376 B | **Event Flag Matrix** | 43,008-bit game progression, story cutscenes, and dungeon milestones |
+
+---
+
+## ❓ Frequently Asked Questions (FAQ)
+
+Have questions about save button locations, inventory offsets, unmet confidants, or 3rd Semester requirements?
+Check out our comprehensive **[FAQ & Knowledge Base](docs/FAQ.md)**!
+
+- [Where is the "Save Changes" button?](docs/FAQ.md#-1-general--saving)
+- [Why did adding an item swap it previously? (Homunculus vs Takemedic fix)](docs/FAQ.md#-2-inventory--items)
+- [Where are crafting materials like Liquid Mercury?](docs/FAQ.md#-2-inventory--items)
+- [Why do unmet confidants show 0 stars instead of "???"](docs/FAQ.md#-3-confidants--social-links)
+- [Why does my compendium show 100%?](docs/FAQ.md#-4-compendium--personas)
+- [Does maxing out Yen mess up Joker's EXP or Level?](docs/FAQ.md#-5-money-exp--stats)
+- [Where are save backups stored and how do I roll back?](docs/FAQ.md#-6-backups--safety)
 
 ---
 

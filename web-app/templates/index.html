@@ -68,8 +68,11 @@
         <span id="status-text">INITIALIZING SYSTEM...</span>
       </div>
       <a href="https://ko-fi.com/j0nnydigital" target="_blank" style="display:flex; align-items:center; justify-content:center; gap:6px; background:rgba(255,94,91,0.12); border:1px solid #FF5E5B; color:#FF5E5B; padding:5px 8px; border-radius:4px; font-size:11px; font-weight:800; text-decoration:none; transition:all 0.2s ease;">
-        <span></span> <span>SUPPORT j0nny DiGITAL</span>
+        <span>☕</span> <span>SUPPORT j0nny DiGITAL</span>
       </a>
+      <button onclick="openFaqModal()" class="p5-btn-action secondary" style="width:100%; margin-top:6px; padding:5px 8px; font-size:11px; font-weight:800; border-color:var(--p5-gold); color:var(--p5-gold); display:flex; align-items:center; justify-content:center; gap:6px;">
+        <span>❓</span> <span>HELP &amp; FAQ</span>
+      </button>
     </div>
   </aside>
 
@@ -85,6 +88,7 @@
         <button class="p5-btn-action" onclick="loadSaveFile()"><span>LOAD SAVE</span></button>
         <button class="p5-btn-action secondary" onclick="refreshDiscovery()" title="Rescan standard Steam directory"><span>REFRESH</span></button>
         <button class="p5-btn-action secondary" onclick="document.getElementById('manualFileInput').click()" title="Browse custom or GamePass save file (DATA.DAT / DATA.BIN)"><span> BROWSE...</span></button>
+        <button class="p5-btn-action secondary" onclick="openFaqModal()" title="View Frequently Asked Questions & Save Guide" style="border-color:var(--p5-gold); color:var(--p5-gold);"><span>❓ FAQ</span></button>
         <input type="file" id="manualFileInput" style="display:none;" accept=".DAT,.BIN,.dat,.bin" onchange="onManualFileSelected(event)">
       </div>
 
@@ -738,6 +742,92 @@
         <button class="p5-btn-action" style="background:#FF9F1C; border-color:#FF9F1C; color:#000;" onclick="executeSaveAfterSafetyCheck()">
           <span style="font-weight:900;">RE-SIGN ANYWAY ★</span>
         </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAQ & Knowledge Base Modal -->
+  <div id="faqHelpModal" class="p5-modal-backdrop" onclick="closeFaqModal(event)">
+    <div class="p5-modal-content" style="max-width:720px; max-height:85vh; display:flex; flex-direction:column; overflow:hidden;" onclick="event.stopPropagation()">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:2px solid var(--p5-crimson); padding-bottom:8px;">
+        <h3 style="font-family:var(--font-p5); font-size:22px; color:var(--p5-crimson); margin:0; display:flex; align-items:center; gap:8px;">
+          <span>❓</span> <span>PHANTOM THIEVES FAQ &amp; HELP</span>
+        </h3>
+        <button class="p5-btn-action secondary" style="padding:4px 10px; font-size:12px;" onclick="closeFaqModal()"><span>✕ CLOSE</span></button>
+      </div>
+
+      <div style="overflow-y:auto; padding-right:8px; display:flex; flex-direction:column; gap:16px; font-size:13px; line-height:1.5; color:#DDD;">
+        
+        <div class="faq-item" style="background:rgba(255,255,255,0.03); border-left:3px solid var(--p5-crimson); padding:10px 14px;">
+          <div style="font-weight:900; color:var(--p5-gold); margin-bottom:4px; font-size:14px;">
+            💾 Where is the "Save Changes" button?
+          </div>
+          <div>
+            The save button is permanently anchored at the <strong>bottom floating deck</strong> of your screen: 
+            <span style="color:var(--p5-crimson); font-weight:800;">[SAVE CHANGES &amp; RE-SIGN (CRC + AES) ★]</span>.
+            Whenever you stage changes, an amber <strong>● STAGED</strong> badge will light up next to it. Clicking save recalculates the dual CRC32 checksums, creates an automated ZIP backup, and writes your save to disk.
+          </div>
+        </div>
+
+        <div class="faq-item" style="background:rgba(255,255,255,0.03); border-left:3px solid var(--p5-crimson); padding:10px 14px;">
+          <div style="font-weight:900; color:var(--p5-gold); margin-bottom:4px; font-size:14px;">
+            🧪 Why did adding an item swap it (e.g. Homunculus giving Takemedic)?
+          </div>
+          <div>
+            <strong>Fixed in v1.1.2!</strong> Atlus memory tables contain non-contiguous gaps (such as Vanish Ball missing at row 23). Older linear math caused 309 items to desynchronize. We discovered the <strong>Universal Engine Offset Formula</strong> (<code style="color:var(--p5-white); background:#000; padding:1px 4px;">save_offset = memory_address - 0x0226F024</code>), perfectly locking Homunculus (0x2570) and all 338 consumables to their exact bytes.
+          </div>
+        </div>
+
+        <div class="faq-item" style="background:rgba(255,255,255,0.03); border-left:3px solid var(--p5-crimson); padding:10px 14px;">
+          <div style="font-weight:900; color:var(--p5-gold); margin-bottom:4px; font-size:14px;">
+            🔑 Where are crafting materials like Liquid Mercury and Red Phosphorus?
+          </div>
+          <div>
+            Crafting materials are located under the <strong>🔑 Tools &amp; Mats</strong> tab. In Persona 5 Royal, Atlus stores infiltration crafting ingredients in the exact same table partition (<code style="color:var(--p5-white); background:#000; padding:1px 4px;">0x6000</code>) as infiltration tools. You can also search for them anytime using the <strong>+ ADD ITEM</strong> catalog modal.
+          </div>
+        </div>
+
+        <div class="faq-item" style="background:rgba(255,255,255,0.03); border-left:3px solid var(--p5-crimson); padding:10px 14px;">
+          <div style="font-weight:900; color:var(--p5-gold); margin-bottom:4px; font-size:14px;">
+            🎭 Why do confidants I haven't met yet show 0 stars instead of "???"?
+          </div>
+          <div>
+            In vanilla P5R, un-met confidants have unallocated save slots and render with "???". When an editor assigns a rank or initializes the slot at Rank 0, the game allocates the 16-byte arcana slot (<code style="color:var(--p5-white); background:#000; padding:1px 4px;">0x136A0</code>) and shows 0 stars. If you want a confidant to stay hidden until you meet them in the story, leave them unedited.
+          </div>
+        </div>
+
+        <div class="faq-item" style="background:rgba(255,255,255,0.03); border-left:3px solid var(--p5-crimson); padding:10px 14px;">
+          <div style="font-weight:900; color:var(--p5-gold); margin-bottom:4px; font-size:14px;">
+            💖 Can I skip straight to Rank 10? What happens to romance cutscenes?
+          </div>
+          <div>
+            Setting Rank 10 instantly gives combat perks, but dialogue cutscenes are governed by a permanent calendar event matrix. Skipping directly to Rank 10 will not play the Rank 9 romance hangout. To enable romance without the cutscene, use the dedicated <strong>Romance Route Toggle</strong> (<code style="color:var(--p5-white); background:#000; padding:1px 4px;">0x02</code> bit) on Rank 9+ confidants.
+          </div>
+        </div>
+
+        <div class="faq-item" style="background:rgba(255,255,255,0.03); border-left:3px solid var(--p5-crimson); padding:10px 14px;">
+          <div style="font-weight:900; color:var(--p5-gold); margin-bottom:4px; font-size:14px;">
+            💰 Does editing Yen (Money) mess up Joker's EXP or Level?
+          </div>
+          <div>
+            <strong>No!</strong> Yen is stored at offset <code style="color:var(--p5-white); background:#000; padding:1px 4px;">0x35C0</code>, completely isolated from Joker's EXP (<code style="color:var(--p5-white); background:#000; padding:1px 4px;">0x3C</code>). Furthermore, Change of Heart includes an authentic Atlus cubic curve Level ↔ EXP auto-sync engine to prevent post-battle EXP stalls.
+          </div>
+        </div>
+
+        <div class="faq-item" style="background:rgba(255,255,255,0.03); border-left:3px solid var(--p5-crimson); padding:10px 14px;">
+          <div style="font-weight:900; color:var(--p5-gold); margin-bottom:4px; font-size:14px;">
+            🛡️ How do backups work, and how do I roll back?
+          </div>
+          <div>
+            Every save write automatically creates a timestamped ZIP snapshot in <code style="color:var(--p5-white); background:#000; padding:1px 4px;">savedata/backups/</code>. To roll back, simply click the <strong>BACKUPS &amp; SAFETY</strong> stage in the sidebar, select any timestamped state, and click <strong>RESTORE SELECTED STATE</strong>.
+          </div>
+        </div>
+
+      </div>
+
+      <div style="margin-top:14px; border-top:1px solid #333; padding-top:10px; display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-size:11px; color:#888;">For the complete technical guide, see <code style="color:var(--p5-white);">docs/FAQ.md</code></span>
+        <button class="p5-btn-action" onclick="closeFaqModal()"><span>GOT IT!</span></button>
       </div>
     </div>
   </div>
