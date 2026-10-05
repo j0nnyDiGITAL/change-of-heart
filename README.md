@@ -222,16 +222,39 @@ If the editor launches but buttons are dead / saves aren't detected, your **Micr
 
 ## ❓ Frequently Asked Questions (FAQ)
 
-Have questions about save button locations, inventory offsets, unmet confidants, or 3rd Semester requirements?
-Check out our comprehensive **[FAQ & Knowledge Base](docs/FAQ.md)**!
+### 💾 1. Where is the "Save Changes" button?
+The primary save button is anchored in the **bottom floating action deck** at all times:  
+👉 **`[SAVE CHANGES & RE-SIGN (CRC + AES) ★]`**  
+Whenever you edit stats, items, or confidants, an amber **`● STAGED`** badge appears in the bottom status bar. Clicking the save button triggers automatic timestamped ZIP backup creation, recalculates dual CRC32 checksums (`0x00` header and `0x20` payload), and writes your re-signed save to disk.
 
-- [Where is the "Save Changes" button?](docs/FAQ.md#-1-general--saving)
-- [Why did adding an item swap it previously? (Homunculus vs Takemedic fix)](docs/FAQ.md#-2-inventory--items)
-- [Where are crafting materials like Liquid Mercury?](docs/FAQ.md#-2-inventory--items)
-- [Why do unmet confidants show 0 stars instead of "???"](docs/FAQ.md#-3-confidants--social-links)
-- [Why does my compendium show 100%?](docs/FAQ.md#-4-compendium--personas)
-- [Does maxing out Yen mess up Joker's EXP or Level?](docs/FAQ.md#-5-money-exp--stats)
-- [Where are save backups stored and how do I roll back?](docs/FAQ.md#-6-backups--safety)
+### 🧪 2. Why did adding items give me the wrong item previously (e.g. Homunculus giving Takemedic)?
+* **Fixed in v1.1.2!** Persona 5 Royal's internal consumable database (`Items.txt`) contains non-contiguous memory gaps (e.g. *Vanish Ball* missing at line 23, and a 4-row skip at line 69). Older linear arithmetic shifted 309 out of 338 items (>91% mismatch).
+* We reverse-engineered the **Universal Engine Offset Formula**:
+  $$\text{save\_offset} = \text{memory\_address} - 0\text{x}0226\text{F}024$$
+  All 338 consumable items now map to their exact, authentic save file byte addresses. Adding 99x *Homunculus* writes strictly to `0x2570`, leaving *Takemedic* (`0x2534`) and all other items completely untouched.
+
+### 🔑 3. Where are crafting materials like Liquid Mercury, Red Phosphorus, and Aluminum Sheet?
+Crafting materials are located under the **`🔑 Tools & Mats`** tab! In Persona 5 Royal, Atlus stores infiltration crafting ingredients in the exact same table partition (`0x6000`) as infiltration tools. You can also search for them anytime using the **`+ ADD ITEM`** modal.
+
+### 🎭 4. Why do unmet confidants show 0 stars instead of "???"?
+In vanilla P5R, un-met confidants have unallocated save slots and render with `???`. When an editor assigns a rank or initializes the slot at Rank 0, the game allocates the 16-byte arcana slot (`0x136A0`) and shows 0 stars. If you want a confidant to stay hidden until you meet them naturally in the story, leave their slot unedited.
+
+### 💖 5. Can I skip directly to Rank 10? What happens to romance cutscenes?
+Setting Rank 10 instantly gives combat perks, but dialogue cutscenes are governed by a permanent calendar event matrix. Skipping directly to Rank 10 will not play the Rank 9 romance hangout. To enable romance without the cutscene, use the dedicated **Romance Route Toggle** (`0x02` bit) on Rank 9+ confidants.
+
+### 💰 6. Does editing Yen (Money) mess up Joker's EXP or Level?
+**No!** Yen is stored at offset `0x35C0`, completely isolated from Joker's EXP (`0x3C`). Furthermore, Change of Heart includes an authentic Atlus cubic curve Level ↔ EXP auto-sync engine to prevent post-battle EXP stalls.
+
+### 📖 7. Why did previous editors get stuck at 96% Compendium? How does Change of Heart reach 100%?
+The game's `Completed %` counts **232 Velvet Room records**, not just the 29-byte bitmask. Change of Heart writes both the primary mask (`0x09973`), synchronized mirror (`0x21E83`), and all 232 Velvet Room records for true 100% NG+ parity without creating ghost personas.
+
+### 🛡️ 8. How do backups work, and how do I roll back?
+Every save write automatically creates a timestamped ZIP snapshot in `savedata/backups/`. To roll back, simply click the **BACKUPS & SAFETY** stage in the sidebar, select any timestamped state, and click **RESTORE SELECTED STATE**.
+
+### 🩺 9. What if the editor opens to a blank screen or unresponsive buttons?
+This occurs when the Windows **Microsoft Edge WebView2 Runtime** crashes or fails to initialize. Change of Heart has an automated watchdog that falls back to your web browser within 30 seconds. To repair the native window, go to **Windows Settings → Apps → Microsoft Edge WebView2 Runtime → Modify → Repair**, then relaunch.
+
+> 📖 **Need more answers?** Read our complete **[Extended FAQ & Knowledge Base (docs/FAQ.md)](docs/FAQ.md)** covering platform support, Game Pass setup, story deadlines, and technical reverse-engineering proofs.
 
 ---
 

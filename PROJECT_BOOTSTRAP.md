@@ -9,7 +9,7 @@
 | Capability | Status | Notes |
 |---|---|---|
 | `python -m PyInstaller` (build frozen exe) | ✅ Works | Use the **module form** — `python -m PyInstaller P5R_Save_Editor.spec --noconfirm --clean --distpath dist`. The lowercase `pyinstaller` CLI is NOT on PATH; the module resolves. |
-| `python -m unittest` | ✅ Works | `python -m unittest discover -s tests` → currently **168/168 OK** (oracle-corpus tests auto-skip without live saves). |
+| `python -m unittest` | ✅ Works | `python -m unittest discover -s tests` → currently **183/183 OK** (oracle-corpus tests auto-skip without live saves). |
 | `node --check` (JS syntax) | ✅ Works | `node --check web-app/static/app.js`. |
 | `npm run lint:context` | ✅ Works | Shim lives at `tools/lint_context.js` (no upstream package.json script was present originally). Passes all checks. |
 | Launch the GUI / click the modal | ⚠️ Partial | No interactive display session, but the frozen EXE **can be smoke-tested headlessly**: launch `dist/P5R_Save_Editor.exe`, confirm the process spawns, find its loopback port via `netstat -ano`, probe `/api/build` for 200, then kill it. Full visual/WebView checks remain an end-user step. |

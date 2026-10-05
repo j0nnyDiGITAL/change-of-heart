@@ -14,12 +14,12 @@
 
 
 ## CURRENT POSITION -- realign here, then act
-- **Milestone:** Ship v1.1.2 release (stale EXE), then resume Ground-Up Redesign on `redesign/p5r-native-menu`.
-- **You are at:** Implementation phase (AGY-OS Tier 2 active; ledger resynced after Antigravity quota death).
-- **Last done:** v1.1.2 EXE rebuilt from HEAD (41.7MB, sha256 897e0df5cbf17172, includes reddit bugfixes).
+- **Milestone:** Ship v1.1.2 release, then resume Ground-Up Redesign on `redesign/p5r-native-menu`.
+- **You are at:** Implementation phase (AGY-OS Tier 2 active; Reddit bugfixes & FAQ complete).
+- **Last done:** Consumable item offset desync fixed via Universal Engine Offset Formula (Homunculus/Takemedic bug, u/Party-Consequence-71); comprehensive FAQ published to docs/FAQ.md, README.md, and in-app Help modal; 183/183 tests green.
 - **Do this next:** User hands-on test of fresh EXE -> D011 process smoke test -> GitHub v1.1.2 release upload.
 - **DONE WHEN:** Process smoke test passes (Origin guard 403 + heartbeat ever_seen=true), GitHub release v1.1.2 published with asset, STATUS.md Build/GitHub lines match release.
-- **Live caveats (trust, don't re-verify):** Full-bleed redesign preserved on branch `redesign/p5r-native-menu`; Outfits `0xA000+` wiring frozen (D008) until 2-save diff proves offsets; current shipped EXE predates reddit bugfixes.
+- **Live caveats (trust, don't re-verify):** Full-bleed redesign preserved on branch `redesign/p5r-native-menu`; Outfits `0xA000+` wiring frozen (D008) until 2-save diff proves offsets.
 
 
 ## Project goals (durable)
@@ -51,6 +51,7 @@
 
 
 ## Progress Log
+- 2026-10-05: Critical consumable offset desync fixed (u/Party-Consequence-71: Homunculus->Takemedic bug) via Universal Engine Offset Formula (`core/consumable_offsets.py`, D019); full FAQ knowledge base published (`docs/FAQ.md`) with in-app `❓ FAQ & HELP` modal and full inline README FAQ (u/Aslanyiyenkedi save button, u/Antiwis- unmet confidants 0 stars vs ???); 183/183 tests passing; invariants verified 4/4.
 - 2026-09-22: v1.1.2 EXE rebuilt from HEAD `174d35a` (PyInstaller 6.22.0 / Python 3.14.6, 28.6s, 41.7MB, sha256 897e0df5cbf17172) — reddit bugfixes now in binary. Ledger synced pre-build per crash-safety rule.
 - 2026-09-22: Reddit community bugfixes shipped (RESERVE item filter, Satanael NG+ badge, romance bit 0x02 verify, Yen/EXP isolation, category-table cache ~4ms) + AGY-OS Tier 2 scaffolding committed. 182/182 tests green. Antigravity session died on quota mid-reflex-audit; ledger desyncs repaired + next direction (v1.1.2 EXE rebuild) chosen via reflex.
 - 2026-09-02: Rescaffolding project according to AGY-OS Tier 2 standard (GOALS.md initialized).
