@@ -14,11 +14,11 @@
 
 
 ## CURRENT POSITION -- realign here, then act
-- **Milestone:** Ship v1.1.2 release, then resume Ground-Up Redesign on `redesign/p5r-native-menu`.
-- **You are at:** Implementation phase (AGY-OS Tier 2 active; Reddit bugfixes & FAQ complete).
-- **Last done:** Consumable item offset desync fixed via Universal Engine Offset Formula (Homunculus/Takemedic bug, u/Party-Consequence-71); comprehensive FAQ published to docs/FAQ.md, README.md, and in-app Help modal; 183/183 tests green.
-- **Do this next:** User hands-on test of fresh EXE -> D011 process smoke test -> GitHub v1.1.2 release upload.
-- **DONE WHEN:** Process smoke test passes (Origin guard 403 + heartbeat ever_seen=true), GitHub release v1.1.2 published with asset, STATUS.md Build/GitHub lines match release.
+- **Milestone:** v1.1.2 released; next: resume Ground-Up Redesign on `redesign/p5r-native-menu`.
+- **You are at:** Release complete; transitioning to Phase 2 (Redesign).
+- **Last done:** v1.1.2 standalone binary built, process smoke-tested (D011 passed), packaged to `CHANGE_OF_HEART_v1.1.2_WINDOWS.zip`, and published to GitHub Releases.
+- **Do this next:** Resume Ground-Up Redesign on `redesign/p5r-native-menu`.
+- **DONE WHEN:** Redesign Stage 1 (Full-Bleed Joker Status Canvas) captured and validated.
 - **Live caveats (trust, don't re-verify):** Full-bleed redesign preserved on branch `redesign/p5r-native-menu`; Outfits `0xA000+` wiring frozen (D008) until 2-save diff proves offsets.
 
 

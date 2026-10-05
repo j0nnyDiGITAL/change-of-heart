@@ -1,7 +1,7 @@
 # STATUS.md — P5R Save Editor (Change of Heart)
 
 > Human-readable current state. Synced from state.json on every exit.
-> Updated: 2026-10-05 16:25 EDT
+> Updated: 2026-10-05 17:40 EDT
 
 ## Current State
 <!-- GENERATED_STATE_HEADER_START -->
@@ -9,7 +9,7 @@
 - **Gate:** ready
 - **Mode:** single-agent
 - **Version:** v1.1.2
-- **Updated:** 2026-10-05T20:25:00Z
+- **Updated:** 2026-10-05T21:40:00Z
 <!-- GENERATED_STATE_HEADER_END -->
 
 ## Last Completed
@@ -33,7 +33,7 @@
 - Equipment ownership all 4 categories verified
 
 ## Next Action
-- User hands-on test of fresh v1.1.2 EXE, then D011 process smoke test + GitHub release upload; after release = confidant event-flag paired writes feature (D018).
+- Resume Ground-Up Redesign on `redesign/p5r-native-menu` (Stage 1: Full-Bleed Joker Status Canvas).
 
 ## Blockers
 - None.
@@ -52,6 +52,6 @@
 - None (no upstream dependencies)
 
 ## Build
-- Latest: `dist/P5R_Save_Editor.exe` (41.7 MB, rebuilt 2026-09-22 01:03 EDT from v1.1.2 HEAD `174d35a` — reddit bugfixes included; sha256 prefix 897e0df5cbf17172). Prior build 47.9 MB (2026-08-24) replaced.
-- PyInstaller 6.22.0 / Python 3.14.6 (D011 ABI verified pre-build)
-- GitHub: v1.1.1 Released (v1.1.2 asset upload pending process smoke test)
+- Latest: `dist/P5R_Save_Editor.exe` (41.7 MB, rebuilt 2026-10-05 17:38 EDT from v1.1.2 HEAD — consumable offset formula & FAQ modal included; sha256 9a9d5f5f4ad7b69d27d19ccaf1c19b2ba9e04825106c12f01c5df38290a0a2d9).
+- PyInstaller 6.22.0 / Python 3.14.6 (D011 ABI verified; process smoke test PASSED).
+- GitHub: v1.1.2 Released (`CHANGE_OF_HEART_v1.1.2_WINDOWS.zip` + `P5R_Save_Editor.exe`).

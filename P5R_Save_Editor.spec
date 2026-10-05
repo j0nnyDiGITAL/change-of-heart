@@ -37,6 +37,7 @@ a = Analysis(
         'core.crypto',
         'core.parser',
         'core.editor',
+        'core.consumable_offsets',
         'core.environment',
         'core.instances',
         'http.server',

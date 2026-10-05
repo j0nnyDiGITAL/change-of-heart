@@ -89,9 +89,9 @@ This project was built across intensive collaborative AI-assisted reverse-engine
 ## 📥 Download Standalone Executable
 
 No Python or terminal required! Just grab the latest standalone release:  
-👉 **[Download CHANGE_OF_HEART_v1.1.0.zip (Latest Release)](https://github.com/j0nnyDiGITAL/change-of-heart/releases/latest)**
+👉 **[Download CHANGE_OF_HEART_v1.1.2_WINDOWS.zip (Latest Release)](https://github.com/j0nnyDiGITAL/change-of-heart/releases/latest)**
 
-1. Download and extract `CHANGE_OF_HEART_v1.1.0.zip`.
+1. Download and extract `CHANGE_OF_HEART_v1.1.2_WINDOWS.zip`.
 2. Double-click `P5R_Save_Editor.exe`.
 3. The editor will automatically detect your Steam saves and open the studio window.
 
