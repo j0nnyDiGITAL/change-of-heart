@@ -961,6 +961,18 @@ class SaveEditor:
             "flags": struct.unpack_from("<H", d, base + self.PC31_PERSONA_BASE_REL)[0],
         }
 
+    TEAMMATE_EVOLUTION_IDS = {
+        1: {0x00CA, 0x00D4, 0x00F2},  # Ryuji: Captain Kidd, Seiten Taisei, William
+        2: {0x00CB, 0x00D5, 0x00F3},  # Morgana: Zorro, Mercurius, Diego
+        3: {0x00CC, 0x00E9, 0x00F4},  # Ann: Carmen, Hecate, Celestine
+        4: {0x00CD, 0x00EA, 0x00F5},  # Yusuke: Goemon, Kamu Susano-o, Gorokichi
+        5: {0x00CE, 0x00EB, 0x00F6},  # Makoto: Johanna, Anat, Agnes
+        6: {0x00CF, 0x00EC, 0x00F7},  # Haru: Milady, Astarte, Lucy
+        7: {0x00D0, 0x00ED, 0x00F8},  # Futaba: Necronomicon, Prometheus, Al Azif
+        8: {0x00D1, 0x00D2, 0x00F9},  # Akechi: Robin Hood, Loki, Hereward
+        9: {0x00F0, 0x00F1, 0x00FA},  # Kasumi: Cendrillon, Vanadis, Ella
+    }
+
     def set_equipped_persona(self, slot: int, persona_id: Optional[int] = None,
                              level: Optional[int] = None, trait_id: Optional[int] = None,
                              exp: Optional[int] = None, skills: Optional[List[int]] = None,
@@ -979,9 +991,10 @@ class SaveEditor:
         if persona_id is not None:
             if slot > 0:
                 cur_id = struct.unpack_from("<H", d, base + self.PC31_PERSONA_ID_OFF)[0]
-                if persona_id != cur_id:
+                allowed_evos = self.TEAMMATE_EVOLUTION_IDS.get(slot, set())
+                if persona_id != cur_id and persona_id not in allowed_evos:
                     return {"status": "invalid",
-                            "message": "Teammate personas are story-locked; only Joker (slot 0) may change the equipped persona."}
+                            "message": "Teammate personas are story-locked; only canonical evolution tiers may be equipped."}
             table = self._load_table("Personas.txt")
             if table and persona_id not in table:
                 return {"status": "invalid",

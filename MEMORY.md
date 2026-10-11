@@ -7,7 +7,7 @@
 - **Title:** Change of Heart — P5R Save Editor
 - **Goal:** Read and fix Persona 5 Royal (PC/Steam) save files — truthful read + safe lasting write
 - **Workspace:** `E:\ai-workspace\knowledge-base\projects\p5r-save-editor`
-- **Version:** v1.1.2 (185/185 tests passing)
+- **Version:** v1.1.2 (188/188 tests passing)
 - **Architecture:** Native PyWebView / Edge WebView2 window (`main.py`) over stdlib HTTP backend (`server.py`, binds `127.0.0.1:3000`). Frozen build: `P5R_Save_Editor.spec` (PyInstaller).
 
 ## Locked Decisions (Do Not Re-Debate Without User)

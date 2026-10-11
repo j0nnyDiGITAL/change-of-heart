@@ -206,7 +206,36 @@ class TestRedditBugFixes(unittest.TestCase):
         self.assertEqual(p.header.lname, "Kurusu")
         self.assertEqual(p.player_names.group_name_utf8, "The〆Phantoms")
 
+    def test_passive_affinity_skills_and_teammate_evolution_tiers(self):
+        """1. PASSIVE_AFFINITY_SKILLS in app.js must match exact Skill ID.txt Resist/Null/Repel/Drain IDs.
+        2. Teammate evolution tiers (Tier 1..3) must be accepted by set_equipped_persona while foreign IDs are rejected."""
+        import re
+        from pathlib import Path
+
+        app_js = (Path(__file__).resolve().parent.parent / "web-app" / "static" / "app.js").read_text(encoding="utf-8")
+        m = re.search(r"const PASSIVE_AFFINITY_SKILLS = \{(.*?)\n\};", app_js, re.S)
+        self.assertIsNotNone(m)
+        type_prefix = {"Str": "Resist ", "Nul": "Null ", "Rpl": "Repel ", "Dr": "Drain "}
+        entries = re.findall(r"(\d+):\s*\{\s*elem:\s*\"(\w+)\",\s*type:\s*\"(\w+)\"\s*\}", m.group(1))
+        self.assertEqual(len(entries), 36, "Expected all 9 elements x 4 tiers (Resist/Null/Repel/Drain) = 36 entries")
+        for sid_str, elem, aff_type in entries:
+            sid = int(sid_str)
+            sname = self.editor.get_skill_name(sid)
+            self.assertTrue(
+                sname.startswith(type_prefix[aff_type]) and elem.lower() in sname.lower(),
+                f"Skill {sid} ({sname}) does not match {aff_type} {elem}",
+            )
+
+        # Teammate slot 1 (Ryuji): Captain Kidd (0xCA) -> Seiten Taisei (0xD4) -> William (0xF2) allowed; Raoul (0x16B) rejected
+        self.editor.set_persona_stock_slot(1, 0, persona_id=0x00CA, level=20)
+        self.assertEqual(self.editor.set_equipped_persona(1, persona_id=0x00D4, level=50)["status"], "success")
+        self.assertEqual(self.editor.get_equipped_persona(1)["persona_id"], 0x00D4)
+        self.assertEqual(self.editor.set_equipped_persona(1, persona_id=0x00F2, level=75)["status"], "success")
+        self.assertEqual(self.editor.get_equipped_persona(1)["persona_id"], 0x00F2)
+        self.assertEqual(self.editor.set_equipped_persona(1, persona_id=0x016B, level=99)["status"], "invalid")
+
 
 if __name__ == "__main__":
     unittest.main()
+
 

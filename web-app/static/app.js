@@ -210,46 +210,53 @@ const P5R_BASE_AFFINITIES = {
   240: { phys: "Str", gun: "-", fire: "-", ice: "-", elec: "-", wind: "-", psy: "-", nuke: "-", bless: "Nul", curse: "Wk" }
 };
 
-// Skill Passive Overrides (Resist, Null, Repel, Drain)
+// Skill Passive Overrides (Resist, Null, Repel, Drain — exact Skill ID.txt IDs)
 const PASSIVE_AFFINITY_SKILLS = {
-  // Fire
-  872: { elem: "fire", type: "Str" }, // Resist Fire
-  873: { elem: "fire", type: "Nul" }, // Null Fire
-  874: { elem: "fire", type: "Rpl" }, // Repel Fire
-  875: { elem: "fire", type: "Dr" }, // Drain Fire
-  341: { elem: "fire", type: "Dr" }, // Drain Fire (alt)
-  // Ice
-  877: { elem: "ice", type: "Str" }, // Resist Ice
-  878: { elem: "ice", type: "Nul" }, // Null Ice
-  879: { elem: "ice", type: "Rpl" }, // Repel Ice
-  880: { elem: "ice", type: "Dr" }, // Drain Ice
-  834: { elem: "ice", type: "Dr" }, // Drain Ice (alt)
-  // Wind
-  882: { elem: "wind", type: "Str" }, // Resist Wind
-  883: { elem: "wind", type: "Nul" }, // Null Wind
-  884: { elem: "wind", type: "Rpl" }, // Repel Wind
-  885: { elem: "wind", type: "Dr" }, // Drain Wind
-  // Elec
-  887: { elem: "elec", type: "Str" }, // Resist Elec
-  888: { elem: "elec", type: "Nul" }, // Null Elec
-  889: { elem: "elec", type: "Rpl" }, // Repel Elec
-  890: { elem: "elec", type: "Dr" }, // Drain Elec
-  // Bless
-  892: { elem: "bless", type: "Str" }, // Resist Bless
-  893: { elem: "bless", type: "Nul" }, // Null Bless
-  894: { elem: "bless", type: "Rpl" }, // Repel Bless
-  895: { elem: "bless", type: "Dr" }, // Drain Bless
-  // Curse
-  897: { elem: "curse", type: "Str" }, // Resist Curse
-  898: { elem: "curse", type: "Nul" }, // Null Curse
-  899: { elem: "curse", type: "Rpl" }, // Repel Curse
-  900: { elem: "curse", type: "Dr" }, // Drain Curse
-  342: { elem: "curse", type: "Dr" }, // Drain Curse (alt)
-  // Phys
-  902: { elem: "phys", type: "Str" }, // Resist Phys
-  903: { elem: "phys", type: "Nul" }, // Null Phys
-  904: { elem: "phys", type: "Rpl" }, // Repel Phys
-  905: { elem: "phys", type: "Dr" } // Drain Phys
+  // Fire (870..873)
+  870: { elem: "fire", type: "Str" }, // Resist Fire
+  871: { elem: "fire", type: "Nul" }, // Null Fire
+  872: { elem: "fire", type: "Rpl" }, // Repel Fire
+  873: { elem: "fire", type: "Dr" },  // Drain Fire
+  // Ice (875..878)
+  875: { elem: "ice", type: "Str" },  // Resist Ice
+  876: { elem: "ice", type: "Nul" },  // Null Ice
+  877: { elem: "ice", type: "Rpl" },  // Repel Ice
+  878: { elem: "ice", type: "Dr" },   // Drain Ice
+  // Wind (880..883)
+  880: { elem: "wind", type: "Str" }, // Resist Wind
+  881: { elem: "wind", type: "Nul" }, // Null Wind
+  882: { elem: "wind", type: "Rpl" }, // Repel Wind
+  883: { elem: "wind", type: "Dr" },  // Drain Wind
+  // Elec (885..888)
+  885: { elem: "elec", type: "Str" }, // Resist Elec
+  886: { elem: "elec", type: "Nul" }, // Null Elec
+  887: { elem: "elec", type: "Rpl" }, // Repel Elec
+  888: { elem: "elec", type: "Dr" },  // Drain Elec
+  // Bless (890..893)
+  890: { elem: "bless", type: "Str" }, // Resist Bless
+  891: { elem: "bless", type: "Nul" }, // Null Bless
+  892: { elem: "bless", type: "Rpl" }, // Repel Bless
+  893: { elem: "bless", type: "Dr" },  // Drain Bless
+  // Curse (895..898)
+  895: { elem: "curse", type: "Str" }, // Resist Curse
+  896: { elem: "curse", type: "Nul" }, // Null Curse
+  897: { elem: "curse", type: "Rpl" }, // Repel Curse
+  898: { elem: "curse", type: "Dr" },  // Drain Curse
+  // Phys (900..903)
+  900: { elem: "phys", type: "Str" }, // Resist Phys
+  901: { elem: "phys", type: "Nul" }, // Null Phys
+  902: { elem: "phys", type: "Rpl" }, // Repel Phys
+  903: { elem: "phys", type: "Dr" },  // Drain Phys
+  // Nuke (956..959)
+  956: { elem: "nuke", type: "Str" }, // Resist Nuke
+  957: { elem: "nuke", type: "Nul" }, // Null Nuke
+  958: { elem: "nuke", type: "Rpl" }, // Repel Nuke
+  959: { elem: "nuke", type: "Dr" },  // Drain Nuke
+  // Psy (961..964)
+  961: { elem: "psy", type: "Str" },  // Resist Psy
+  962: { elem: "psy", type: "Nul" },  // Null Psy
+  963: { elem: "psy", type: "Rpl" },  // Repel Psy
+  964: { elem: "psy", type: "Dr" }    // Drain Psy
 };
 
 // Lifecycle
