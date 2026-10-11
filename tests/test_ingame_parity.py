@@ -124,8 +124,8 @@ class TestInGameParityFixes(unittest.TestCase):
         # Accessories and Protectors are stackable counts (0..99):
         self.assertEqual(editor.get_item_owned_offset(0x3001), 0)
         self.assertEqual(editor.get_item_count_offset(0x3001), 0x2331)
-        self.assertEqual(editor.get_item_owned_offset(0x5001), 0)
-        self.assertEqual(editor.get_item_count_offset(0x5001), 0x1F31)
+        self.assertEqual(editor.get_item_owned_offset(0x5003), 0)
+        self.assertEqual(editor.get_item_count_offset(0x5003), 0x1F32)  # Dark Undershirt (idx=3 -> 0x1F32)
         # Ranged: only mapped ids resolve; unverified stay 0
         self.assertGreater(editor.get_item_owned_offset(0x7020), 0)  # Bianchi (verified)
         self.assertEqual(editor.get_item_owned_offset(0x7001), 0)    # unverified ranged -> 0
@@ -139,9 +139,9 @@ class TestInGameParityFixes(unittest.TestCase):
         with open(self.oracle_path, "rb") as f:
             raw = f.read()
         editor = SaveEditor(raw)
-        # melee base 0x1B30, protector count base 0x1F30, accessory count base 0x2330, ranged 0x3430
+        # melee base 0x1B30, protector count base 0x1F30 (idx-1), accessory count base 0x2330, ranged 0x3430
         self.assertEqual(editor.get_item_owned_offset(0x1005), 0x1B35)  # Blizz Dagger
-        self.assertEqual(editor.get_item_count_offset(0x5001), 0x1F31)  # protector idx 1 count
+        self.assertEqual(editor.get_item_count_offset(0x5003), 0x1F32)  # Dark Undershirt (idx 3 -> 0x1F32)
         self.assertEqual(editor.get_item_owned_offset(0x7010), 0x3443)  # Makaronov via map (0x3430+0x13)
         self.assertEqual(editor.get_item_owned_offset(0x7020), 0x3453)  # Bianchi via map (0x3430+0x23)
         self.assertEqual(editor.get_item_owned_offset(0x700B), 0x343E)  # Tkachev via map (0x3430+0x0E)

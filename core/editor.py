@@ -398,7 +398,12 @@ class SaveEditor:
             off = arr_base + idx * self.PC31_COMPENDIUM_STRIDE
             if off + self.PC31_COMPENDIUM_STRIDE <= len(d):
                 if registered:
-                    if template:
+                    existing_pid = struct.unpack_from("<H", d, off + 2)[0]
+                    existing_lvl = d[off + 4]
+                    if existing_pid == persona_id and existing_lvl > 0:
+                        # Preserve player's existing Velvet Room record
+                        pass
+                    elif template and (persona_id not in self.PC31_COMPENDIUM_MASK_ONLY_IDS):
                         d[off : off + self.PC31_COMPENDIUM_STRIDE] = template
                 else:
                     d[off : off + self.PC31_COMPENDIUM_STRIDE] = b"\x00" * self.PC31_COMPENDIUM_STRIDE
@@ -443,7 +448,7 @@ class SaveEditor:
 
         # 2. Populate Compendium Struct Arrays (both primary 0x04270 and mirror 0x1C780)
         # Strictly populate ONLY authentic summonable persona templates (231 verified Royal records).
-        # Unsummonable/RESERVE slots remain pristine 0x00.
+        # Unsummonable/RESERVE slots remain pristine 0x00, while existing player builds are preserved.
         for arr_base, gap_start, gap_end in (
             (self.PC31_COMPENDIUM_ARRAY_BASE, 0x09460, 0x09940),
             (self.PC31_COMPENDIUM_ARRAY_MIRROR, 0x21970, 0x21E50)
@@ -458,6 +463,10 @@ class SaveEditor:
                 off = arr_base + slot * self.PC31_COMPENDIUM_STRIDE
                 if off + self.PC31_COMPENDIUM_STRIDE <= len(d):
                     if pid in templates and (pid in all_unlockable) and (pid not in self.PC31_COMPENDIUM_MASK_ONLY_IDS):
+                        existing_pid = struct.unpack_from("<H", d, off + 2)[0]
+                        existing_lvl = d[off + 4]
+                        if existing_pid == pid and existing_lvl > 0:
+                            continue
                         d[off : off + self.PC31_COMPENDIUM_STRIDE] = templates[pid]
                     else:
                         d[off : off + self.PC31_COMPENDIUM_STRIDE] = b"\x00" * self.PC31_COMPENDIUM_STRIDE
@@ -1477,15 +1486,15 @@ class SaveEditor:
                 return 0x2530 + idx
             return 0
         elif prefix == 0x3000:  # Accessories — stackable count byte (0x2330 + idx)
-            return SaveEditor.PC31_ACCESSORY_OWNED_BASE + idx
-        elif prefix == 0x5000:  # Protectors / Armor — stackable count byte (0x1F30 + idx)
-            return SaveEditor.PC31_PROTECTOR_OWNED_BASE + idx
-        elif prefix == 0x4000:  # Skill Cards — verified engine base (0x2E30 + idx)
-            return 0x2E30 + idx
+            return (SaveEditor.PC31_ACCESSORY_OWNED_BASE + idx) if idx >= 1 else 0
+        elif prefix == 0x5000:  # Protectors / Armor — stackable count byte (0x1F30 + idx - 1; idx=1 is 0x000 BLANK)
+            return (SaveEditor.PC31_PROTECTOR_OWNED_BASE + idx - 1) if idx >= 1 else 0
+        elif prefix == 0x4000:  # Skill Cards — verified engine base (0x2E30 + idx - 1; idx=1 is 0x000 BLANK)
+            return (0x2E30 + idx - 1) if idx >= 1 else 0
         elif prefix == 0x6000:  # Infiltration Tools — direct memory mapping
             return SaveEditor.TOOL_OFFSET_BY_DB_ID.get(item_id, 0)
-        elif prefix == 0x8000:  # Treasure/Materials — verified engine base (0x2A30 + idx)
-            return 0x2A30 + idx
+        elif prefix == 0x8000:  # Treasure/Materials — verified engine base (0x2A30 + idx - 1; idx=1 is 0x000 BLANK)
+            return (0x2A30 + idx - 1) if idx >= 1 else 0
         elif prefix == 0x9000:  # Key Items & Essentials — verified engine offsets (0x2576..0x2A2F)
             return KEY_ITEM_OFFSET_BY_DB_ID.get(item_id, 0)
         return 0
@@ -1502,14 +1511,14 @@ class SaveEditor:
         prefix = item_id & 0xF000
         idx = item_id & 0x0FFF
         if prefix == 0x1000:  # Melee (verified, 3 points)
-            return SaveEditor.PC31_MELEE_OWNED_BASE + idx
+            return (SaveEditor.PC31_MELEE_OWNED_BASE + idx) if idx >= 1 else 0
         if prefix == 0x7000:  # Ranged (verified mechanism)
             save_idx = SaveEditor.RANGED_SAVE_IDX_BY_DB_ID.get(item_id)
             if save_idx is not None:
                 return SaveEditor.PC31_RANGED_OWNED_BASE + save_idx
             return 0  # unverified ranged id -> do not guess
-        if prefix == 0xA000:  # Outfits & Costumes (0x3230 + idx)
-            return 0x3230 + idx
+        if prefix == 0xA000:  # Outfits & Costumes (0x3230 + idx - 1; idx=1 is 0x000 BLANK)
+            return (0x3230 + idx - 1) if idx >= 1 else 0
         return 0
 
     # ------------------------------------------------------------------
@@ -1616,13 +1625,12 @@ class SaveEditor:
                               if (i & 0xF000) in (0x1000, 0x7000, 0xA000)]
         else:
             # Synthetic fallback: scan owned-flag regions for nonzero flags
-            for base, prefix in ((self.PC31_MELEE_OWNED_BASE, 0x1000),
-                                 (0x3230, 0xA000)):
-                for idx in range(0x300):
-                    off = base + idx
-                    if off < len(d) and d[off] in (1, 0):
-                        if d[off] == 1:
-                            probe_gear_ids.append(prefix | idx)
+            for prefix in (0x1000, 0xA000):
+                for idx in range(1, 0x300):
+                    cand = prefix | idx
+                    off = self.get_item_owned_offset(cand)
+                    if off and off < len(d) and d[off] == 1:
+                        probe_gear_ids.append(cand)
             # Ranged via map keys only (unknown otherwise)
             for db_id in self.RANGED_SAVE_IDX_BY_DB_ID:
                 probe_gear_ids.append(db_id)
@@ -2100,15 +2108,23 @@ class SaveEditor:
             target_exp = get_p5r_min_exp_for_level(lvl)
             if slot == 0:
                 struct.pack_into("<H", d, offset + lv_off, max(1, min(lvl, 99)))
-                # Joker EXP @ +0x10 (u32)
-                struct.pack_into("<I", d, offset + 0x10, target_exp)
+                # Joker EXP @ +0x10 (u32): preserve partial EXP if level did not change
+                cur_exp = struct.unpack_from("<I", d, offset + 0x10)[0]
+                if level is not None and lvl != lvl_:
+                    struct.pack_into("<I", d, offset + 0x10, target_exp)
+                else:
+                    target_exp = cur_exp
             else:
                 # u8 write only — a u16 write here clobbers +0x3D (the
                 # persona struct's unk byte). Verified 2026-08-16.
                 d[offset + lv_off] = max(1, min(lvl, 99))
-                # Teammate EXP @ +0x18 (u32)
+                # Teammate EXP @ +0x18 (u32): preserve partial EXP if level did not change
                 if offset + 0x1C <= len(d):
-                    struct.pack_into("<I", d, offset + 0x18, target_exp)
+                    cur_exp = struct.unpack_from("<I", d, offset + 0x18)[0]
+                    if level is not None and lvl != lvl_:
+                        struct.pack_into("<I", d, offset + 0x18, target_exp)
+                    else:
+                        target_exp = cur_exp
             self.parser.data_payload = bytes(d)
             return {"status": "success", "slot": slot, "level": lvl, "hp": cur_hp, "sp": cur_sp,
                     "exp": target_exp, "max_hp": None, "max_sp": None}

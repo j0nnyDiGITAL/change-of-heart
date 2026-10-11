@@ -98,5 +98,51 @@ class TestRedditBugFixes(unittest.TestCase):
         self.assertEqual(norm["stacks"].get(0x203F), 99)
         self.assertEqual(norm["stacks"].get(0x2004), 5)
 
+    def test_compendium_preserves_existing_player_builds_and_clean_arsene_template(self):
+        """Regression test for u/Thelonlierface report:
+        1. Template 201 (Arsene) must be canonical Lv 1 starter Arsene (Pinch Anchor, Eiha, Cleave), NOT Lv 93 Curse Build.
+        2. set_compendium_registration(pid, True) and unlock_compendium_100() must preserve existing player builds.
+        """
+        SaveEditor._COMPENDIUM_TEMPLATES_CACHE.clear()
+        templates = self.editor._load_compendium_templates()
+        arsene_tpl = templates[201]
+        self.assertEqual(struct.unpack_from("<H", arsene_tpl, 2)[0], 201)
+        self.assertEqual(arsene_tpl[4], 1, "Arsene template must be Lv 1, not Lv 93 Curse Build")
+        self.assertEqual(struct.unpack_from("<H", arsene_tpl, 6)[0], 86, "Arsene template trait must be Pinch Anchor (86)")
+        skills = [struct.unpack_from("<H", arsene_tpl, 0x0C + i * 2)[0] for i in range(8)]
+        self.assertEqual(skills, [64, 210, 0, 0, 0, 0, 0, 0], "Arsene template skills must be Eiha (64) and Cleave (210)")
+
+        # Seed a custom player Lv 3 Arsene in primary & mirror compendium arrays
+        d = bytearray(self.editor.parser.data_payload)
+        custom_arsene = bytearray(48)
+        struct.pack_into("<HHBBHI", custom_arsene, 0, 1, 201, 3, 0, 54, 109)
+        struct.pack_into("<H", custom_arsene, 0x0C, 64)  # Eiha
+        custom_arsene[0x1C:0x21] = bytes([2, 5, 2, 6, 1])
+        for base in (self.editor.PC31_COMPENDIUM_ARRAY_BASE, self.editor.PC31_COMPENDIUM_ARRAY_MIRROR):
+            off = base + 200 * 0x30
+            d[off : off + 48] = custom_arsene
+        self.editor.parser.data_payload = bytes(d)
+
+        # Calling set_compendium_registration(201, True) or unlock_compendium_100() must preserve Lv 3 Arsene
+        self.editor.set_compendium_registration(201, True)
+        off_primary = self.editor.PC31_COMPENDIUM_ARRAY_BASE + 200 * 0x30
+        self.assertEqual(self.editor.parser.data_payload[off_primary : off_primary + 48], bytes(custom_arsene))
+
+        self.editor.unlock_compendium_100()
+        self.assertEqual(self.editor.parser.data_payload[off_primary : off_primary + 48], bytes(custom_arsene))
+
+    def test_skillcard_protector_treasure_outfit_offset_alignment(self):
+        """Skill Cards (0x4000), Protectors (0x5000), Treasure (0x8000), and Outfits (0xA000)
+        have a 0x000 BLANK row at idx=1 in their TSV files and must map to base + idx - 1."""
+        # Skill Card: 0x4002 (Agi, idx=2, main+02271E55) -> 0x2E31
+        self.assertEqual(self.editor.get_item_count_offset(0x4002), 0x2E31)
+        # Protector: 0x5003 (Dark Undershirt, idx=3, main+02271F32) -> 0x1F32
+        self.assertEqual(self.editor.get_item_count_offset(0x5003), 0x1F32)
+        # Treasure: 0x8013 (Glory Staff, idx=19, main+02271A66) -> 0x2A42
+        self.assertEqual(self.editor.get_item_count_offset(0x8013), 0x2A42)
+        # Outfit: 0xA002 (Shujin Uniform All, idx=2, main+02272255) -> 0x3231
+        self.assertEqual(self.editor.get_item_owned_offset(0xA002), 0x3231)
+
+
 if __name__ == "__main__":
     unittest.main()

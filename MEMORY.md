@@ -7,7 +7,7 @@
 - **Title:** Change of Heart — P5R Save Editor
 - **Goal:** Read and fix Persona 5 Royal (PC/Steam) save files — truthful read + safe lasting write
 - **Workspace:** `E:\ai-workspace\knowledge-base\projects\p5r-save-editor`
-- **Version:** v1.1.2 (183/183 tests passing)
+- **Version:** v1.1.2 (185/185 tests passing)
 - **Architecture:** Native PyWebView / Edge WebView2 window (`main.py`) over stdlib HTTP backend (`server.py`, binds `127.0.0.1:3000`). Frozen build: `P5R_Save_Editor.spec` (PyInstaller).
 
 ## Locked Decisions (Do Not Re-Debate Without User)
@@ -33,6 +33,7 @@
 | D017 | 2026-09-22 | Atlus table placeholder rows (RESERVE / BLANK / リザーブ / `Item 0x…`) are NEVER surfaced in inventory reads and NEVER writable via `set_item_quantity` | Community bug reports (u/dotsacrum): placeholder dummies leaked into editor inventory |
 | D018 | 2026-09-22 | Delivery order: v1.1.2 EXE rebuild + release FIRST, then next feature = confidant event-flag paired writes (SAFETY #1 undetected corruption); chosen via reflex (2/2 unanimous) over outfits unlock / redesign Stage 2 / NG+ deadline advisor | Shipped binary predates HEAD; unpaired rank writes = story-content permanent loss |
 | D019 | 2026-10-05 | Consumable item save offsets MUST route through static engine table `core/consumable_offsets.py` derived via Universal Engine Offset Formula (`save_offset = memory_address - 0x0226F024`), never piecewise linear arithmetic (`0x2530 + idx`) | Non-contiguous table gaps in `Items.txt` (Vanish Ball missing at row 23, etc.) desynchronized 309 of 338 items (>91% mismatch), causing Homunculus (`0x203F` -> `0x2570`) to write to Life Ointment (`0x256F`). Reported by u/Party-Consequence-71 |
+| D020 | 2026-10-11 | Compendium registrations MUST preserve existing player-registered 48B Velvet Room records (`existing_pid == pid and existing_lvl > 0`), `/api/save` must only apply compendium diffs (`registered_list ^ current_reg`), template `201` must be canonical Lv 1 starter Arsene, and categories with a `0x000` `BLANK` row at `idx=1` (`0x4000`, `0x5000`, `0x8000`, `0xA000`) must map to `base + idx - 1` | Fixes `u/Thelonlierface` report where saving overwrote Velvet Room Arsene with a Lv 93 Curse Build Arsene from `DATA11` and shifted Skill Cards/Armor/Treasure/Outfits by +1 |
 
 
 ## Core Domain Rules
@@ -49,15 +50,15 @@
 | Prefix | Item type | Save storage | Status |
 |--------|-----------|-------------|--------|
 | 0x1000 | Melee weapon | OWNED-FLAG `0x1B30+idx` | ✅ VERIFIED |
-| 0x2000 | Consumable | COUNT-ARRAY `0x2410..0x2800` | ✅ VERIFIED |
+| 0x2000 | Consumable | COUNT-ARRAY `CONSUMABLE_OFFSET_BY_DB_ID` (`addr - 0x0226F024`) | ✅ VERIFIED |
 | 0x3000 | Accessory | COUNT-ARRAY `0x2330+idx` | ✅ VERIFIED |
-| 0x4000 | Skill card | COUNT-ARRAY `0x2E30+idx` | ✅ VERIFIED |
-| 0x5000 | Protector/Armor | COUNT-ARRAY `0x1F30+idx` | ✅ VERIFIED |
+| 0x4000 | Skill card | COUNT-ARRAY `0x2E30+idx-1` (`addr - 0x0226F024`) | ✅ VERIFIED |
+| 0x5000 | Protector/Armor | COUNT-ARRAY `0x1F30+idx-1` (`addr - 0x02270000`) | ✅ VERIFIED |
 | 0x6000 | Infiltration tool | COUNT-ARRAY `TOOL_OFFSET_BY_DB_ID` | ✅ VERIFIED |
-| 0x7000 | Ranged weapon | OWNED-FLAG `0x3430+save-idx` | ✅ VERIFIED (2 mapped) |
-| 0x8000 | Treasure/material | COUNT-ARRAY `0x2A30+idx` | ✅ VERIFIED |
-| 0x9000 | Key item | COUNT-ARRAY `KEY_ITEM_OFFSET_BY_DB_ID` | ✅ VERIFIED (583 mapped) |
-| 0xA000 | Outfits & Costumes | OWNED-FLAG `0x3230+idx` | ✅ VERIFIED (286, frozen) |
+| 0x7000 | Ranged weapon | OWNED-FLAG `0x3430+save-idx` | ✅ VERIFIED (106 mapped) |
+| 0x8000 | Treasure/material | COUNT-ARRAY `0x2A30+idx-1` (`addr - 0x0226F024`) | ✅ VERIFIED |
+| 0x9000 | Key item | COUNT-ARRAY `KEY_ITEM_OFFSET_BY_DB_ID` | ✅ VERIFIED (456 mapped) |
+| 0xA000 | Outfits & Costumes | OWNED-FLAG `0x3230+idx-1` (`addr - 0x0226F024`) | ✅ VERIFIED (254, frozen) |
 
 ## Key Verified Offsets
 - **Yen** = `0x35C0` (v1.0.5 fix). `0x3C` is Joker EXP — MUST NOT be written.

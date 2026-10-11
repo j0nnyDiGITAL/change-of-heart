@@ -67,9 +67,9 @@ Yes! However, make sure that **Persona 5 Royal (`P5R.exe`) is closed** before sa
 
 ### Why did adding an item give me a completely different item (e.g. Homunculus giving Takemedic)?
 * **The Root Cause:** In versions prior to v1.1.2, community item databases used piecewise arithmetic offsets (`0x2530 + idx`, `0x25AA + idx`). However, Persona 5 Royal's internal consumable table (`Items.txt`) contains non-contiguous memory gaps (for example, *Vanish Ball* is missing from line 23, and 4 entries are skipped at line 69). This caused linear index arithmetic to desynchronize over 91% of consumable items, writing *Homunculus* (`0x203F`) to `0x256F` (*Life Ointment*) instead of its authentic engine offset `0x2570`.
-* **The Fix (v1.1.2):** We reverse-engineered the **Universal Engine Offset Formula**:
+* **The Fix (v1.1.2+):** We reverse-engineered the **Universal Engine Offset Formula**:
   $$\text{save\_offset} = \text{memory\_address} - 0\text{x}0226\text{F}024$$
-  All 338 consumable items now map to their exact, authentic save file byte addresses. Adding 99x *Homunculus* writes strictly to `0x2570`, leaving *Takemedic* (`0x2534`) and all other items completely untouched.
+  All 338 consumable items now map to their exact, authentic save file byte addresses. Adding 99x *Homunculus* writes strictly to `0x2570`, leaving *Takemedic* (`0x2534`) and all other items completely untouched. Additionally, we eliminated a `+1` row-index shift in **Skill Cards** (`0x4000`), **Protectors / Armor** (`0x5000`), **Treasure** (`0x8000`), and **Outfits** (`0xA000`) caused by the `0x000` `BLANK` header entry in those tables.
 
 ### Why do I only see some items in my bag?
 Change of Heart implements an authentic **In-Game Inventory View**:
@@ -119,6 +119,13 @@ You can safely adjust these ranks in Change of Heart to meet the criteria if you
 * Legacy tools only modified the 29-byte bitmask at `0x09973`. However, the in-game Velvet Room menu calculates the `Completed %` by counting **Velvet Room Persona records** (232 entries), not the bitmask!
 * When other tools did not populate the Velvet Room records for party Personas and special fusions, the game registered only ~223 records, resulting in the infamous **"stuck at 96%"** bug.
 * Change of Heart writes both the primary mask (`0x09973`), the synchronized mirror (`0x21E83`), and all **232 Velvet Room records**, matching a genuine 100% New Game Plus save down to the exact byte.
+
+### Why did earlier builds overwrite my Velvet Room Arsene with a Lv 93 "Curse Build Arsene"?
+* **The Root Cause:** In builds prior to the v1.1.2 Compendium Preservation update, `compendium_templates.json` contained a 48-byte template for Arsene (`ID 201`) extracted from an NG+ oracle save where the player had registered a custom Lv 93 Curse Build Arsene (*Abyssal Wings*, *Curse Amp*, *Curse Boost*, *Will of the Sword*). Worse, saving any change in the editor ran a Compendium sync loop that overwrote existing 48-byte Velvet Room records with the template file.
+* **The Fix:**
+  1. **Existing Velvet Room Records Preserved:** Both `set_compendium_registration()` and `unlock_compendium_100()` now check if a Persona slot already has a registered build in your save and **strictly preserve your existing Velvet Room record**.
+  2. **Diff-Only Compendium Sync:** `/api/save` now only touches Compendium records for Persona IDs whose registration state you explicitly toggled.
+  3. **Canonical Lv 1 Starter Arsene Template:** Template `201` has been replaced with authentic Lv 1 starter Arsene (*Pinch Anchor*, *Eiha*, *Cleave*, stats `[2, 2, 2, 3, 1]`).
 
 ### Why does Satanael have an "NG+ ONLY" badge?
 Satanael is hardcoded by Atlus as a New Game Plus exclusive ultimate fusion. In a fresh first-playthrough save, forcing Satanael into your compendium or active party can cause Velvet Room registration glitches. Change of Heart clearly marks Satanael so you can make informed decisions.

@@ -51,6 +51,7 @@
 
 
 ## Progress Log
+- 2026-10-11: Resolved `u/Thelonlierface` report (*"added all the wrong items and also gave me curse build arsene"*): preserved existing player-registered Velvet Room Compendium builds on save/unlock, replaced template `201` with canonical Lv 1 starter Arsene, fixed `+1` BLANK-row offset shift across Skill Cards (`0x4000`), Protectors (`0x5000`), Treasure (`0x8000`), and Outfits (`0xA000`), and prevented empty normalized inventory fallback (D020); 185/185 tests passing.
 - 2026-10-05: Critical consumable offset desync fixed (u/Party-Consequence-71: Homunculus->Takemedic bug) via Universal Engine Offset Formula (`core/consumable_offsets.py`, D019); full FAQ knowledge base published (`docs/FAQ.md`) with in-app `❓ FAQ & HELP` modal and full inline README FAQ (u/Aslanyiyenkedi save button, u/Antiwis- unmet confidants 0 stars vs ???); 183/183 tests passing; invariants verified 4/4.
 - 2026-09-22: v1.1.2 EXE rebuilt from HEAD `174d35a` (PyInstaller 6.22.0 / Python 3.14.6, 28.6s, 41.7MB, sha256 897e0df5cbf17172) — reddit bugfixes now in binary. Ledger synced pre-build per crash-safety rule.
 - 2026-09-22: Reddit community bugfixes shipped (RESERVE item filter, Satanael NG+ badge, romance bit 0x02 verify, Yen/EXP isolation, category-table cache ~4ms) + AGY-OS Tier 2 scaffolding committed. 182/182 tests green. Antigravity session died on quota mid-reflex-audit; ledger desyncs repaired + next direction (v1.1.2 EXE rebuild) chosen via reflex.

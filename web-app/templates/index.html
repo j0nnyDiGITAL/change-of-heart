@@ -774,7 +774,16 @@
             🧪 Why did adding an item swap it (e.g. Homunculus giving Takemedic)?
           </div>
           <div>
-            <strong>Fixed in v1.1.2!</strong> Atlus memory tables contain non-contiguous gaps (such as Vanish Ball missing at row 23). Older linear math caused 309 items to desynchronize. We discovered the <strong>Universal Engine Offset Formula</strong> (<code style="color:var(--p5-white); background:#000; padding:1px 4px;">save_offset = memory_address - 0x0226F024</code>), perfectly locking Homunculus (0x2570) and all 338 consumables to their exact bytes.
+            <strong>Fixed in v1.1.2!</strong> Atlus memory tables contain non-contiguous gaps (such as Vanish Ball missing at row 23). Older linear math caused 309 consumables and +1 BLANK-row categories (Skill Cards, Armor, Treasure, Outfits) to shift. We discovered the <strong>Universal Engine Offset Formula</strong> (<code style="color:var(--p5-white); background:#000; padding:1px 4px;">save_offset = memory_address - 0x0226F024</code>), locking every item category to its exact engine byte.
+          </div>
+        </div>
+
+        <div class="faq-item" style="background:rgba(255,255,255,0.03); border-left:3px solid var(--p5-crimson); padding:10px 14px;">
+          <div style="font-weight:900; color:var(--p5-gold); margin-bottom:4px; font-size:14px;">
+            🃏 Why did earlier builds give me a Lv 93 "Curse Build Arsene" in the Compendium?
+          </div>
+          <div>
+            <strong>Fixed in v1.1.2!</strong> Previously, saving ran a Compendium sync that overwrote existing Velvet Room records with an NG+ template (which had a Lv 93 Curse Build Arsene). The editor now <strong>strictly preserves all player-registered Velvet Room builds</strong>, only updates Compendium IDs you explicitly toggle, and uses a clean Lv 1 starter Arsene template.
           </div>
         </div>
 

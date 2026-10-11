@@ -716,8 +716,8 @@ class P5RWebHandler(SimpleHTTPRequestHandler):
 
                 # 5c. Apply Active Inventory Items — prefers normalized payload
                 norm_in = data.get("inventory_normalized")
-                if isinstance(norm_in, dict) and (norm_in.get("stacks") or norm_in.get("owned_gear")):
-                    # New path: stacks + owned_gear from S1 normalized model
+                if isinstance(norm_in, dict):
+                    # New path: stacks + owned_gear from S1 normalized model (empty dict = 0 changes, no legacy fallback)
                     for raw_id, qty in (norm_in.get("stacks") or {}).items():
                         try:
                             iid = int(raw_id) if isinstance(raw_id, str) else int(raw_id)
@@ -750,15 +750,18 @@ class P5RWebHandler(SimpleHTTPRequestHandler):
                     comp = data["compendium"]
                     if comp and comp.get("supported"):
                         registered_list = set(comp.get("registered", []))
-                        for pid in range(1, CURRENT_EDITOR.PC31_COMPENDIUM_MAX_ID + 1):
-                            is_reg = pid in registered_list
-                            CURRENT_EDITOR.set_compendium_registration(pid, is_reg)
-                        # Sanitize any rogue bytes in the gap
-                        d_tmp = bytearray(CURRENT_EDITOR.parser.data_payload)
-                        for gap_start, gap_end in ((0x09460, 0x09940), (0x21970, 0x21E50)):
-                            if gap_end <= len(d_tmp):
-                                d_tmp[gap_start:gap_end] = b"\x00" * (gap_end - gap_start)
-                        CURRENT_EDITOR.parser.data_payload = bytes(d_tmp)
+                        current_reg = set(CURRENT_EDITOR.get_compendium().get("registered", []))
+                        changed_pids = sorted(registered_list ^ current_reg)
+                        if changed_pids:
+                            for pid in changed_pids:
+                                is_reg = pid in registered_list
+                                CURRENT_EDITOR.set_compendium_registration(pid, is_reg)
+                            # Sanitize any rogue bytes in the gap
+                            d_tmp = bytearray(CURRENT_EDITOR.parser.data_payload)
+                            for gap_start, gap_end in ((0x09460, 0x09940), (0x21970, 0x21E50)):
+                                if gap_end <= len(d_tmp):
+                                    d_tmp[gap_start:gap_end] = b"\x00" * (gap_end - gap_start)
+                            CURRENT_EDITOR.parser.data_payload = bytes(d_tmp)
 
                 # 6. Repack & Sign
                 out_bytes = CURRENT_EDITOR.save_to_bytes()
