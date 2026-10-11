@@ -165,6 +165,26 @@ class GameDataParser:
         if self.version != 0x2D000000:
             self.is_pc_0x31 = True
             self.blocks_raw = {}
+            if len(data_bytes) >= 0x139AC:
+                import unicodedata
+                raw_full = data_bytes[0x13840:0x13880].rstrip(b"\x00").decode("utf-8", errors="ignore")
+                raw_last = data_bytes[0x138A8:0x138C8].rstrip(b"\x00").decode("utf-8", errors="ignore")
+                raw_first = data_bytes[0x138DC:0x138FC].rstrip(b"\x00").decode("utf-8", errors="ignore")
+                raw_group = data_bytes[0x1397C:0x139AC].rstrip(b"\x00").decode("utf-8", errors="ignore")
+                norm_first = unicodedata.normalize("NFKC", raw_first).strip()
+                norm_last = unicodedata.normalize("NFKC", raw_last).strip()
+                norm_full = unicodedata.normalize("NFKC", raw_full).strip()
+                norm_group = unicodedata.normalize("NFKC", raw_group).strip()
+                if norm_first:
+                    self.player_names.first_name_game = norm_first
+                if norm_last:
+                    self.player_names.last_name_game = norm_last
+                if norm_full:
+                    self.player_names.full_name_utf8 = norm_full
+                    self.player_names.full_name_game = norm_full
+                if norm_group:
+                    self.player_names.group_name_utf8 = norm_group
+                    self.player_names.group_name_game = norm_group
             return
 
         # 0x2D format (converted PS4 / synthetic): parse sub-header first

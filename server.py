@@ -228,16 +228,8 @@ def build_reference_db():
     ]
 
     seen_ids = set()
-    # Item name fixes verified against the game's NAME.TBL (2026-08-16).
-    ITEM_NAME_FIXES = {
-        8270: "Money Distributor", 8271: "Item Distributor",
-        8304: "Discharge Crystal", 8398: "Hifumi's Chocolate",
-        8529: "Old Man's Elixir", 12400: "Vajra Belt",
-        12417: "Blazing Horns", 12418: "Inferno Horns",
-        12642: "Judgment Cross", 12736: "Spiral Rasetsu Anklet",
-        12782: "Dazzling Netsuke", 8420: "Sakura Amezaiku",
-        8375: "Oh! Shiruko",
-    }
+    # Item name fixes verified against the game's NAME.TBL (2026-08-16 + 2026-10-11).
+    ITEM_NAME_FIXES = SaveEditor.ITEM_NAME_FIXES
     for prefix, fname, cat in CATEGORY_MAPPING:
         p = data_dir / fname
         if not p.exists():
@@ -247,6 +239,7 @@ def build_reference_db():
                 for idx, line in enumerate(f):
                     parts = line.strip().split("\t")
                     en_name = None
+                    jp_name = parts[2].strip() if len(parts) >= 3 else ""
                     if len(parts) >= 4:
                         en_name = parts[3].strip()
                     elif len(parts) == 1 and parts[0]:
@@ -254,10 +247,12 @@ def build_reference_db():
 
                     if (
                         en_name
-                        and en_name not in ["EN_NAME", "BLANK", "RESERVE", "----------", "使用禁止", "Unused", "unused", "Unused Item"]
+                        and en_name not in ["EN_NAME", "BLANK", "RESERVE", "----------", "—", "-", "–", "???", "使用禁止", "Unused", "unused", "Unused Item"]
+                        and jp_name not in ("リザーブ", "ブランク", "未使用", "使用禁止")
                         and "RESERVE" not in en_name
                         and "BLANK" not in en_name
                         and not en_name.lower().startswith("unused")
+                        and not SaveEditor.is_placeholder_item(en_name)
                     ):
                         iid = prefix | (idx & 0x0FFF)
                         if iid not in seen_ids:
@@ -268,7 +263,7 @@ def build_reference_db():
                                 continue
                             
                             display_name = ITEM_NAME_FIXES.get(iid, en_name)
-                            # For Protectors (0x5000), Melee (0x1000), Ranged (0x7000), Outfits (0xA000), append character owner if present
+                            # For Protectors (0x5000), Melee (0x1000), Ranged (0x7000), Outfits (0xA000), append character owner if present and not already suffixed
                             if prefix in (0x1000, 0x5000, 0x7000, 0xA000) and len(parts) >= 5 and parts[4].strip() and parts[4].strip() != "-":
                                 role = parts[4].strip()
                                 char_map = {
@@ -278,7 +273,7 @@ def build_reference_db():
                                     "芳泽霞": "Kasumi", "ALL": "All"
                                 }
                                 eng_role = char_map.get(role, role)
-                                if eng_role:
+                                if eng_role and not display_name.endswith(f"({eng_role})"):
                                     display_name = f"{display_name} ({eng_role})"
 
                             db["items"].append({
@@ -586,13 +581,17 @@ class P5RWebHandler(SimpleHTTPRequestHandler):
                     backup_path = create_timestamped_backup(p)
                     backup_path_name = backup_path.name
 
-                # 2. Apply Header Edits
+                # 2. Apply Header Edits (only rewrite name bytes if user actually changed them)
                 hdr_in = data.get("header", {})
-                CURRENT_EDITOR.set_player_names(
-                    hdr_in.get("fname", ""),
-                    hdr_in.get("lname", ""),
-                    hdr_in.get("group_name", "")
-                )
+                in_fname = str(hdr_in.get("fname", CURRENT_EDITOR.parser.header.fname)).strip()
+                in_lname = str(hdr_in.get("lname", CURRENT_EDITOR.parser.header.lname)).strip()
+                in_group = str(hdr_in.get("group_name", CURRENT_EDITOR.parser.player_names.group_name_utf8)).strip()
+                if (
+                    in_fname != CURRENT_EDITOR.parser.header.fname
+                    or in_lname != CURRENT_EDITOR.parser.header.lname
+                    or in_group != CURRENT_EDITOR.parser.player_names.group_name_utf8
+                ):
+                    CURRENT_EDITOR.set_player_names(in_fname, in_lname, in_group)
                 if "money" in hdr_in:
                     CURRENT_EDITOR.set_money(int(hdr_in["money"]))
 

@@ -683,8 +683,10 @@ class SaveEditor:
     @staticmethod
     def _to_fullwidth(text: str) -> str:
         """Convert ASCII alphanumeric string to Unicode Fullwidth (Zen-kaku)."""
+        import unicodedata
+        norm = unicodedata.normalize("NFKC", text)
         res = []
-        for c in text:
+        for c in norm:
             code = ord(c)
             if 0x21 <= code <= 0x7E:
                 res.append(chr(code + 0xFEE0))
@@ -695,29 +697,39 @@ class SaveEditor:
         return "".join(res)
 
     @staticmethod
-    def _to_atlus_encoding(text: str) -> bytes:
+    def _to_atlus_encoding(text: str, max_bytes: Optional[int] = None) -> bytes:
         """Convert ASCII string to Atlus 2-byte font glyph encoding.
         
         Authentic Atlus font encoding formula verified across genuine saves:
         - ASCII alphanumeric / punctuation characters (0x21..0x7E) -> 0x80, (code + 0x60).
+        - In-game group separator '〆' (\\u3006) -> 0x82, 0x97.
         - Space (0x20) -> 0x20.
+        Never truncates in the middle of a 2-byte glyph when max_bytes is given.
         """
+        import unicodedata
+        norm = unicodedata.normalize("NFKC", text)
         b = bytearray()
-        for c in text:
+        for c in norm:
             code = ord(c)
             if 0x21 <= code <= 0x7E:
-                b.extend([0x80, code + 0x60])
+                glyph = bytes([0x80, code + 0x60])
+            elif c == "\u3006":
+                glyph = bytes([0x82, 0x97])
             elif code == 32:
-                b.append(0x20)
+                glyph = b"\x20"
             else:
-                b.append(code if code < 128 else 0x20)
+                glyph = bytes([code if code < 128 else 0x20])
+            if max_bytes is not None and len(b) + len(glyph) > max_bytes:
+                break
+            b.extend(glyph)
         return bytes(b)
 
     def set_player_names(self, first: str, last: str, group: str) -> Dict[str, Any]:
         """Update Joker first, last, and Phantom Thief group name across container and payload."""
-        first = first.strip()[:24]
-        last = last.strip()[:24]
-        group = group.strip()[:24]
+        import unicodedata
+        first = unicodedata.normalize("NFKC", first).strip()[:24]
+        last = unicodedata.normalize("NFKC", last).strip()[:24]
+        group = unicodedata.normalize("NFKC", group).strip()[:24]
         full_ascii = f"{first} {last}".strip()
 
         # 1. Header (0x190 container header)
@@ -746,11 +758,11 @@ class SaveEditor:
             fw_first_b = fw_first.encode("utf-8")[:32].ljust(32, b"\x00")
             fw_group_b = fw_group.encode("utf-8")[:48].ljust(48, b"\x00")
 
-            # Atlus Custom 2-byte encoded bytes
-            atlus_last_b = self._to_atlus_encoding(last)[:20].ljust(20, b"\x00")
-            atlus_first_b = self._to_atlus_encoding(first)[:20].ljust(20, b"\x00")
-            atlus_full_b = self._to_atlus_encoding(full_ascii)[:40].ljust(40, b"\x00")
-            atlus_group_b = self._to_atlus_encoding(group)[:24].ljust(24, b"\x00")
+            # Atlus Custom 2-byte encoded bytes (glyph-aligned, never half-sliced)
+            atlus_last_b = self._to_atlus_encoding(last, max_bytes=20).ljust(20, b"\x00")
+            atlus_first_b = self._to_atlus_encoding(first, max_bytes=20).ljust(20, b"\x00")
+            atlus_full_b = self._to_atlus_encoding(full_ascii, max_bytes=40).ljust(40, b"\x00")
+            atlus_group_b = self._to_atlus_encoding(group, max_bytes=24).ljust(24, b"\x00")
 
             for delta in (0x0000, 0x18510):
                 base = 0x13840 + delta
@@ -1056,17 +1068,29 @@ class SaveEditor:
                 return out
         return {}
 
+    SKILL_NAME_FIXES = {
+        123: "Med Burn", 126: "Med Freeze", 129: "Med Shock", 134: "Med Dizzy",
+        137: "Med Confuse", 142: "Med Fear", 145: "Med Forget", 148: "Med Brainwash",
+        153: "Med Sleep", 156: "Med Rage", 159: "Med Despair", 164: "Med All Ail",
+        516: "Royal Jelly", 295: "Ultimate Support",
+    }
+    TRAIT_NAME_FIXES = {
+        9: "Savior Bloodline", 73: "Skillful Combo", 102: "Deathly Illness",
+    }
+
     def get_persona_name(self, pid: int) -> str:
         t = self._load_table("Personas.txt")
         return t.get(pid, f"persona_{pid:04X}")
 
     def get_skill_name(self, sid: int) -> str:
         t = self._load_table("Skill ID.txt")
-        return t.get(sid, f"skill_{sid:04X}")
+        raw = t.get(sid, f"skill_{sid:04X}")
+        return self.SKILL_NAME_FIXES.get(sid, raw)
 
     def get_trait_name(self, tid: int) -> str:
         t = self._load_table("Traits.txt")
-        return t.get(tid, f"trait_{tid:04X}")
+        raw = t.get(tid, f"trait_{tid:04X}")
+        return self.TRAIT_NAME_FIXES.get(tid, raw)
 
     # -------------------------------------------------------------------------
     # Persona STOCK array API (12 slots/member) — VERIFIED 2026-08-09
@@ -1370,6 +1394,18 @@ class SaveEditor:
         0xA000: ("Outfits.txt", "Outfit"),
     }
 
+    ITEM_NAME_FIXES = {
+        8270: "Money Distributor", 8271: "Item Distributor",
+        8304: "Discharge Crystal", 8398: "Hifumi's Chocolate",
+        8529: "Old Man's Elixir", 12400: "Vajra Belt",
+        12417: "Blazing Horns", 12418: "Inferno Horns",
+        12642: "Judgment Cross", 12736: "Spiral Rasetsu Anklet",
+        12782: "Dazzling Netsuke", 8420: "Sakura Amezaiku",
+        8375: "Oh! Shiruko",
+        0x904B: "Uji Matcha Flan",
+        0x91CE: "Members Floor Map",
+    }
+
     _CATEGORY_TABLE_CACHE: Dict[str, Dict[int, Tuple[str, str]]] = {}
 
     def _get_category_table(self, fname: str, prefix: int, cat: str) -> Dict[int, Tuple[str, str]]:
@@ -1389,11 +1425,17 @@ class SaveEditor:
                     for line_idx, line in enumerate(f):
                         parts = line.strip().split("\t")
                         name = parts[3].strip() if len(parts) >= 4 else parts[0].strip()
-                        if prefix == 0x5000 and len(parts) >= 5 and parts[4].strip() and parts[4].strip() != "-":
-                            role = parts[4].strip()
-                            eng_role = char_map.get(role, role)
-                            if eng_role:
-                                name = f"{name} ({eng_role})"
+                        jp_name = parts[2].strip() if len(parts) >= 3 else ""
+                        if jp_name in ("リザーブ", "ブランク", "未使用", "使用禁止") or name in ("—", "-", "–"):
+                            name = "RESERVE"
+                        else:
+                            iid = prefix | (line_idx & 0x0FFF)
+                            name = self.ITEM_NAME_FIXES.get(iid, name)
+                            if prefix in (0x1000, 0x5000, 0x7000, 0xA000) and len(parts) >= 5 and parts[4].strip() and parts[4].strip() != "-":
+                                role = parts[4].strip()
+                                eng_role = char_map.get(role, role)
+                                if eng_role and not name.endswith(f"({eng_role})"):
+                                    name = f"{name} ({eng_role})"
                         table[line_idx] = (name, cat)
             except Exception:
                 pass
@@ -1417,13 +1459,13 @@ class SaveEditor:
         
         Authentic in-game items like 'Reserve Ammo' or 'Blank Card' are preserved.
         Only pure placeholder tokens ('RESERVE', 'BLANK', 'リザーブ', '使用禁止', 'Unused',
-        '0x...', 'Item 0x...') are identified as placeholders.
+        '—', '0x...', 'Item 0x...') are identified as placeholders.
         """
         if not name:
             return True
         s = name.strip()
         # Exact placeholder names
-        if s.upper() in ("RESERVE", "BLANK", "----------", "使用禁止", "UNUSED", "UNUSED ITEM", "空栏"):
+        if s.upper() in ("RESERVE", "BLANK", "----------", "—", "-", "–", "???", "使用禁止", "UNUSED", "UNUSED ITEM", "空栏"):
             return True
         if "リザーブ" in s:
             return True
@@ -1433,7 +1475,7 @@ class SaveEditor:
             return True
         # Check name before any parenthetical character tag (e.g. "RESERVE (Joker)")
         base_name = s.split(" (")[0].strip()
-        if base_name.upper() in ("RESERVE", "BLANK", "使用禁止", "UNUSED"):
+        if base_name.upper() in ("RESERVE", "BLANK", "—", "-", "–", "???", "使用禁止", "UNUSED"):
             return True
         return False
 

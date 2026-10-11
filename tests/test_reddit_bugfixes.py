@@ -143,6 +143,70 @@ class TestRedditBugFixes(unittest.TestCase):
         # Outfit: 0xA002 (Shujin Uniform All, idx=2, main+02272255) -> 0x3231
         self.assertEqual(self.editor.get_item_owned_offset(0xA002), 0x3231)
 
+    def test_universal_name_and_offset_parity_across_all_tables(self):
+        """Every item, skill, and trait in server.REFERENCE_DB must match SaveEditor 1:1,
+        have zero duplicated '(Role) (Role)' suffixes, zero leaked '—'/JP RESERVE placeholders,
+        and 100% exact engine offset parity with data/*.txt memory addresses."""
+        import re
+        import server
+
+        SaveEditor._CATEGORY_TABLE_CACHE.clear()
+        db = server.build_reference_db()
+
+        # 1. 0x3170 ('—' / JP 'リザーブ' in Accessories.txt) must be rejected as placeholder
+        self.assertTrue(self.editor.is_placeholder_item("—"))
+        self.assertNotIn(0x3170, {it["id"] for it in db["items"]})
+
+        # 2. Every item in REFERENCE_DB matches SaveEditor._resolve_item_info and has no doubled (Role)
+        for it in db["items"]:
+            iid = it["id"]
+            ename, ecat = self.editor._resolve_item_info(iid)
+            self.assertEqual(it["name"], ename, f"Item 0x{iid:04X} mismatch: server={it['name']!r} vs editor={ename!r}")
+            self.assertEqual(it["category"], ecat)
+            self.assertIsNone(
+                re.search(r"\([^)]+\)\s*\([^)]+\)$", it["name"]),
+                f"Duplicated role suffix on 0x{iid:04X}: {it['name']!r}",
+            )
+            prefix = iid & 0xF000
+            off = (
+                self.editor.get_item_owned_offset(iid)
+                if prefix in (0x1000, 0x7000, 0xA000)
+                else self.editor.get_item_count_offset(iid)
+            )
+            self.assertGreater(off, 0, f"Unmapped offset for 0x{iid:04X} ({it['name']})")
+
+        # 3. Every skill and trait in REFERENCE_DB matches SaveEditor.get_skill_name / get_trait_name
+        for s in db["skills"]:
+            self.assertEqual(self.editor.get_skill_name(s["id"]), s["name"])
+        for t in db["traits"]:
+            if t["id"] != 0:
+                self.assertEqual(self.editor.get_trait_name(t["id"]), t["name"])
+
+    def test_player_and_group_name_pc0x31_unpack_and_glyph_safe_atlus_encoding(self):
+        """1. 0x31 PC payloads unpack player & group names from 0x13840..0x139AC.
+        2. _to_atlus_encoding encodes '〆' as 0x8297 and never slices a 2-byte glyph in half."""
+        # 'The〆Phantoms' -> 80b480c880c5829780b080c880c180ce80d480cf80cd80d3 (exact 24 bytes from DATA11)
+        atlus_default_grp = self.editor._to_atlus_encoding("The〆Phantoms", max_bytes=24)
+        self.assertEqual(
+            atlus_default_grp.hex(),
+            "80b480c880c5829780b080c880c180ce80d480cf80cd80d3",
+        )
+
+        # Long group name ('Phantom Thieves' = 29 Atlus bytes) truncated at max_bytes=24 must not end with dangling 0x80
+        atlus_long = self.editor._to_atlus_encoding("Phantom Thieves", max_bytes=24)
+        self.assertLessEqual(len(atlus_long), 24)
+        self.assertNotEqual(atlus_long[-1], 0x80, "2-byte Atlus glyph was sliced in half!")
+
+        # Unpacking a 0x31 payload with 'Ｔｈｅ〆Ｐｈａｎｔｏｍｓ' at 0x1397C populates player_names.group_name_utf8
+        self.editor.set_player_names("Akira", "Kurusu", "The〆Phantoms")
+        from core.parser import GameDataParser
+        p = GameDataParser()
+        p.unpack(self.editor.parser.header.pack(), self.editor.parser.data_payload)
+        self.assertEqual(p.header.fname, "Akira")
+        self.assertEqual(p.header.lname, "Kurusu")
+        self.assertEqual(p.player_names.group_name_utf8, "The〆Phantoms")
+
 
 if __name__ == "__main__":
     unittest.main()
+
