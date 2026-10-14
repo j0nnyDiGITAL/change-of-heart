@@ -16,7 +16,7 @@
 ## CURRENT POSITION -- realign here, then act
 - **Milestone:** v1.1.2 released; next: resume Ground-Up Redesign on `redesign/p5r-native-menu`.
 - **You are at:** Release complete; transitioning to Phase 2 (Redesign).
-- **Last done:** v1.1.2 standalone binary built, process smoke-tested (D011 passed), packaged to `CHANGE_OF_HEART_v1.1.2_WINDOWS.zip`, and published to GitHub Releases.
+- **Last done:** GitHub issue triage complete (#1, #3 closed as already-implemented in v1.1.2; #2 needs-info; #4 ready-for-agent with agent brief) + #4 Load-Save playtime `NoneType` crash fixed (server.py None-tolerant playtime → "Unknown") with 2 regression tests. 190/190 green.
 - **Do this next:** Resume Ground-Up Redesign on `redesign/p5r-native-menu`.
 - **DONE WHEN:** Redesign Stage 1 (Full-Bleed Joker Status Canvas) captured and validated.
 - **Live caveats (trust, don't re-verify):** Full-bleed redesign preserved on branch `redesign/p5r-native-menu`; Outfits `0xA000+` wiring frozen (D008) until 2-save diff proves offsets.
@@ -51,6 +51,7 @@
 
 
 ## Progress Log
+- 2026-10-14: GitHub issue triage (`/triage`): 4 open issues verified against HEAD 22818e8 via changelog cross-reference + read-only code verifier. #1 (group name overflow) and #3 (compendium pollution / Satanael) closed as already-implemented in v1.1.2 (83cefdf, 191fe0d); #2 (rank 10 romance) → needs-info (fixed-in-head, awaiting reporter confirm); #4 (Load Save `NoneType // int`) → ready-for-agent with agent brief. Shipped the #4 fix: None-tolerant playtime in `server.py` (undeterminable → "Unknown"; header-u32 fallback accepted only when 0 < v <= 500000) + `tests/test_github_issues.py` (2 regression tests). 190/190 tests green.
 - 2026-10-11: Resolved `u/Thelonlierface` report (*"added all the wrong items and also gave me curse build arsene"*): preserved existing player-registered Velvet Room Compendium builds on save/unlock, replaced template `201` with canonical Lv 1 starter Arsene, fixed `+1` BLANK-row offset shift across Skill Cards (`0x4000`), Protectors (`0x5000`), Treasure (`0x8000`), and Outfits (`0xA000`), and prevented empty normalized inventory fallback (D020); 185/185 tests passing.
 - 2026-10-05: Critical consumable offset desync fixed (u/Party-Consequence-71: Homunculus->Takemedic bug) via Universal Engine Offset Formula (`core/consumable_offsets.py`, D019); full FAQ knowledge base published (`docs/FAQ.md`) with in-app `❓ FAQ & HELP` modal and full inline README FAQ (u/Aslanyiyenkedi save button, u/Antiwis- unmet confidants 0 stars vs ???); 183/183 tests passing; invariants verified 4/4.
 - 2026-09-22: v1.1.2 EXE rebuilt from HEAD `174d35a` (PyInstaller 6.22.0 / Python 3.14.6, 28.6s, 41.7MB, sha256 897e0df5cbf17172) — reddit bugfixes now in binary. Ledger synced pre-build per crash-safety rule.

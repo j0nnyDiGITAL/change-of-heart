@@ -1,7 +1,7 @@
 # STATUS.md — P5R Save Editor (Change of Heart)
 
 > Human-readable current state. Synced from state.json on every exit.
-> Updated: 2026-10-05 17:40 EDT
+> Updated: 2026-10-14 02:15 EDT
 
 ## Current State
 <!-- GENERATED_STATE_HEADER_START -->
@@ -9,10 +9,11 @@
 - **Gate:** ready
 - **Mode:** single-agent
 - **Version:** v1.1.2
-- **Updated:** 2026-10-11T18:25:00Z
+- **Updated:** 2026-10-14T02:15:00-04:00
 <!-- GENERATED_STATE_HEADER_END -->
 
 ## Last Completed
+- 2026-10-14: GitHub issue triage complete + Load-Save playtime crash fixed. Triage: #1 (group name overflow) and #3 (compendium pollution / Satanael) closed as already-implemented in v1.1.2 (verified: 83cefdf conditional name write + verbatim 0x31 pack; 191fe0d XOR compendium diff + record preservation + removal path); #2 (rank 10 romance) → needs-info (fixed-in-head: explicit 0x02 bit semantics, rank-down stepper, SAVE_ID/ARCANA_ID mapping consistent both directions); #4 (Load Save `NoneType // int`) → ready-for-agent with agent brief. Fix: None-tolerant playtime computation in `server.py` (`\_build_loaded_save_payload`) — undeterminable playtime degrades to "Unknown", header-u32 fallback accepted only when 0 < v <= 500000; day/level fields same None-tolerance. New `tests/test_github_issues.py` (2 regression tests, exact crash repro). 190/190 tests green.
 - 2026-10-11: Resolved Reddit user bug report (`u/Thelonlierface`: *"added all the wrong items and also gave me curse build arsene"*) & completed Universal Name, Skill & Evolution Accuracy Audit: (1) Preserved existing player-registered Velvet Room Compendium builds in `set_compendium_registration()` and `unlock_compendium_100()`, replaced template `201` with canonical Lv 1 starter Arsene (*Pinch Anchor*, *Eiha*, *Cleave*), and restricted `/api/save` compendium sync to modified IDs (`registered_list ^ current_reg`); (2) Fixed `+1` BLANK-row offset shift (`base + idx - 1`) in Skill Cards (`0x4000`), Protectors/Armor (`0x5000`), Treasure (`0x8000`), and Outfits (`0xA000`), and prevented empty `inventory_normalized` diffs from falling back to the legacy inventory loop; (3) Unpacked player/team names from `0x31` PC payloads (`0x13840..0x139AC`), added glyph-aligned Atlus 2-byte truncation + `'〆'` (`0x8297`) support, unified `SaveEditor` and `server.REFERENCE_DB` name tables (0 diffs across 2,403 items, 870 skills, 93 traits), eliminated duplicated `(Role) (Role)` suffixes across all 254 Outfits, and filtered the leaked `'—'`/`JP_NAME=リザーブ` placeholder (`0x3170`); (4) Fixed `+2` skill ID shift and added missing Nuke/Psy passives in `PASSIVE_AFFINITY_SKILLS` (`app.js`), and wired `TEAMMATE_EVOLUTION_IDS` in `SaveEditor.set_equipped_persona()` so Tier 1–3 teammate evolutions save cleanly. 188/188 tests green.
 - 2026-10-05: Resolved critical Reddit user bug report (`u/Party-Consequence-71`): mapped all 338 consumable items to their exact engine offsets via the Universal Engine Offset Formula (`save_offset = memory_address - 0x0226F024`), fixing the Homunculus (`0x2570`) vs Takemedic (`0x2534`) desync caused by non-contiguous memory gaps in Atlus tables. Published comprehensive FAQ knowledge base (`docs/FAQ.md`), added full inline FAQ section to `README.md`, and integrated in-app `❓ FAQ & HELP` modal in web UI addressing save button location (`u/Aslanyiyenkedi`), un-met confidants 0 stars vs ??? (`u/Antiwis-`), crafting materials location, and save backups. 183/183 tests green.
 - 2026-09-23: Resolved Reddit user query (`u/AbandedsMind`) regarding Liquid Mercury: Liquid Mercury is in `Infiltration` (ID 24597 / `0x6015`), which was previously labeled as just "Tools". Renamed tab to "Tools & Mats" and updated category labels/themes to "Infiltration Tools & Materials" with rich descriptions for all infiltration crafting components. 182/182 tests green.
