@@ -54,6 +54,6 @@
 - None (no upstream dependencies)
 
 ## Build
-- Latest: `dist/P5R_Save_Editor.exe` (41.7 MB, rebuilt 2026-10-11 14:24 EDT from v1.1.2 HEAD — canonical Lv 1 Arsene template, non-destructive Compendium registration, BLANK-row category offset alignment, universal name/glyph parity, passive affinity skill fix, and teammate evolution persistence included; sha256 cab783b1853208a061b3347306253c42cac1a7a455d3de5b38e725f372a14042).
+- Latest: `dist/P5R_Save_Editor.exe` (41.7 MB, rebuilt 2026-10-14 02:28 EDT for v1.1.3 — includes issue #4 playtime NoneType crash fix; headless smoke test PASSED, /api/build → 200; sha256 ef1b69f116787948fea891c6c1c945100cfb37f1e5a4370000decdbc22d530d50). Previous: v1.1.2 build (sha256 cab783b1853208a061b3347306253c42cac1a7a455d3de5b38e725f372a14042).
 - PyInstaller 6.22.0 / Python 3.14.6 (D011 ABI verified; process smoke test PASSED).
-- GitHub: v1.1.2 Released (`CHANGE_OF_HEART_v1.1.2_WINDOWS.zip` + `P5R_Save_Editor.exe`).
+- GitHub: v1.1.3 Released (`CHANGE_OF_HEART_v1.1.3_WINDOWS.zip` + `P5R_Save_Editor.exe`, sha256 d97e55bc04c0e79285027d3c0b917d78fb891e7d3f81deb40179da18d4912c06). v1.1.2 also available.
