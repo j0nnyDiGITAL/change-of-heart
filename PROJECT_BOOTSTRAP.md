@@ -9,11 +9,14 @@
 | Capability | Status | Notes |
 |---|---|---|
 | `python -m PyInstaller` (build frozen exe) | ✅ Works | Use the **module form** — `python -m PyInstaller P5R_Save_Editor.spec --noconfirm --clean --distpath dist`. The lowercase `pyinstaller` CLI is NOT on PATH; the module resolves. |
-| `python -m unittest` | ✅ Works | `python -m unittest discover -s tests` → currently **188/188 OK** (oracle-corpus tests auto-skip without live saves). |
+| `python -m unittest` | ✅ Works | `python -m unittest discover -s tests` → must be green (current count tracked in `state.json` → `test_count`, not here). Oracle-corpus tests auto-skip without live saves. |
 | `node --check` (JS syntax) | ✅ Works | `node --check web-app/static/app.js`. |
 | `npm run lint:context` | ✅ Works | Shim lives at `tools/lint_context.js` (no upstream package.json script was present originally). Passes all checks. |
 | Launch the GUI / click the modal | ⚠️ Partial | No interactive display session, but the frozen EXE **can be smoke-tested headlessly**: launch `dist/P5R_Save_Editor.exe`, confirm the process spawns, find its loopback port via `netstat -ano`, probe `/api/build` for 200, then kill it. Full visual/WebView checks remain an end-user step. |
 | Read `J:\SteamLibrary\...\P5R\CPK\BASE.CPK` directly | ❌ Outside workspace sandbox | Ground-truth table/offset data must be diff-verified by the end-user via `tools/diff_mapper.py` and pasted back as deltas. The agent only consumes offsets already recorded in `handoff.md` / `research/RESEARCH.md`. |
+| Text search (grep/Select-String) | ⚠️ Slow tree | **Explicit file lists only** — `Select-String -Path <file1>,<file2>` or the grep tool with a single-file path. Never grep the workspace root or `tools/` (~2.3GB of the 3.1GB / 7,920-file tree); root grep times out at 60–120s. Raise run_code timeouts above 120s when batching local reads. |
+| Sandbox write ACL (workspace-write) | ⚠️ Broken on this host | If a sandbox write is denied (`SetNamedSecurityInfoW` / Win32 5 under workspace-write), run the `diagnose-windows-sandbox-acl` skill before asking the user to change the session sandbox mode. |
+| run_code `process.env` | ⚠️ Empty | No HOME/USERPROFILE in the run_code runtime — `os.tmpdir()` yields `undefined\temp`. Use a hardcoded temp path (`C:\Users\kufis\AppData\Local\Temp`). |
 
 ## Commands the agent can run right now (verified)
 
