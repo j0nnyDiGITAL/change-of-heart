@@ -324,10 +324,20 @@ def _build_loaded_save_payload(editor: SaveEditor, file_path: str) -> dict:
             "persona": p_info
         })
 
-    # Parse accurate playtime from authoritative quick_info seconds
-    playtime_sec = quick_info.get("playtime") or hdr.playtime or 0
-    if playtime_sec > 500000:
-        playtime_sec = quick_info.get("playtime", 0)
+    # Parse accurate playtime from authoritative quick_info seconds.
+    # quick_info["playtime"] is None when the header description text has no
+    # parseable "PLAY TIME:Xh Ym" line (e.g. localized saves); the
+    # container-header u32 fallback is a garbage value (> 500000) in genuine
+    # saves, so an undeterminable playtime degrades to "Unknown" instead of
+    # reaching // arithmetic (GitHub issue #4: NoneType // int on Load Save).
+    playtime_sec = quick_info.get("playtime")
+    if not isinstance(playtime_sec, int) or playtime_sec < 0:
+        header_pt = hdr.playtime
+        playtime_sec = header_pt if isinstance(header_pt, int) and 0 < header_pt <= 500000 else None
+    playtime_display = (
+        f"{playtime_sec // 3600}h {(playtime_sec % 3600) // 60}m"
+        if playtime_sec is not None else "Unknown"
+    )
 
     joker_stock = editor.get_persona_stock(0)
     inventory = editor.get_inventory()
@@ -344,9 +354,9 @@ def _build_loaded_save_payload(editor: SaveEditor, file_path: str) -> dict:
             "lname": hdr.lname,
             "group_name": names.group_name_utf8,
             "money": editor.get_money(),
-            "day": quick_info.get("day", str(hdr.day)),
-            "level": quick_info.get("level", "22"),
-            "playtime": f"{playtime_sec // 3600}h {(playtime_sec % 3600) // 60}m"
+            "day": quick_info.get("day") or str(hdr.day),
+            "level": quick_info.get("level") or "22",
+            "playtime": playtime_display
         },
         "social_stats": social,
         "confidants": confidants,
