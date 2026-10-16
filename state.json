@@ -1,17 +1,17 @@
 {
   "schema_version": 2,
   "project": "p5r-save-editor",
-  "phase": "implementation",
-  "gate": "ready",
+  "phase": "released",
+  "gate": "closed",
   "mode": "single-agent",
-  "version": "v1.1.3",
+  "version": "v2.0.0",
   "pinned_shas": {},
-  "last_session": "memory/2026-10-14-github-issue-triage.md",
-  "updated_at": "2026-10-14T02:15:00-04:00",
+  "last_session": "memory/2026-10-16-operation-change-of-heart.md",
+  "updated_at": "2026-10-16T03:55:00-04:00",
   "check_commands": [
     ["python", "-m", "unittest", "discover", "-s", "tests"]
   ],
-  "test_count": 190,
+  "test_count": 212,
   "banned_patterns": [
     ["slotIdx\\s*<\\s*30", "Quick-array 30-slot cap (was silently dropping items)"],
     ["0x3530.*merge|merge.*0x3530", "Quick-array merge (never merge with master counts)"],
@@ -19,7 +19,7 @@
   ],
   "human_gate": "none",
   "blockers": [],
-  "next_action": "Resume Ground-Up Redesign on redesign/p5r-native-menu",
+  "next_action": "Long-term maintenance and community stewardship",
   "active_owners": [],
   "frozen_offsets": [
     "0xA000+ Outfits save wiring (D008 — read-only in UI)"

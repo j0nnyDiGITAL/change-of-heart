@@ -1,18 +1,19 @@
-# STATUS.md — P5R Save Editor (Change of Heart)
+# STATUS.md — P5R Save Editor (Change of Heart 2.0)
 
 > Human-readable current state. Synced from state.json on every exit.
-> Updated: 2026-10-14 02:15 EDT
+> Updated: 2026-10-16 04:03 EDT
 
 ## Current State
 <!-- GENERATED_STATE_HEADER_START -->
-- **Phase:** implementation
-- **Gate:** ready
+- **Phase:** released
+- **Gate:** closed
 - **Mode:** single-agent
-- **Version:** v1.1.3
-- **Updated:** 2026-10-14T02:15:00-04:00
+- **Version:** v2.0.0
+- **Updated:** 2026-10-16T04:03:00-04:00
 <!-- GENERATED_STATE_HEADER_END -->
 
 ## Last Completed
+- 2026-10-16: Change of Heart 2.0 (v2.0.0) Final Release complete: (1) Architecture Hardening & Save Integrity: Created `core/atomic_writer.py` (atomic tempfile + fsync + pre-replacement conflict detection + atomic rename with Windows file lock retries + readback verification) and `core/session.py` (transactional edit staging, capability tokens, concurrency guard, no direct mutation of loaded bytes); (2) Local API & Security: Capped request body size (32MB) and save size (5MB), added Content-Security-Policy headers, DNS rebinding loopback Host validation, and path traversal protection on backup restore; (3) Binary Correctness & Invariants: Removed arbitrary 2,496-byte gap zeroing from compendium saving, created `core/binary_oracle.py`, and verified 0-byte payload deltas on no-op re-saves; (4) Advanced Features: Shipped Save Inspector (`/api/inspect`), Side-by-Side Save Comparator (`/api/compare`), Semantic Cross-Save Transfer (`/api/transfer`), and Staged Changes Review (`/api/stage`); (5) Frontend & UI: Authentic P5R styling, 2.0 branding, escapeHtml XSS sanitization, HTTP 409 conflict modal, keyboard navigation (Escape, 1-7 stage hotkeys), and reduced-motion toggle; (6) Verification: Expanded test suite from 190 to 212 passing tests (+22 tests), verified standalone Windows executable build (`dist/P5R_Save_Editor.exe`, 41.7 MB, sha256 `01e3fec0...`) with D011 loopback process smoke test, and packaged release archive `dist/CHANGE_OF_HEART_v2.0.0_WINDOWS.zip` (41.45 MB, sha256 `cd23f76c...`). 212/212 tests green.
 - 2026-10-14: GitHub issue triage complete + Load-Save playtime crash fixed. Triage: #1 (group name overflow) and #3 (compendium pollution / Satanael) closed as already-implemented in v1.1.2 (verified: 83cefdf conditional name write + verbatim 0x31 pack; 191fe0d XOR compendium diff + record preservation + removal path); #2 (rank 10 romance) → needs-info (fixed-in-head: explicit 0x02 bit semantics, rank-down stepper, SAVE_ID/ARCANA_ID mapping consistent both directions); #4 (Load Save `NoneType // int`) → ready-for-agent with agent brief. Fix: None-tolerant playtime computation in `server.py` (`\_build_loaded_save_payload`) — undeterminable playtime degrades to "Unknown", header-u32 fallback accepted only when 0 < v <= 500000; day/level fields same None-tolerance. New `tests/test_github_issues.py` (2 regression tests, exact crash repro). 190/190 tests green.
 - 2026-10-11: Resolved Reddit user bug report (`u/Thelonlierface`: *"added all the wrong items and also gave me curse build arsene"*) & completed Universal Name, Skill & Evolution Accuracy Audit: (1) Preserved existing player-registered Velvet Room Compendium builds in `set_compendium_registration()` and `unlock_compendium_100()`, replaced template `201` with canonical Lv 1 starter Arsene (*Pinch Anchor*, *Eiha*, *Cleave*), and restricted `/api/save` compendium sync to modified IDs (`registered_list ^ current_reg`); (2) Fixed `+1` BLANK-row offset shift (`base + idx - 1`) in Skill Cards (`0x4000`), Protectors/Armor (`0x5000`), Treasure (`0x8000`), and Outfits (`0xA000`), and prevented empty `inventory_normalized` diffs from falling back to the legacy inventory loop; (3) Unpacked player/team names from `0x31` PC payloads (`0x13840..0x139AC`), added glyph-aligned Atlus 2-byte truncation + `'〆'` (`0x8297`) support, unified `SaveEditor` and `server.REFERENCE_DB` name tables (0 diffs across 2,403 items, 870 skills, 93 traits), eliminated duplicated `(Role) (Role)` suffixes across all 254 Outfits, and filtered the leaked `'—'`/`JP_NAME=リザーブ` placeholder (`0x3170`); (4) Fixed `+2` skill ID shift and added missing Nuke/Psy passives in `PASSIVE_AFFINITY_SKILLS` (`app.js`), and wired `TEAMMATE_EVOLUTION_IDS` in `SaveEditor.set_equipped_persona()` so Tier 1–3 teammate evolutions save cleanly. 188/188 tests green.
 - 2026-10-05: Resolved critical Reddit user bug report (`u/Party-Consequence-71`): mapped all 338 consumable items to their exact engine offsets via the Universal Engine Offset Formula (`save_offset = memory_address - 0x0226F024`), fixing the Homunculus (`0x2570`) vs Takemedic (`0x2534`) desync caused by non-contiguous memory gaps in Atlus tables. Published comprehensive FAQ knowledge base (`docs/FAQ.md`), added full inline FAQ section to `README.md`, and integrated in-app `❓ FAQ & HELP` modal in web UI addressing save button location (`u/Aslanyiyenkedi`), un-met confidants 0 stars vs ??? (`u/Antiwis-`), crafting materials location, and save backups. 183/183 tests green.
@@ -54,6 +55,8 @@
 - None (no upstream dependencies)
 
 ## Build
-- Latest: `dist/P5R_Save_Editor.exe` (41.7 MB, rebuilt 2026-10-14 02:28 EDT for v1.1.3 — includes issue #4 playtime NoneType crash fix; headless smoke test PASSED, /api/build → 200; sha256 ef1b69f116787948fea891c6c1c945100cfb37f1e5a4370000decdbc22d530d50). Previous: v1.1.2 build (sha256 cab783b1853208a061b3347306253c42cac1a7a455d3de5b38e725f372a14042).
+- Latest: `dist/P5R_Save_Editor.exe` (41.7 MB, built 2026-10-16 for Change of Heart 2.0 — includes two-phase transaction engine, binary oracle, deep inspector, comparator, semantic transfer, and P5R native menu redesign; headless smoke test PASSED, /api/build → 200; sha256 e5e9fc1e5d4cfe8e96d4b4af86e6b1aa74e89cfde029db2d779813719f79dd8c).
 - PyInstaller 6.22.0 / Python 3.14.6 (D011 ABI verified; process smoke test PASSED).
-- GitHub: v1.1.3 Released (`CHANGE_OF_HEART_v1.1.3_WINDOWS.zip` + `P5R_Save_Editor.exe`, sha256 d97e55bc04c0e79285027d3c0b917d78fb891e7d3f81deb40179da18d4912c06). v1.1.2 also available.
+- Release Archive: `dist/CHANGE_OF_HEART_v2.0.0_WINDOWS.zip` (41.46 MB, sha256 cdac8e9822092c554f922c606d2da5dd780f3e0a0a8993296767c1f0db2ec8e5). Previous releases: v1.1.3, v1.1.2.
+
+

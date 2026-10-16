@@ -14,10 +14,22 @@ let DB = {
 };
 
 let CURRENT_SAVE = null;
+let CURRENT_SESSION_TOKEN = null;
+let REDUCED_MOTION_ENABLED = false;
 let ACTIVE_MEMBER_INDEX = 0;
 let CURRENT_CONFIDANT_FILTER = "all";
 let ALLOW_UNSAFE_CONFIDANTS = false;
 let INITIAL_CONFIDANT_RANKS = {};
+
+function escapeHtml(str) {
+  if (str === null || str === undefined) return "";
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
 
 // =========================================================================
 // AUTHENTIC PERSONA 5 SYNTHETIC WEB AUDIO SFX ENGINE
@@ -394,6 +406,7 @@ function onManualFileSelected(event) {
 function _applyLoadedSaveData(data, displayPath) {
   CURRENT_SAVE = data;
   CURRENT_FILE_PATH = data.file_path || displayPath;
+  CURRENT_SESSION_TOKEN = data.token || null;
   if (data.notice) renderSameSaveNotice(data.notice);
   INITIAL_CONFIDANT_RANKS = {};
   Object.entries(data.confidants || {}).forEach(([arc, c]) => {
@@ -3326,17 +3339,27 @@ async function executeSavePayload(skipReview) {
 
   setStatus("Creating timestamped backup & re-signing save...");
   try {
+    const headers = { "Content-Type": "application/json" };
+    if (CURRENT_SESSION_TOKEN) {
+      headers["X-Session-Token"] = CURRENT_SESSION_TOKEN;
+    }
     const res = await fetch("/api/save", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: headers,
       body: JSON.stringify(CURRENT_SAVE)
     });
     const result = await res.json();
+    if (res.status === 409 || result.conflict) {
+      showConflictModal(result.error || "Save conflict: File was modified externally or P5R is running.");
+      setStatus("Save conflict: External file change detected.");
+      return;
+    }
     if (result.error) {
       alert("Save Failed: " + result.error);
       setStatus("Error: " + result.error);
       return;
     }
+    if (result.token) CURRENT_SESSION_TOKEN = result.token;
 
     updateIntegrityBadge(result.integrity);
     refreshBackups();
@@ -3412,12 +3435,20 @@ async function restoreSelectedBackup() {
   if (!confirm(`Restore ${bname}? The current state will be backed up first.`)) return;
 
   try {
+    const headers = { "Content-Type": "application/json" };
+    if (CURRENT_SESSION_TOKEN) {
+      headers["X-Session-Token"] = CURRENT_SESSION_TOKEN;
+    }
     const res = await fetch("/api/restore", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: headers,
       body: JSON.stringify({ backup_name: bname })
     });
     const data = await res.json();
+    if (res.status === 409 || data.conflict) {
+      showConflictModal(data.error || "Restore conflict: Target save was modified externally.");
+      return;
+    }
     if (data.error) {
       alert("Restore failed: " + data.error);
       return;
@@ -3485,3 +3516,384 @@ function setStatus(msg) {
   const el = document.getElementById("bottomStatus");
   if (el) el.textContent = msg;
 }
+
+// =========================================================================
+// PHASE D & E: P5R NATIVE REDESIGN, INSPECTOR, COMPARATOR & TRANSFER CONTROLLER
+// =========================================================================
+
+let COMPARE_TARGET_PATH = "";
+
+function toggleReducedMotion() {
+  REDUCED_MOTION_ENABLED = !REDUCED_MOTION_ENABLED;
+  document.body.classList.toggle("reduced-motion", REDUCED_MOTION_ENABLED);
+  const btn = document.getElementById("motionToggleBtn");
+  if (btn) {
+    btn.innerHTML = `<span>⚡ FX: ${REDUCED_MOTION_ENABLED ? 'OFF' : 'ON'}</span>`;
+  }
+}
+
+function openInspectorModal() {
+  P5Audio.playSwitch();
+  const m = document.getElementById("inspectorModal");
+  if (m) m.classList.add("open");
+  refreshInspector();
+}
+
+function closeInspectorModal(e) {
+  if (e && e.target && !e.target.classList.contains("p5-modal-backdrop") && !e.target.closest("button")) return;
+  const m = document.getElementById("inspectorModal");
+  if (m) m.classList.remove("open");
+}
+
+function openCompareModal() {
+  P5Audio.playSwitch();
+  const m = document.getElementById("compareModal");
+  if (m) m.classList.add("open");
+  populateCompareDropdown();
+}
+
+function closeCompareModal(e) {
+  if (e && e.target && !e.target.classList.contains("p5-modal-backdrop") && !e.target.closest("button")) return;
+  const m = document.getElementById("compareModal");
+  if (m) m.classList.remove("open");
+}
+
+function openStagedReviewModal() {
+  P5Audio.playSwitch();
+  const m = document.getElementById("stagedReviewModal");
+  if (m) m.classList.add("open");
+  renderStagedReviewTable();
+}
+
+function closeStagedReviewModal(e) {
+  if (e && e.target && !e.target.classList.contains("p5-modal-backdrop") && !e.target.closest("button")) return;
+  const m = document.getElementById("stagedReviewModal");
+  if (m) m.classList.remove("open");
+}
+
+function showConflictModal(msg) {
+  P5Audio.playMax();
+  const m = document.getElementById("conflictModal");
+  const msgEl = document.getElementById("conflictModalMessage");
+  if (msgEl) msgEl.textContent = msg;
+  if (m) m.classList.add("open");
+}
+
+function closeConflictModal(e) {
+  if (e && e.target && !e.target.classList.contains("p5-modal-backdrop") && !e.target.closest("button")) return;
+  const m = document.getElementById("conflictModal");
+  if (m) m.classList.remove("open");
+}
+
+function closeAnyOpenModal() {
+  closeFaqModal();
+  closePortraitModal();
+  closeSafetyModal();
+  closeInvContextMenu();
+  closeAddItemModal();
+  closeInspectorModal();
+  closeCompareModal();
+  closeStagedReviewModal();
+  closeConflictModal();
+}
+
+// Global Keyboard Navigation
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    closeAnyOpenModal();
+    return;
+  }
+  const tag = (e.target && e.target.tagName) ? e.target.tagName.toUpperCase() : "";
+  if (tag === "INPUT" || tag === "SELECT" || tag === "TEXTAREA" || e.target.isContentEditable) {
+    return;
+  }
+  const stageMap = {
+    "1": "daily_life",
+    "2": "velvet_room",
+    "3": "confidants",
+    "4": "inventory",
+    "5": "compendium",
+    "6": "god_presets",
+    "7": "rescue_vault"
+  };
+  if (stageMap[e.key]) {
+    switchStage(stageMap[e.key]);
+  }
+});
+
+// Save Inspector Diagnostics Runner
+async function refreshInspector() {
+  const container = document.getElementById("inspectorContent");
+  if (!container) return;
+  container.innerHTML = `<div style="text-align:center; padding:30px; color:#888;">Scanning binary save structure...</div>`;
+
+  try {
+    const headers = {};
+    if (CURRENT_SESSION_TOKEN) headers["X-Session-Token"] = CURRENT_SESSION_TOKEN;
+    const res = await fetch("/api/inspect", { headers });
+    const insp = await res.json();
+    if (insp.error) {
+      container.innerHTML = `<div class="audit-card" style="border-left-color:#FF5E5B;">
+        <strong style="color:#FF5E5B;">INSPECTOR NOTICE:</strong> ${escapeHtml(insp.error)}
+      </div>`;
+      return;
+    }
+
+    const isValid = insp.status === "valid";
+    const statusBadge = isValid 
+      ? `<span class="badge-valid">INTEGRITY: GRADE A (VALID)</span>`
+      : `<span class="badge-degraded">INTEGRITY: DEGRADED</span>`;
+
+    const procAlert = insp.process_check?.p5r_running
+      ? `<div class="audit-card" style="border-left-color:#FF5E5B; margin-bottom:12px;">
+          <strong style="color:#FF5E5B;">⚠️ P5R.exe IS CURRENTLY RUNNING!</strong> Close the game before writing changes to avoid memory overwrites.
+         </div>`
+      : `<div class="audit-card" style="border-left-color:var(--p5-green); margin-bottom:12px;">
+          <strong style="color:var(--p5-yellow);">✔ GAME PROCESS CLOSED:</strong> Environment is safe for atomic disk replacement.
+         </div>`;
+
+    container.innerHTML = `
+      ${procAlert}
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        ${statusBadge}
+        <span style="font-size:12px; font-family:monospace; color:#888;">${escapeHtml(insp.file_info?.file_path || "Active Session")}</span>
+      </div>
+
+      <div class="grid-2" style="gap:14px; margin-bottom:14px;">
+        <div class="audit-card">
+          <div style="font-family:var(--font-p5); font-size:16px; color:var(--p5-yellow); margin-bottom:6px;">FILE &amp; CONTAINER</div>
+          <div style="font-size:12px; line-height:1.6; color:#DDD;">
+            <strong>Size:</strong> ${(insp.file_info?.size_bytes || 0).toLocaleString()} bytes<br>
+            <strong>SHA-256:</strong> <code style="font-size:10px; color:#AAA;">${escapeHtml(insp.file_info?.sha256?.substring(0, 32))}...</code><br>
+            <strong>Days Elapsed:</strong> ${insp.header_data?.day_count || 0}<br>
+            <strong>Date / Calendar:</strong> ${escapeHtml(insp.header_data?.date_string || "—")}<br>
+            <strong>Current Yen:</strong> ¥${(insp.header_data?.money || 0).toLocaleString()}
+          </div>
+        </div>
+
+        <div class="audit-card">
+          <div style="font-family:var(--font-p5); font-size:16px; color:var(--p5-yellow); margin-bottom:6px;">CRYPTOGRAPHIC CHECKSUMS</div>
+          <div style="font-size:12px; line-height:1.6; color:#DDD;">
+            <strong>Header CRC32:</strong> ${insp.crc_checks?.header_crc32?.match ? '<span style="color:var(--p5-yellow);">MATCH ✔</span>' : '<span style="color:#FF5E5B;">MISMATCH ✘</span>'} (0x${(insp.crc_checks?.header_crc32?.stored || 0).toString(16).toUpperCase()})<br>
+            <strong>Payload CRC32:</strong> ${insp.crc_checks?.data_crc32?.match ? '<span style="color:var(--p5-yellow);">MATCH ✔</span>' : '<span style="color:#FF5E5B;">MISMATCH ✘</span>'} (0x${(insp.crc_checks?.data_crc32?.stored || 0).toString(16).toUpperCase()})<br>
+            <strong>Compendium Mask:</strong> ${insp.compendium_mirror?.match ? '<span style="color:var(--p5-yellow);">MIRROR IN SYNC ✔</span>' : '<span style="color:#FF5E5B;">DIVERGENCE ✘</span>'}<br>
+            <strong>Registered Personas:</strong> ${insp.compendium_mirror?.unlocked_count || 0} / 224 live bits
+          </div>
+        </div>
+      </div>
+    `;
+  } catch (err) {
+    container.innerHTML = `<div style="color:#FF5E5B; padding:20px;">Failed to fetch inspection report: ${escapeHtml(err)}</div>`;
+  }
+}
+
+// Side-by-Side Save Comparison & Semantic Transfer
+async function populateCompareDropdown() {
+  const select = document.getElementById("compareTargetSelect");
+  if (!select) return;
+  try {
+    const res = await fetch("/api/discovery");
+    const data = await res.json();
+    select.innerHTML = `<option value="">-- Select Target Save to Compare --</option>`;
+    if (data.saves && data.saves.length > 0) {
+      data.saves.forEach(s => {
+        const opt = document.createElement("option");
+        opt.value = s.path;
+        opt.textContent = `📁 ${s.name} (${s.date || 'Save'})`;
+        select.appendChild(opt);
+      });
+    }
+  } catch (err) {
+    console.error("Discovery error:", err);
+  }
+}
+
+function onCompareFileSelected(event) {
+  const file = event.target.files?.[0];
+  if (!file) return;
+  const select = document.getElementById("compareTargetSelect");
+  const opt = document.createElement("option");
+  opt.value = file.name;
+  opt.textContent = `📁 ${file.name} (Browse)`;
+  select.prepend(opt);
+  select.value = file.name;
+  COMPARE_TARGET_PATH = file.name;
+}
+
+async function runComparison() {
+  const select = document.getElementById("compareTargetSelect");
+  const targetPath = select?.value || COMPARE_TARGET_PATH;
+  if (!targetPath) {
+    alert("Please select or browse a comparison target save.");
+    return;
+  }
+  COMPARE_TARGET_PATH = targetPath;
+  const container = document.getElementById("compareContent");
+  container.innerHTML = `<div style="text-align:center; padding:30px; color:#888;">Comparing saves side-by-side...</div>`;
+
+  try {
+    const headers = { "Content-Type": "application/json" };
+    if (CURRENT_SESSION_TOKEN) headers["X-Session-Token"] = CURRENT_SESSION_TOKEN;
+    const res = await fetch("/api/compare", {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify({ target_path: targetPath })
+    });
+    const cmp = await res.json();
+    if (cmp.error) {
+      container.innerHTML = `<div class="audit-card" style="border-left-color:#FF5E5B;">
+        <strong style="color:#FF5E5B;">COMPARISON ERROR:</strong> ${escapeHtml(cmp.error)}
+      </div>`;
+      return;
+    }
+
+    const s1 = cmp.semantic_diff?.save_1 || {};
+    const s2 = cmp.semantic_diff?.save_2 || {};
+    const bdiff = cmp.binary_diff || {};
+
+    const diffRow = (label, v1, v2) => {
+      const isDiff = JSON.stringify(v1) !== JSON.stringify(v2);
+      return `<tr>
+        <td style="font-weight:700; color:#DDD;">${escapeHtml(label)}</td>
+        <td>${escapeHtml(v1)}</td>
+        <td style="${isDiff ? 'color:var(--p5-yellow); font-weight:800;' : ''}">${escapeHtml(v2)} ${isDiff ? '★' : ''}</td>
+      </tr>`;
+    };
+
+    container.innerHTML = `
+      <table class="p5-table">
+        <thead>
+          <tr>
+            <th style="width:28%;">FIELD / STAT</th>
+            <th style="width:36%;">ACTIVE LOADED SAVE</th>
+            <th style="width:36%;">TARGET SAVE</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${diffRow("First Name", s1.fname, s2.fname)}
+          ${diffRow("Last Name", s1.lname, s2.lname)}
+          ${diffRow("Group Name", s1.group_name, s2.group_name)}
+          ${diffRow("Yen Balance", `¥${(s1.money || 0).toLocaleString()}`, `¥${(s2.money || 0).toLocaleString()}`)}
+          ${diffRow("Days Elapsed", s1.days_elapsed, s2.days_elapsed)}
+          ${diffRow("Compendium Registered", `${s1.compendium_registered || 0} personas`, `${s2.compendium_registered || 0} personas`)}
+          ${diffRow("Inventory Stacks Count", Object.keys(s1.inventory_stacks || {}).length, Object.keys(s2.inventory_stacks || {}).length)}
+          ${diffRow("Owned Gear Count", Object.keys(s1.inventory_gear || {}).length, Object.keys(s2.inventory_gear || {}).length)}
+          ${diffRow("Binary Differences", "Baseline", `${bdiff.different_bytes_count || 0} bytes divergent`)}
+        </tbody>
+      </table>
+    `;
+
+    const transferCtrl = document.getElementById("transferControls");
+    if (transferCtrl) transferCtrl.style.display = "flex";
+  } catch (err) {
+    container.innerHTML = `<div style="color:#FF5E5B; padding:20px;">Comparison failed: ${escapeHtml(err)}</div>`;
+  }
+}
+
+async function executeSemanticTransfer() {
+  if (!COMPARE_TARGET_PATH) {
+    alert("No comparison target save active.");
+    return;
+  }
+  const opts = {
+    money: !!document.getElementById("transferMoneyCheck")?.checked,
+    social_stats: !!document.getElementById("transferStatsCheck")?.checked,
+    compendium: !!document.getElementById("transferCompendiumCheck")?.checked,
+    inventory: !!document.getElementById("transferInventoryCheck")?.checked
+  };
+
+  if (!opts.money && !opts.social_stats && !opts.compendium && !opts.inventory) {
+    alert("Please check at least one module to transfer.");
+    return;
+  }
+
+  if (!confirm("Transfer selected data into current active session?")) return;
+
+  try {
+    const headers = { "Content-Type": "application/json" };
+    if (CURRENT_SESSION_TOKEN) headers["X-Session-Token"] = CURRENT_SESSION_TOKEN;
+    const res = await fetch("/api/transfer", {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify({
+        source_path: COMPARE_TARGET_PATH,
+        transfer_options: opts
+      })
+    });
+    const data = await res.json();
+    if (data.error) {
+      alert("Transfer failed: " + data.error);
+      return;
+    }
+    alert("Transfer successful! " + (data.message || "Modules transferred."));
+    closeCompareModal();
+    if (CURRENT_FILE_PATH) loadSaveFile();
+  } catch (err) {
+    alert("Transfer error: " + err);
+  }
+}
+
+// Staged Changes Review Table Renderer
+async function renderStagedReviewTable() {
+  const container = document.getElementById("stagedTableContainer");
+  if (!container) return;
+  container.innerHTML = `<div style="text-align:center; padding:20px; color:#888;">Auditing staged modifications...</div>`;
+
+  try {
+    const headers = {};
+    if (CURRENT_SESSION_TOKEN) headers["X-Session-Token"] = CURRENT_SESSION_TOKEN;
+    const res = await fetch("/api/stage", { headers });
+    const data = await res.json();
+    const staged = data.staged_changes || [];
+
+    if (staged.length === 0) {
+      const normPayload = buildInventoryPayload();
+      const changeCount = Object.keys(normPayload.stacks).length + Object.keys(normPayload.owned_gear).length;
+      if (changeCount === 0 && !UNLOCK_COMPENDIUM_PENDING) {
+        container.innerHTML = `<div class="audit-card" style="text-align:center; padding:25px;">
+          <strong style="color:var(--p5-yellow);">NO CHANGES STAGED</strong><br>
+          <span style="font-size:12px; color:#888;">Active memory matches the on-disk save baseline.</span>
+        </div>`;
+        return;
+      }
+    }
+
+    let rowsHtml = "";
+    staged.forEach(ch => {
+      rowsHtml += `<tr>
+        <td style="font-weight:700; color:var(--p5-yellow);">${escapeHtml(ch.category)}</td>
+        <td>${escapeHtml(ch.field)}</td>
+        <td class="delta-old">${escapeHtml(JSON.stringify(ch.old_value))}</td>
+        <td class="delta-new">${escapeHtml(JSON.stringify(ch.new_value))}</td>
+      </tr>`;
+    });
+
+    if (UNLOCK_COMPENDIUM_PENDING) {
+      rowsHtml += `<tr>
+        <td style="font-weight:700; color:var(--p5-yellow);">Compendium</td>
+        <td>100% Full Unlock</td>
+        <td class="delta-old">Partial</td>
+        <td class="delta-new">All 224 Live Bits Armed ★</td>
+      </tr>`;
+    }
+
+    container.innerHTML = `
+      <table class="p5-table">
+        <thead>
+          <tr>
+            <th>CATEGORY</th>
+            <th>FIELD / ITEM</th>
+            <th>BASELINE VALUE</th>
+            <th>STAGED CANDIDATE</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rowsHtml}
+        </tbody>
+      </table>
+    `;
+  } catch (err) {
+    container.innerHTML = `<div style="color:#FF5E5B; padding:15px;">Failed to load staged changes: ${escapeHtml(err)}</div>`;
+  }
+}
+

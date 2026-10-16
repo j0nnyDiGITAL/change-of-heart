@@ -1,19 +1,23 @@
-# 🎭 CHANGE OF HEART — Persona 5 Royal Save Studio
-*A modern binary save editor & 100% compendium utility for Persona 5 Royal (PC / Steam)*  
+# 🎭 CHANGE OF HEART 2.0 — Persona 5 Royal Save Studio
+*The definitive binary save editor, inspection suite & 100% compendium utility for Persona 5 Royal (PC / Steam)*  
 *Engineered by **j0nny DiGITAL***
 
 <p align="center">
-  <img src="change_of_heart_logo.jpg" alt="CHANGE OF HEART Logo" width="320" style="border-radius:8px; box-shadow:0 0 25px rgba(230,0,18,0.5);">
+  <img src="change_of_heart_logo.jpg" alt="CHANGE OF HEART 2.0 Logo" width="320" style="border-radius:8px; box-shadow:0 0 25px rgba(230,0,18,0.5);">
 </p>
 
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Steam%20%7C%20Steam%20Deck-red?style=for-the-badge&logo=steam)](https://github.com/j0nnyDiGITAL/change-of-heart)
+[![Release](https://img.shields.io/badge/Release-v2.0.0%20(Change%20of%20Heart%202.0)-crimson?style=for-the-badge)](https://github.com/j0nnyDiGITAL/change-of-heart/releases)
 [![Built With](https://img.shields.io/badge/Built%20With-100%25%20Vibecoded%20⚡-ff007f?style=for-the-badge)](https://github.com/j0nnyDiGITAL/change-of-heart)
-[![Tests](https://img.shields.io/badge/Tests-190%2F190%20Passing%20(100%25)-brightgreen?style=for-the-badge)](https://github.com/j0nnyDiGITAL/change-of-heart)
+[![Tests](https://img.shields.io/badge/Tests-212%2F212%20Passing%20(100%25)-brightgreen?style=for-the-badge)](https://github.com/j0nnyDiGITAL/change-of-heart)
 [![FAQ](https://img.shields.io/badge/FAQ-Read%20Knowledge%20Base-orange?style=for-the-badge)](docs/FAQ.md)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
 [![Ko-fi](https://img.shields.io/badge/Ko--fi-Support%20j0nny%20DiGITAL-ff5e5b?style=for-the-badge&logo=kofi&logoColor=white)](https://ko-fi.com/j0nnydigital)
 
-**CHANGE OF HEART** is a modern, standalone save editor and binary reverse-engineering studio for **Persona 5 Royal (PC / Steam)**. Built with a full **Phantom Thieves** visual interface, automatic Steam save detection, mathematical bitfield manipulation, and dual-layer CRC32 cryptographic re-signing.
+**CHANGE OF HEART 2.0** is the definitive, standalone save editor, binary reverse-engineering studio, and inspection suite for **Persona 5 Royal (PC / Steam)**. Built with a full **Phantom Thieves** native visual interface, automatic Steam save detection, mathematical bitfield manipulation, two-phase transactional corruption-resistant writes, side-by-side save comparison, semantic cross-save transfer, and dual-layer CRC32 cryptographic re-signing.
+
+> [!IMPORTANT]
+> 🏆 **CHANGE OF HEART 2.0 Milestone**: This release represents the complete architectural hardening pass, introducing the Two-Phase Transaction & Session Engine, Save Inspector, Side-by-Side Save Comparator, Cross-Save Semantic Transfer, Staged Changes Review Ledger, and full P5R-native styling with hotkeys and reduced-motion accessibility.
 
 > [!NOTE]
 > ⚡ **100% Pure Vibecoded**: This entire application — from the AES-256 binary cryptography and multi-save oracle diffing to the standalone desktop UI and test suite — was built and reverse-engineered collaboratively via AI-driven pair programming sessions between **j0nnyDiGITAL**, **Hermes Agent**, and **Antigravity**.
