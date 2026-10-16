@@ -418,25 +418,64 @@ class P5RWebHandler(SimpleHTTPRequestHandler):
         host_hdr = self.headers.get("Host", "")
         if not host_hdr:
             return True
-        host_name = host_hdr.split(":")[0].strip().lower()
-        return host_name in ("127.0.0.1", "localhost", "::1", "[::1]")
+        parts = host_hdr.strip().lower().split(":")
+        host_name = parts[0]
+        if host_name not in ("127.0.0.1", "localhost", "::1", "[::1]"):
+            return False
+        if len(parts) > 1:
+            try:
+                host_port = int(parts[1])
+                srv_port = getattr(self.server, "server_port", None) or self.server.server_address[1]
+                if host_port != srv_port:
+                    return False
+            except ValueError:
+                return False
+        return True
 
     def _origin_allowed(self):
-        """CSRF guard: any browser-sent Origin must be a loopback origin.
-
-        Browsers attach an Origin header to cross-site requests; a malicious
-        page must not be able to drive this local API. Requests with no
-        Origin (curl, webview navigation, same-origin GET) are allowed.
-        """
+        """CSRF guard: browser-sent Origin must match the exact runtime loopback listener."""
         origin = self.headers.get("Origin")
         if not origin:
+            # Native WebView2 navigation, curl, or same-origin non-CORS requests
             return True
         try:
             from urllib.parse import urlsplit
-            host = (urlsplit(origin).hostname or "").lower()
+            parsed = urlsplit(origin)
+            scheme = (parsed.scheme or "").lower()
+            hostname = (parsed.hostname or "").lower()
+            port = parsed.port
         except Exception:
             return False
-        return host in ("127.0.0.1", "localhost", "::1")
+
+        if scheme != "http":
+            return False
+        if hostname not in ("127.0.0.1", "localhost", "::1"):
+            return False
+        srv_port = getattr(self.server, "server_port", None) or self.server.server_address[1]
+        if port != srv_port:
+            return False
+        return True
+
+    def do_OPTIONS(self):
+        if not self._host_allowed():
+            self.send_response(400)
+            self.end_headers()
+            return
+        if not self._origin_allowed():
+            self.send_response(403)
+            self.end_headers()
+            return
+        self.send_response(204)
+        origin = self.headers.get("Origin")
+        if origin and self._origin_allowed():
+            self.send_header("Access-Control-Allow-Origin", origin)
+            self.send_header("Vary", "Origin")
+            self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+            self.send_header("Access-Control-Allow-Headers", "Content-Type, X-Session-Token")
+            self.send_header("Access-Control-Max-Age", "86400")
+        self.send_header("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
+        self.send_header("Pragma", "no-cache")
+        self.end_headers()
 
     def do_GET(self):
         global CURRENT_EDITOR, CURRENT_FILE_PATH, LAST_REQUEST_TS
@@ -451,9 +490,11 @@ class P5RWebHandler(SimpleHTTPRequestHandler):
         if parsed.path == "/" or parsed.path == "/index.html":
             self.send_response(200)
             self.send_header("Content-type", "text/html; charset=utf-8")
+            self.send_header("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
+            self.send_header("Pragma", "no-cache")
             self.send_header(
                 "Content-Security-Policy",
-                "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self';"
+                "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; frame-ancestors 'none'; object-src 'none';"
             )
             self.end_headers()
             template_path = WEB_APP_DIR / "templates" / "index.html"
@@ -463,6 +504,7 @@ class P5RWebHandler(SimpleHTTPRequestHandler):
         elif parsed.path == "/game" or parsed.path == "/game/":
             self.send_response(200)
             self.send_header("Content-type", "text/html; charset=utf-8")
+            self.send_header("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
             self.end_headers()
             game_index = PROJECT_ROOT / "p5r-game-client" / "index.html"
             with open(game_index, "rb") as f:
@@ -485,6 +527,7 @@ class P5RWebHandler(SimpleHTTPRequestHandler):
                     self.send_header("Content-type", "application/javascript; charset=utf-8")
                 else:
                     self.send_header("Content-type", "application/octet-stream")
+                self.send_header("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
                 self.end_headers()
                 with open(game_file, "rb") as f:
                     self.wfile.write(f.read())
@@ -510,12 +553,12 @@ class P5RWebHandler(SimpleHTTPRequestHandler):
                 "pid": os.getpid(),
                 "save": (session.file_path if session else CURRENT_FILE_PATH) or "",
                 "session_id": session.session_id if session else None,
-                "token": session.capability_token if session else None,
                 "revision": session.revision if session else None,
             })
             return
         elif parsed.path == "/api/inspect":
-            session = SESSION_MANAGER.get_session()
+            token = self.headers.get("X-Session-Token")
+            session = SESSION_MANAGER.get_session_by_token(token) if token else None
             if session:
                 report = inspect_save(session.editor, file_path=session.file_path)
                 self.send_json(200, report)
@@ -526,11 +569,18 @@ class P5RWebHandler(SimpleHTTPRequestHandler):
                 self.send_json(400, {"error": "No save file loaded to inspect."})
             return
         elif parsed.path == "/api/stage":
-            session = SESSION_MANAGER.get_session()
-            if session:
-                self.send_json(200, {"staged_changes": session.get_staged_summary()})
-            else:
-                self.send_json(200, {"staged_changes": []})
+            token = self.headers.get("X-Session-Token")
+            session = SESSION_MANAGER.get_session_by_token(token) if token else None
+            if not session:
+                self.send_json(401, {"error": "Authentication failed: Valid session capability token required."})
+                return
+            t = session.current_transaction
+            self.send_json(200, {
+                "staged_changes": session.get_staged_summary(),
+                "patch_digest": t.patch_digest if t else None,
+                "stage_token": t.stage_token if t else None,
+                "revision": session.revision,
+            })
             return
         elif parsed.path == "/api/database":
             accepts_gzip = "gzip" in (self.headers.get("Accept-Encoding") or "")
@@ -605,6 +655,7 @@ class P5RWebHandler(SimpleHTTPRequestHandler):
                 return
             try:
                 raw = p.read_bytes()
+                verify_save_bytes(raw, strict_crc=True)
                 session = SESSION_MANAGER.create_session(raw, file_path=str(p), is_uploaded=False)
                 CURRENT_EDITOR = session.editor
                 CURRENT_FILE_PATH = session.file_path
@@ -617,7 +668,7 @@ class P5RWebHandler(SimpleHTTPRequestHandler):
                 resp["baseline_sha256"] = session.baseline_sha256
                 self.send_json(200, resp)
             except Exception as e:
-                self.send_json(500, {"error": f"Failed to load save: {str(e)}"})
+                self.send_json(400, {"error": f"Failed to load save: {str(e)}", "corrupt": True})
 
         elif parsed.path == "/api/load-upload":
             raw_b64 = data.get("data", "")
@@ -630,6 +681,7 @@ class P5RWebHandler(SimpleHTTPRequestHandler):
                 if len(raw_bytes) > 5 * 1024 * 1024:
                     self.send_json(400, {"error": "Uploaded save exceeds 5MB limit."})
                     return
+                verify_save_bytes(raw_bytes, strict_crc=True)
                 session = SESSION_MANAGER.create_session(raw_bytes, file_path=f"Uploaded ({filename})", is_uploaded=True)
                 CURRENT_EDITOR = session.editor
                 CURRENT_FILE_PATH = session.file_path
@@ -642,12 +694,12 @@ class P5RWebHandler(SimpleHTTPRequestHandler):
                 resp["baseline_sha256"] = session.baseline_sha256
                 self.send_json(200, resp)
             except Exception as e:
-                self.send_json(500, {"error": f"Failed to load uploaded save: {str(e)}"})
+                self.send_json(400, {"error": f"Failed to load uploaded save: {str(e)}", "corrupt": True})
 
         elif parsed.path == "/api/save":
-            session = SESSION_MANAGER.get_session_by_token(token) or SESSION_MANAGER.get_session()
+            session = SESSION_MANAGER.get_session_by_token(token) if token else None
             if not session:
-                self.send_json(400, {"error": "No save file loaded."})
+                self.send_json(401, {"error": "Authentication failed: Valid session capability token required."})
                 return
 
             p5r_run, _ = check_running_processes()
@@ -657,7 +709,8 @@ class P5RWebHandler(SimpleHTTPRequestHandler):
 
             try:
                 # Session handles transaction commit, including data.get("unlock_compendium") -> unlock_compendium_100()
-                commit_res = session.commit_transaction(data, strict_verification=True)
+                stage_token = data.get("stage_token") if isinstance(data, dict) else None
+                commit_res = session.commit_transaction(data, stage_token=stage_token, strict_verification=True)
                 CURRENT_EDITOR = session.editor
                 CURRENT_ORIGINAL_BYTES = session.baseline_bytes
                 _conflicts = instances.find_conflicts(session.file_path)
@@ -674,10 +727,10 @@ class P5RWebHandler(SimpleHTTPRequestHandler):
                 self.send_json(500, {"error": f"Failed to save file: {str(e)}"})
 
         elif parsed.path == "/api/restore":
-            backup_name = data.get("backup_name", "")
-            session = SESSION_MANAGER.get_session_by_token(token) or SESSION_MANAGER.get_session()
+            backup_name = data.get("backup_name", "") if isinstance(data, dict) else ""
+            session = SESSION_MANAGER.get_session_by_token(token) if token else None
             if not session or not session.file_path or not backup_name:
-                self.send_json(400, {"error": "Missing backup file or active save path."})
+                self.send_json(401 if not session else 400, {"error": "Missing valid session token or backup parameter."})
                 return
             if not re.fullmatch(r"[A-Za-z0-9_.\-]+", backup_name):
                 self.send_json(400, {"error": "Invalid backup name."})
@@ -697,7 +750,7 @@ class P5RWebHandler(SimpleHTTPRequestHandler):
                 restored_bytes = p.read_bytes()
                 session.baseline_bytes = restored_bytes
                 session.baseline_sha256 = compute_sha256(restored_bytes)
-                session.editor = SaveEditor(restored_bytes)
+                session.editor = SaveEditor(restored_bytes, strict_crc=True)
                 session.revision += 1
                 CURRENT_EDITOR = session.editor
                 CURRENT_ORIGINAL_BYTES = session.baseline_bytes
@@ -709,10 +762,10 @@ class P5RWebHandler(SimpleHTTPRequestHandler):
                 self.send_json(500, {"error": f"Restore failed: {str(e)}"})
 
         elif parsed.path == "/api/compare":
-            target_path = data.get("target_path", "").strip()
-            session = SESSION_MANAGER.get_session_by_token(token) or SESSION_MANAGER.get_session()
+            target_path = data.get("target_path", "").strip() if isinstance(data, dict) else ""
+            session = SESSION_MANAGER.get_session_by_token(token) if token else None
             if not session:
-                self.send_json(400, {"error": "No active save loaded for comparison."})
+                self.send_json(401, {"error": "Authentication failed: Valid session capability token required."})
                 return
             if not target_path or not Path(target_path).is_file():
                 self.send_json(400, {"error": "Valid comparison target save path is required."})
@@ -729,14 +782,22 @@ class P5RWebHandler(SimpleHTTPRequestHandler):
                 self.send_json(500, {"error": f"Comparison failed: {str(e)}"})
 
         elif parsed.path == "/api/stage":
-            session = SESSION_MANAGER.get_session_by_token(token) or SESSION_MANAGER.get_session()
+            session = SESSION_MANAGER.get_session_by_token(token) if token else None
             if not session:
-                self.send_json(400, {"error": "No active save session."})
+                self.send_json(401, {"error": "Authentication failed: Valid session capability token required."})
                 return
-            action = data.get("action", "stage")
+            action = data.get("action", "stage") if isinstance(data, dict) else "stage"
             if action == "clear":
                 session.clear_staged_changes()
                 self.send_json(200, {"status": "success", "staged_changes": []})
+            elif action == "prepare":
+                prep_res = session.prepare_staged_transaction()
+                self.send_json(200, prep_res)
+            elif action == "confirm":
+                st_token = data.get("stage_token", "")
+                p_digest = data.get("patch_digest")
+                conf_res = session.confirm_staged_transaction(st_token, patch_digest=p_digest)
+                self.send_json(200, conf_res)
             else:
                 cat = data.get("category", "general")
                 key = data.get("key", "unspecified")
@@ -746,50 +807,46 @@ class P5RWebHandler(SimpleHTTPRequestHandler):
                 self.send_json(200, {"status": "success", "staged_changes": session.get_staged_summary()})
 
         elif parsed.path == "/api/transfer":
-            source_path = data.get("source_path", "").strip()
-            opts = data.get("transfer_options")
-            if isinstance(opts, dict):
-                categories = [k for k, v in opts.items() if v]
-            else:
-                categories = data.get("categories", ["money", "inventory", "compendium", "personas"])
-
-            session = SESSION_MANAGER.get_session_by_token(token) or SESSION_MANAGER.get_session()
+            source_path = data.get("source_path", "").strip() if isinstance(data, dict) else ""
+            session = SESSION_MANAGER.get_session_by_token(token) if token else None
             if not session:
-                self.send_json(400, {"error": "No active destination save session."})
+                self.send_json(401, {"error": "Authentication failed: Valid session capability token required."})
                 return
             if not source_path or not Path(source_path).is_file():
                 self.send_json(400, {"error": "Valid source save path is required for transfer."})
                 return
+            action = data.get("action", "preview") if isinstance(data, dict) else "preview"
             try:
                 src_bytes = Path(source_path).read_bytes()
-                src_editor = SaveEditor(src_bytes)
-                transfer_data = {}
-                if "money" in categories:
-                    transfer_data["header"] = {"money": src_editor.get_money()}
-                if "social_stats" in categories:
-                    transfer_data["social_stats"] = src_editor.get_social_stats()
-                if "inventory" in categories:
-                    transfer_data["inventory_normalized"] = src_editor.get_normalized_inventory()
-                if "compendium" in categories:
-                    src_comp = set(src_editor.get_compendium().get("registered", []))
-                    cur_comp = set(session.editor.get_compendium().get("registered", []))
-                    transfer_data["compendium"] = {
-                        "supported": True,
-                        "registered": sorted(list(src_comp | cur_comp)),
-                    }
-                if "personas" in categories:
-                    transfer_data["joker_stock"] = src_editor.get_persona_stock(0)
-
-                res = session.commit_transaction(transfer_data, strict_verification=True)
-                CURRENT_EDITOR = session.editor
-                CURRENT_ORIGINAL_BYTES = session.baseline_bytes
-                self.send_json(200, {"status": "success", "transferred_categories": categories, "result": res})
+                if action == "confirm":
+                    transfer_token = data.get("transfer_token", "")
+                    if not transfer_token:
+                        self.send_json(400, {"error": "Transfer confirmation token is required."})
+                        return
+                    res = session.confirm_and_commit_transfer(transfer_token, src_bytes)
+                    CURRENT_EDITOR = session.editor
+                    CURRENT_ORIGINAL_BYTES = session.baseline_bytes
+                    self.send_json(200, {"status": "success", "result": res})
+                else:
+                    opts = data.get("transfer_options")
+                    if isinstance(opts, dict):
+                        categories = [k for k, v in opts.items() if v]
+                    else:
+                        categories = data.get("categories", ["money", "inventory", "compendium", "personas"])
+                    preview = session.build_transfer_preview(src_bytes, categories)
+                    self.send_json(200, preview)
+            except ConcurrencyConflictError as ce:
+                self.send_json(409, {"error": str(ce), "conflict": True})
+            except SaveValidationError as ve:
+                self.send_json(400, {"error": str(ve)})
             except Exception as e:
                 self.send_json(500, {"error": f"Transfer failed: {str(e)}"})
 
     def send_json(self, code, payload):
         self.send_response(code)
         self.send_header("Content-Type", "application/json; charset=utf-8")
+        self.send_header("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
+        self.send_header("Pragma", "no-cache")
         # Reflect only loopback Origins (see _origin_allowed) — never "*".
         origin = self.headers.get("Origin")
         if origin and self._origin_allowed():

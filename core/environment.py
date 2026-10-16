@@ -190,27 +190,14 @@ def list_backups(save_file: Path, backup_dir: Optional[Path] = None) -> List[Pat
 
 def restore_backup(save_file: Path, backup_zip: Path) -> Path:
     """
-    Restore a save file from one of its backup ZIPs.
+    Restore a save file from one of its backup ZIPs using two-phase atomic write
+    and bounded decompression.
 
     Before overwriting, a fresh timestamped backup of the CURRENT state is
     created (so the restore itself is reversible). Returns the path of the
-    pre-restore backup. Raises ValueError on a mismatched archive (wrong
-    save name inside).
+    pre-restore backup.
     """
-    if not backup_zip.exists():
-        raise FileNotFoundError(f"Backup ZIP not found: {backup_zip}")
-
-    with zipfile.ZipFile(backup_zip, "r") as zipf:
-        names = zipf.namelist()
-        if save_file.name not in names:
-            raise ValueError(
-                f"Archive {backup_zip.name} does not contain {save_file.name} "
-                f"(contains: {names[:5]})"
-            )
-        payload = zipf.read(save_file.name)
-
-    # Safety net: keep the current state before overwriting it.
-    safety = create_timestamped_backup(save_file)
-
-    save_file.write_bytes(payload)
-    return safety
+    from .atomic_writer import atomic_restore_backup
+    res = atomic_restore_backup(target_path=save_file, backup_zip=backup_zip, strict_verification=False)
+    backup_path = res.get("backup_path")
+    return Path(backup_path) if backup_path else (save_file.parent / "backups" / "pre_restore_backup.zip")

@@ -3838,25 +3838,50 @@ async function executeSemanticTransfer() {
     return;
   }
 
-  if (!confirm("Transfer selected data into current active session?")) return;
-
   try {
     const headers = { "Content-Type": "application/json" };
     if (CURRENT_SESSION_TOKEN) headers["X-Session-Token"] = CURRENT_SESSION_TOKEN;
-    const res = await fetch("/api/transfer", {
+    
+    // Step 1: Request authoritative server-side transfer preview & token
+    const previewRes = await fetch("/api/transfer", {
       method: "POST",
       headers: headers,
       body: JSON.stringify({
+        action: "preview",
         source_path: COMPARE_TARGET_PATH,
         transfer_options: opts
       })
     });
-    const data = await res.json();
-    if (data.error) {
-      alert("Transfer failed: " + data.error);
+    const previewData = await previewRes.json();
+    if (previewData.error) {
+      alert("Transfer preview failed: " + previewData.error);
       return;
     }
-    alert("Transfer successful! " + (data.message || "Modules transferred."));
+
+    const transferToken = previewData.transfer_token;
+    let confirmMsg = "CONFIRM DATA TRANSFER:\n";
+    if (previewData.warnings && previewData.warnings.length) {
+      confirmMsg += "WARNINGS:\n- " + previewData.warnings.join("\n- ") + "\n\n";
+    }
+    confirmMsg += `Transfer ${previewData.preview_diff ? previewData.preview_diff.length : 0} validated modules into the current active save?`;
+    if (!confirm(confirmMsg)) return;
+
+    // Step 2: Explicit confirmation with bound transfer token
+    const commitRes = await fetch("/api/transfer", {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify({
+        action: "confirm",
+        source_path: COMPARE_TARGET_PATH,
+        transfer_token: transferToken
+      })
+    });
+    const commitData = await commitRes.json();
+    if (commitData.error) {
+      alert("Transfer commit failed: " + commitData.error);
+      return;
+    }
+    alert("Transfer successful! Changes committed to disk.");
     closeCompareModal();
     if (CURRENT_FILE_PATH) loadSaveFile();
   } catch (err) {

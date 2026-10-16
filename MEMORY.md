@@ -7,7 +7,7 @@
 - **Title:** Change of Heart 2.0 — P5R Save Studio
 - **Goal:** Read and fix Persona 5 Royal (PC/Steam) save files — truthful read + safe lasting write
 - **Workspace:** `E:\ai-workspace\knowledge-base\projects\p5r-save-editor`
-- **Version:** v2.0.0 (212/212 tests passing)
+- **Version:** v2.0.0 (242/242 tests passing)
 - **Architecture:** Native PyWebView / Edge WebView2 window (`main.py`) over stdlib HTTP backend (`server.py`, binds `127.0.0.1:3000`). Frozen build: `P5R_Save_Editor.spec` (PyInstaller).
 
 ## Locked Decisions (Do Not Re-Debate Without User)
@@ -38,6 +38,8 @@
 | D022 | 2026-10-16 | Local API Hardening (`server.py`) — Loopback-only Host header validation (DNS rebinding protection), 32MB request body cap, 5MB save file limit, Content-Security-Policy headers, path traversal regex validation on backup restore | Resolves high-risk local web server vulnerabilities |
 | D023 | 2026-10-16 | Compendium 2,496-byte gap zeroing eliminated — Compendium pack only mutates registered persona bitmasks and records; untouched buffer regions preserved bit-for-bit (0-byte delta on no-op re-save) | Strict binary invariant preservation |
 | D024 | 2026-10-16 | Advanced Diagnostics & Transfer Suite — Save Inspector (`/api/inspect`), Side-by-Side Comparator (`/api/compare`), Semantic Cross-Save Transfer (`/api/transfer`), and Staged Changes Review (`/api/stage`) | Comprehensive inspection, comparison, and safe state migration capabilities |
+| D025 | 2026-10-16 | Adversarial Audit Remediation — Strict CRC validation (`strict_crc=True`) on save loading; mutating endpoints enforce `X-Session-Token` capability authentication (401); Origin port filtering bound to runtime listener; authoritative staged transactions with canonical patch digest; two-phase transfer preview and confirmation; automated pre-replacement rollback; bounded ZIP extraction (50 members, 16MB/32MB limits) | Remediates all P0/P1 adversarial audit vulnerabilities (30 new tests in `tests/test_audit_remediation.py`) |
+| D026 | 2026-10-16 | OpenDesign Visual Governance & Redesign Course Correction — Autonomous visual redesign halted per owner rejection of Phase E dashboard; OpenDesign assigned visual authority with technical contract in `docs/design/OPENDESIGN_HANDOFF.md` on branch `design/p5r-native-overhaul`; PR #7 kept in Draft status awaiting owner sign-off | Enforces separation between engineering integrity and authentic Persona 5 Royal art direction |
 
 
 ## Core Domain Rules

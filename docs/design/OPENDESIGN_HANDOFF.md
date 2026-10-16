@@ -306,7 +306,9 @@ interface LoadedSavePayload {
 ### 8.2 Save Commit Payload Schema (`POST /api/save`)
 ```typescript
 interface SaveCommitPayload {
-  token: string;          // Session capability token
+  // Required capability token via header 'X-Session-Token' or body 'token'
+  token?: string;
+  stage_token?: string;   // Optional bound token from confirmed staged review
   header?: {
     fname?: string;
     lname?: string;
@@ -333,7 +335,59 @@ interface SaveCommitPayload {
 }
 ```
 
-### 8.3 Diagnostic Inspection Schema (`GET /api/inspect`)
+### 8.3 Staged Transaction Protocol (`/api/stage`)
+```typescript
+// 1. Prepare Staged Transaction (POST /api/stage { action: "prepare" })
+// Header: X-Session-Token: <token>
+interface StagePrepareResponse {
+  status: "prepared";
+  stage_token: string;    // Unique 16-byte hex token
+  patch_digest: string;   // SHA-256 digest of canonical patch set
+  revision: number;       // Bound session revision
+  staged_changes: Array<{
+    category: string;
+    field: string;
+    old_value: any;
+    new_value: any;
+    timestamp: number;
+  }>;
+}
+
+// 2. Confirm Staged Transaction (POST /api/stage { action: "confirm", stage_token: string, patch_digest: string })
+// Header: X-Session-Token: <token>
+interface StageConfirmResponse {
+  status: "confirmed";
+  stage_token: string;
+  patch_digest: string;
+  revision: number;
+}
+```
+
+### 8.4 Two-Phase Semantic Transfer Protocol (`/api/transfer`)
+```typescript
+// Phase 1: Preview Transfer (POST /api/transfer { action: "preview", donor_path?: string, donor_data_b64?: string, categories: string[] })
+// Header: X-Session-Token: <token>
+interface TransferPreviewResponse {
+  status: "preview";
+  transfer_token: string; // Bound single-use token (300s TTL)
+  source_sha256: string;
+  dest_revision: number;
+  preview_diff: Array<{
+    category: string;
+    field: string;
+    current: any;
+    donor: any;
+  }>;
+  warnings: string[];
+  exclusions: string[];   // Explicit safety exclusions (e.g. Outfits, 3rd Sem Flags)
+}
+
+// Phase 2: Confirm & Commit Transfer (POST /api/transfer { action: "confirm", transfer_token: string, donor_path?: string, donor_data_b64?: string })
+// Header: X-Session-Token: <token>
+// Returns standard SaveCommitResponse on verified atomic commit.
+```
+
+### 8.5 Diagnostic Inspection Schema (`GET /api/inspect`)
 ```typescript
 interface InspectorReport {
   integrity_grade: "CLEAN" | "DEGRADED";
@@ -369,9 +423,11 @@ interface InspectorReport {
 }
 ```
 
-### 8.4 Server Error & Conflict Responses
-- **HTTP 400 Bad Request:** Payload validation failed (e.g., malformed UTF-8, out-of-range integer). Returns `{"error": string}`.
-- **HTTP 409 Conflict:** Concurrency conflict. Disk file was altered externally since session baseline load. Returns `{"error": string, "conflict": true}`. The UI must present options to Reload from Disk or View Diff.
+### 8.6 Server Error & Security Responses
+- **HTTP 400 Bad Request:** Payload validation failed (e.g., malformed UTF-8, out-of-range integer, or corrupted save). Returns `{"error": string, "corrupt"?: boolean}`.
+- **HTTP 401 Unauthorized:** Missing, invalid, or revoked capability token on mutating endpoints. Returns `{"error": "Authentication failed: Valid session capability token required."}`.
+- **HTTP 403 Forbidden:** DNS rebinding or CSRF violation: Host header is not loopback or Origin port does not match the runtime listener.
+- **HTTP 409 Conflict:** Concurrency conflict. Disk file or session baseline was altered externally. Returns `{"error": string, "conflict": true}`.
 - **HTTP 413 Payload Too Large:** Request body exceeds 32 MB limit.
 - **HTTP 500 Internal Error:** Physical disk failure, file-lock timeout, or container serialization exception.
 
@@ -436,7 +492,7 @@ OpenDesign must follow this phased, evidence-based methodology. No screen may be
 
 ### Stage 7 — Engineering Integration
 - Antigravity integrates the owner-approved frontend markup and styling into `web-app/templates/index.html` and `web-app/static/`.
-- Run full automated regression suites (212+ tests) and invariant verification gates to guarantee zero save-integrity regression.
+- Run full automated regression suites (242 tests across unit, integration, and audit regression suites) and invariant verification gates to guarantee zero save-integrity regression.
 
 ---
 

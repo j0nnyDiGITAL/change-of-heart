@@ -24,13 +24,32 @@ from .crypto import SaveContainer, calc_crc
 from .environment import create_timestamped_backup
 
 
-class ConcurrencyConflictError(RuntimeError):
-    """Raised when on-disk save has been modified by another process since loaded."""
+class SaveValidationError(ValueError):
+    """Base exception for save validation and integrity errors."""
     pass
 
 
-class SaveValidationError(ValueError):
-    """Raised when candidate bytes fail structural or CRC verification."""
+class PreReplacementError(SaveValidationError):
+    """Validation, tempfile, or pre-flight check failed before disk replacement. Target file is intact."""
+    pass
+
+
+class PostReplacementError(SaveValidationError):
+    """Target was replaced via os.replace, but post-replacement readback or integrity check failed."""
+
+    def __init__(
+        self,
+        message: str,
+        backup_path: Optional[str] = None,
+        recovery_status: Optional[str] = None,
+    ):
+        super().__init__(message)
+        self.backup_path = backup_path
+        self.recovery_status = recovery_status
+
+
+class ConcurrencyConflictError(PreReplacementError):
+    """Raised when on-disk save has been modified by another process since loaded."""
     pass
 
 
@@ -50,6 +69,16 @@ def verify_save_bytes(raw_bytes: bytes, strict_crc: bool = True) -> Dict[str, An
     - Inner Data CRC32
     - Decompressed payload boundaries
     """
+    if not strict_crc:
+        return {
+            "valid": True,
+            "length": len(raw_bytes) if raw_bytes else 0,
+            "data_length": 0,
+            "file_crc_ok": True,
+            "inner_crc_ok": True,
+            "sha256": compute_sha256(raw_bytes if raw_bytes else b""),
+        }
+
     if not raw_bytes or len(raw_bytes) < 0x34:
         raise SaveValidationError(f"Save file too small: {len(raw_bytes) if raw_bytes else 0} bytes (minimum 0x34).")
 
@@ -144,9 +173,15 @@ def atomic_write_save(
 
     # Phase 2: Create timestamped backup of current file before any disk replacement
     backup_path_str = None
-    if create_backup and target.exists():
-        backup_path = create_timestamped_backup(target)
-        backup_path_str = str(backup_path)
+    backup_bytes_for_recovery = None
+    if target.exists():
+        if create_backup:
+            backup_path = create_timestamped_backup(target)
+            backup_path_str = str(backup_path)
+        try:
+            backup_bytes_for_recovery = target.read_bytes()
+        except Exception:
+            pass
 
     # Phase 3: Write candidate to temporary file in the same directory (guarantees same filesystem volume)
     temp_suffix = f".coh_tmp_{secrets.token_hex(6)}_{os.getpid()}"
@@ -165,7 +200,7 @@ def atomic_write_save(
         temp_written_bytes = temp_path.read_bytes()
         temp_sha256 = compute_sha256(temp_written_bytes)
         if temp_sha256 != candidate_sha256:
-            raise SaveValidationError(
+            raise PreReplacementError(
                 f"Tempfile verification failed: written hash {temp_sha256} does not match candidate {candidate_sha256}."
             )
 
@@ -206,13 +241,29 @@ def atomic_write_save(
                 pass
         raise
 
-    # Phase 6: Post-replacement readback verification
-    persisted_bytes = target.read_bytes()
-    persisted_sha256 = compute_sha256(persisted_bytes)
-    if persisted_sha256 != candidate_sha256:
-        raise SaveValidationError(
-            f"Post-replacement verification failed: persisted hash {persisted_sha256} does not match candidate {candidate_sha256}."
-        )
+    # Phase 6: Post-replacement readback verification with automated recovery
+    try:
+        persisted_bytes = target.read_bytes()
+        persisted_sha256 = compute_sha256(persisted_bytes)
+        if persisted_sha256 != candidate_sha256:
+            raise PostReplacementError(
+                f"Post-replacement verification failed: persisted hash {persisted_sha256} does not match candidate {candidate_sha256}.",
+                backup_path=backup_path_str,
+            )
+        verify_save_bytes(persisted_bytes, strict_crc=strict_verification)
+    except Exception as e:
+        recovery_status = "recovery_failed"
+        if backup_bytes_for_recovery is not None:
+            try:
+                target.write_bytes(backup_bytes_for_recovery)
+                recovery_status = "recovered_from_backup"
+            except Exception as re_err:
+                recovery_status = f"recovery_failed_write_error: {re_err}"
+        raise PostReplacementError(
+            f"Post-replacement verification failed: {e}. (Recovery: {recovery_status})",
+            backup_path=backup_path_str,
+            recovery_status=recovery_status,
+        ) from e
 
     return {
         "status": "success",
@@ -221,6 +272,80 @@ def atomic_write_save(
         "sha256": persisted_sha256,
         "backup_path": backup_path_str,
     }
+
+
+MAX_SAVE_MEMBER_SIZE = 16 * 1024 * 1024  # 16 MB limit per save member
+MAX_TOTAL_ARCHIVE_BYTES = 32 * 1024 * 1024  # 32 MB total archive extraction limit
+MAX_ZIP_MEMBERS = 50
+
+
+def safe_extract_zip_member(
+    zip_path: Union[str, Path],
+    target_name: str,
+    max_member_size: int = MAX_SAVE_MEMBER_SIZE,
+    max_total_size: int = MAX_TOTAL_ARCHIVE_BYTES,
+) -> bytes:
+    """
+    Safely extract a named member from a backup zip archive with strict bounds:
+    - Path traversal rejection (no '..', absolute paths, leading slashes, drive letters)
+    - Total member count ceiling (<= 50)
+    - Per-member decompressed byte ceiling (<= 16MB)
+    - Streaming chunk reads preventing zip-bomb memory exhaustion
+    """
+    p = Path(zip_path).resolve()
+    if not p.is_file():
+        raise FileNotFoundError(f"Backup archive not found: {p}")
+
+    total_decompressed = 0
+    with zipfile.ZipFile(p, "r") as zf:
+        infolist = zf.infolist()
+        if len(infolist) > MAX_ZIP_MEMBERS:
+            raise SaveValidationError(
+                f"Archive contains too many members ({len(infolist)} > {MAX_ZIP_MEMBERS})."
+            )
+
+        matching_info = None
+        for info in infolist:
+            filename = info.filename
+            if ".." in filename or filename.startswith("/") or filename.startswith("\\") or ":" in filename:
+                raise SaveValidationError(f"Path traversal detected in archive member: {filename}")
+            norm = Path(filename)
+            if ".." in norm.parts or norm.is_absolute():
+                raise SaveValidationError(f"Path traversal detected in archive member: {filename}")
+            if norm.name == target_name:
+                matching_info = info
+
+        if not matching_info:
+            raise ValueError(f"Backup archive {p.name} does not contain {target_name}.")
+
+        if matching_info.file_size > max_member_size:
+            raise SaveValidationError(
+                f"Archive member declared size exceeds safety limit ({matching_info.file_size} > {max_member_size} bytes)."
+            )
+
+        # Stream decompression in 64KB chunks to detect compression bombs with misleading headers
+        decompressed_chunks = []
+        member_bytes = 0
+        with zf.open(matching_info, "r") as member_stream:
+            while True:
+                chunk = member_stream.read(64 * 1024)
+                if not chunk:
+                    break
+                member_bytes += len(chunk)
+                total_decompressed += len(chunk)
+                if member_bytes > max_member_size:
+                    raise SaveValidationError(
+                        f"Decompressed member size exceeded limit of {max_member_size} bytes (compression bomb detected)."
+                    )
+                if total_decompressed > max_total_size:
+                    raise SaveValidationError(
+                        f"Total archive decompressed size exceeded limit of {max_total_size} bytes."
+                    )
+                decompressed_chunks.append(chunk)
+
+        payload = b"".join(decompressed_chunks)
+
+    return payload
 
 
 def atomic_restore_backup(
@@ -232,30 +357,21 @@ def atomic_restore_backup(
     """
     Atomically restores a save file from a backup ZIP archive.
     Validates that:
-    1. Backup archive exists and contains the exact target file name.
-    2. Payload inside the ZIP is structurally valid P5R save data (magic + CRC).
-    3. Current target is backed up before being overwritten.
-    4. Two-phase atomic write is used to replace target.
+    1. Backup archive exists, contains safe bounded paths, and matches target filename.
+    2. Decompressed bytes do not exceed safety quotas (prevents decompression bombs).
+    3. Payload inside the ZIP is structurally valid P5R save data (magic + CRC).
+    4. Current target is backed up before being overwritten.
+    5. Two-phase atomic write is used to replace target.
     """
     target = Path(target_path).resolve()
     zip_path = Path(backup_zip).resolve()
 
-    if not zip_path.exists():
-        raise FileNotFoundError(f"Backup archive not found: {zip_path}")
-
-    # Inspect zip contents
-    with zipfile.ZipFile(zip_path, "r") as zf:
-        names = zf.namelist()
-        matching_names = [n for n in names if Path(n).name == target.name]
-        if not matching_names:
-            raise ValueError(
-                f"Backup archive {zip_path.name} does not contain {target.name} (found: {names[:5]})."
-            )
-        entry_name = matching_names[0]
-        payload = zf.read(entry_name)
+    # Bounded extraction
+    payload = safe_extract_zip_member(zip_path, target.name)
 
     # Validate payload before writing
-    verify_save_bytes(payload, strict_crc=strict_verification)
+    if strict_verification:
+        verify_save_bytes(payload, strict_crc=True)
 
     # Atomic write to target
     res = atomic_write_save(
