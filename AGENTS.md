@@ -15,6 +15,7 @@
 | Loop State | `GOALS.md` | The Loop: CURRENT POSITION, milestones, phase plan |
 | Safety & Pitfalls | `SAFETY.md` | Ranked failure modes and DO-NOT-DO list |
 | Environment | `PROJECT_BOOTSTRAP.md` | Verified working tools and build recipes |
+| Search recipe | `PROJECT_BOOTSTRAP.md` | Explicit file lists only — root grep times out on this 3GB tree |
 
 ## Startup Protocol (in order)
 1. **Loop-First Execution (Mandatory, HARNESS-AGNOSTIC):** Resuming from `handoff.md` or cold, the resume contract is `GOALS.md` → **CURRENT POSITION** → "do this next". This loop works for ANY agent (Pi, Claude Code, Codex, OpenCode, fresh session) — the contract is plain files, no harness mechanism. `handoff.md` is a *stable trigger only* — do not trust its detail to be current. Read `GOALS.md`, act on its CURRENT POSITION, and treat `state.json`/`STATUS.md` as synced FROM `GOALS.md` (never authoritative on their own — they lag the loop). Note: `.pi/` is Pi-specific — non-Pi harnesses IGNORE it and read root `handoff.md` + `GOALS.md`.
@@ -106,5 +107,5 @@ S1 normalized read (backend, FIRST) → S4 key guard → S2+S5 paradigm writes +
 `[ ] stakeholders [ ] MRM is now [ ] ≥2 alternatives [ ] ITEM.TBL seg/stride cited [ ] ADR file created`
 
 **Done before stamp:**
-`[ ] 178/178 + mirror read-check warns [ ] no phantom merge [ ] STATUS.md stamped [ ] state.json updated [ ] lint:context pasted`
+`[ ] Test suite green (count = state.json test_count) + mirror read-check warns [ ] no phantom merge [ ] STATUS.md stamped [ ] state.json updated [ ] lint:context pasted`
 

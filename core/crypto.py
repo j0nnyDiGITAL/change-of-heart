@@ -95,10 +95,14 @@ class SaveContainer:
         self.header_bytes = b""
         self.data_bytes = b""
 
-    def unpack_raw(self, buffer: bytes) -> bool:
-        """Unpack, decrypt, and decompress raw save bytes."""
+    def unpack_raw(self, buffer: bytes, strict_crc: bool = False) -> bool:
+        """Unpack, decrypt, and decompress raw save bytes.
+        
+        If strict_crc is True, raises ValueError immediately on outer or inner CRC
+        mismatch or corrupt length boundaries rather than only logging warnings.
+        """
         if len(buffer) < 0x34:
-            raise ValueError("Save file buffer too small (< 0x34 bytes)")
+            raise ValueError(f"Save file buffer too small (< 0x34 bytes: got {len(buffer)})")
 
         self.file_magic, self.file_crc, self.file_timestamp, self.file_flags = struct.unpack("<4s3I", buffer[:0x10])
         self.file_iv = buffer[0x10:0x20]
@@ -109,11 +113,16 @@ class SaveContainer:
         # Validate outer file CRC
         computed_file_crc = calc_crc(buffer[0x8:])
         if computed_file_crc != self.file_crc:
-            print(f"[Warning] File CRC mismatch: Header 0x{self.file_crc:08X} vs Calculated 0x{computed_file_crc:08X}")
+            msg = f"Outer File CRC mismatch: Header 0x{self.file_crc:08X} vs Calculated 0x{computed_file_crc:08X}"
+            if strict_crc:
+                raise ValueError(msg)
+            print(f"[Warning] {msg}")
 
         buffer_dec = buffer
         if self.file_flags & (1 << 31):
             encrypted_payload = buffer[0x20:]
+            if len(encrypted_payload) % 16 != 0:
+                raise ValueError(f"Encrypted payload length {len(encrypted_payload)} is not 16-byte aligned")
             decrypted_payload = aes_decrypt(encrypted_payload, self.file_iv)
             buffer_dec = buffer[:0x20] + decrypted_payload
 
@@ -147,7 +156,10 @@ class SaveContainer:
         # Inner Data CRC Check
         computed_data_crc = calc_crc(self.data_bytes)
         if computed_data_crc != self.data_crc:
-            print(f"[Warning] Inner Data CRC mismatch: Header 0x{self.data_crc:08X} vs Calculated 0x{computed_data_crc:08X}")
+            msg = f"Inner Data CRC mismatch: Header 0x{self.data_crc:08X} vs Calculated 0x{computed_data_crc:08X}"
+            if strict_crc:
+                raise ValueError(msg)
+            print(f"[Warning] {msg}")
 
         return True
 

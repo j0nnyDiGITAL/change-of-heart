@@ -1,19 +1,23 @@
-# 🎭 CHANGE OF HEART — Persona 5 Royal Save Studio
-*A modern binary save editor & 100% compendium utility for Persona 5 Royal (PC / Steam)*  
+# 🎭 CHANGE OF HEART 2.0 — Persona 5 Royal Save Studio
+*The definitive binary save editor, inspection suite & 100% compendium utility for Persona 5 Royal (PC / Steam)*  
 *Engineered by **j0nny DiGITAL***
 
 <p align="center">
-  <img src="change_of_heart_logo.jpg" alt="CHANGE OF HEART Logo" width="320" style="border-radius:8px; box-shadow:0 0 25px rgba(230,0,18,0.5);">
+  <img src="change_of_heart_logo.jpg" alt="CHANGE OF HEART 2.0 Logo" width="320" style="border-radius:8px; box-shadow:0 0 25px rgba(230,0,18,0.5);">
 </p>
 
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Steam%20%7C%20Steam%20Deck-red?style=for-the-badge&logo=steam)](https://github.com/j0nnyDiGITAL/change-of-heart)
+[![Release](https://img.shields.io/badge/Release-v2.0.0%20(Change%20of%20Heart%202.0)-crimson?style=for-the-badge)](https://github.com/j0nnyDiGITAL/change-of-heart/releases)
 [![Built With](https://img.shields.io/badge/Built%20With-100%25%20Vibecoded%20⚡-ff007f?style=for-the-badge)](https://github.com/j0nnyDiGITAL/change-of-heart)
-[![Tests](https://img.shields.io/badge/Tests-188%2F188%20Passing%20(100%25)-brightgreen?style=for-the-badge)](https://github.com/j0nnyDiGITAL/change-of-heart)
+[![Tests](https://img.shields.io/badge/Tests-212%2F212%20Passing%20(100%25)-brightgreen?style=for-the-badge)](https://github.com/j0nnyDiGITAL/change-of-heart)
 [![FAQ](https://img.shields.io/badge/FAQ-Read%20Knowledge%20Base-orange?style=for-the-badge)](docs/FAQ.md)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
 [![Ko-fi](https://img.shields.io/badge/Ko--fi-Support%20j0nny%20DiGITAL-ff5e5b?style=for-the-badge&logo=kofi&logoColor=white)](https://ko-fi.com/j0nnydigital)
 
-**CHANGE OF HEART** is a modern, standalone save editor and binary reverse-engineering studio for **Persona 5 Royal (PC / Steam)**. Built with a full **Phantom Thieves** visual interface, automatic Steam save detection, mathematical bitfield manipulation, and dual-layer CRC32 cryptographic re-signing.
+**CHANGE OF HEART 2.0** is the definitive, standalone save editor, binary reverse-engineering studio, and inspection suite for **Persona 5 Royal (PC / Steam)**. Built with a full **Phantom Thieves** native visual interface, automatic Steam save detection, mathematical bitfield manipulation, two-phase transactional corruption-resistant writes, side-by-side save comparison, semantic cross-save transfer, and dual-layer CRC32 cryptographic re-signing.
+
+> [!IMPORTANT]
+> 🏆 **CHANGE OF HEART 2.0 Milestone**: This release represents the complete architectural hardening pass, introducing the Two-Phase Transaction & Session Engine, Save Inspector, Side-by-Side Save Comparator, Cross-Save Semantic Transfer, Staged Changes Review Ledger, and full P5R-native styling with hotkeys and reduced-motion accessibility.
 
 > [!NOTE]
 > ⚡ **100% Pure Vibecoded**: This entire application — from the AES-256 binary cryptography and multi-save oracle diffing to the standalone desktop UI and test suite — was built and reverse-engineered collaboratively via AI-driven pair programming sessions between **j0nnyDiGITAL**, **Hermes Agent**, and **Antigravity**.
@@ -89,15 +93,21 @@ This project was built across intensive collaborative AI-assisted reverse-engine
 ## 📥 Download Standalone Executable
 
 No Python or terminal required! Just grab the latest standalone release:  
-👉 **[Download CHANGE_OF_HEART_v1.1.2_WINDOWS.zip (Latest Release)](https://github.com/j0nnyDiGITAL/change-of-heart/releases/latest)**
+👉 **[Download CHANGE_OF_HEART_v1.1.3_WINDOWS.zip (Latest Release)](https://github.com/j0nnyDiGITAL/change-of-heart/releases/latest)**
 
-1. Download and extract `CHANGE_OF_HEART_v1.1.2_WINDOWS.zip`.
+1. Download and extract `CHANGE_OF_HEART_v1.1.3_WINDOWS.zip`.
 2. Double-click `P5R_Save_Editor.exe`.
 3. The editor will automatically detect your Steam saves and open the studio window.
 
 ---
 
 ## 📋 Changelog
+
+### v1.1.3 — Load Save Crash Fix (issue #4)
+- **🔧 Fixed "Load Save" crash:** `TypeError: unsupported operand type(s) for //: 'NoneType' and 'int'` when a save's header description text had no parseable "PLAY TIME:Xh Ym" line (localized game versions, or saves where the game wrote the default description). Playtime now degrades gracefully to "Unknown" instead of crashing the load.
+- **🧪 190/190 Unit Tests Passing** (was 188: +2 regression tests reproducing the exact reported crash).
+
+Everything else is unchanged from v1.1.2 — patch release only.
 
 ### v1.1.2 — Save Backup ZIP Fix, Reddit Community Fixes & In-Memory Caching
 - **🧪 Universal Engine Offset Formula Across All 10 Categories:** Resolved critical inventory offset bugs reported by Reddit users (`u/Party-Consequence-71`, `u/Thelonlierface`) where adding items wrote to shifted slots. Mapped all 338 consumables via `save_offset = memory_address - 0x0226F024`, fixed the `+1` BLANK-row offset shift across Skill Cards (`0x4000`), Protectors/Armor (`0x5000`), Treasure (`0x8000`), and Outfits (`0xA000`), and removed legacy inventory fallback on empty normalized diffs.

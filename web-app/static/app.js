@@ -14,10 +14,22 @@ let DB = {
 };
 
 let CURRENT_SAVE = null;
+let CURRENT_SESSION_TOKEN = null;
+let REDUCED_MOTION_ENABLED = false;
 let ACTIVE_MEMBER_INDEX = 0;
 let CURRENT_CONFIDANT_FILTER = "all";
 let ALLOW_UNSAFE_CONFIDANTS = false;
 let INITIAL_CONFIDANT_RANKS = {};
+
+function escapeHtml(str) {
+  if (str === null || str === undefined) return "";
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
 
 // =========================================================================
 // AUTHENTIC PERSONA 5 SYNTHETIC WEB AUDIO SFX ENGINE
@@ -328,8 +340,8 @@ async function refreshDiscovery() {
 }
 
 // Load Active Save File
-async function loadSaveFile() {
-  const path = document.getElementById("saveFileDropdown").value;
+async function loadSaveFile(overridePath) {
+  const path = overridePath || document.getElementById("saveFileDropdown").value;
   if (!path) return;
 
   setStatus("Loading and decrypting P5R save file...");
@@ -394,6 +406,7 @@ function onManualFileSelected(event) {
 function _applyLoadedSaveData(data, displayPath) {
   CURRENT_SAVE = data;
   CURRENT_FILE_PATH = data.file_path || displayPath;
+  CURRENT_SESSION_TOKEN = data.token || null;
   if (data.notice) renderSameSaveNotice(data.notice);
   INITIAL_CONFIDANT_RANKS = {};
   Object.entries(data.confidants || {}).forEach(([arc, c]) => {
@@ -3326,17 +3339,27 @@ async function executeSavePayload(skipReview) {
 
   setStatus("Creating timestamped backup & re-signing save...");
   try {
+    const headers = { "Content-Type": "application/json" };
+    if (CURRENT_SESSION_TOKEN) {
+      headers["X-Session-Token"] = CURRENT_SESSION_TOKEN;
+    }
     const res = await fetch("/api/save", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: headers,
       body: JSON.stringify(CURRENT_SAVE)
     });
     const result = await res.json();
+    if (res.status === 409 || result.conflict) {
+      showConflictModal(result.error || "Save conflict: File was modified externally or P5R is running.");
+      setStatus("Save conflict: External file change detected.");
+      return;
+    }
     if (result.error) {
       alert("Save Failed: " + result.error);
       setStatus("Error: " + result.error);
       return;
     }
+    if (result.token) CURRENT_SESSION_TOKEN = result.token;
 
     updateIntegrityBadge(result.integrity);
     refreshBackups();
@@ -3412,12 +3435,20 @@ async function restoreSelectedBackup() {
   if (!confirm(`Restore ${bname}? The current state will be backed up first.`)) return;
 
   try {
+    const headers = { "Content-Type": "application/json" };
+    if (CURRENT_SESSION_TOKEN) {
+      headers["X-Session-Token"] = CURRENT_SESSION_TOKEN;
+    }
     const res = await fetch("/api/restore", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: headers,
       body: JSON.stringify({ backup_name: bname })
     });
     const data = await res.json();
+    if (res.status === 409 || data.conflict) {
+      showConflictModal(data.error || "Restore conflict: Target save was modified externally.");
+      return;
+    }
     if (data.error) {
       alert("Restore failed: " + data.error);
       return;
@@ -3485,3 +3516,440 @@ function setStatus(msg) {
   const el = document.getElementById("bottomStatus");
   if (el) el.textContent = msg;
 }
+
+// =========================================================================
+// PHASE D & E: P5R NATIVE REDESIGN, INSPECTOR, COMPARATOR & TRANSFER CONTROLLER
+// =========================================================================
+
+let COMPARE_TARGET_PATH = "";
+
+function toggleReducedMotion() {
+  REDUCED_MOTION_ENABLED = !REDUCED_MOTION_ENABLED;
+  document.body.classList.toggle("reduced-motion", REDUCED_MOTION_ENABLED);
+  const btn = document.getElementById("motionToggleBtn");
+  if (btn) {
+    btn.innerHTML = `<span>⚡ FX: ${REDUCED_MOTION_ENABLED ? 'OFF' : 'ON'}</span>`;
+  }
+}
+
+function openInspectorModal() {
+  P5Audio.playSwitch();
+  const m = document.getElementById("inspectorModal");
+  if (m) m.classList.add("open");
+  refreshInspector();
+}
+
+function closeInspectorModal(e) {
+  if (e && e.target && !e.target.classList.contains("p5-modal-backdrop") && !e.target.closest("button")) return;
+  const m = document.getElementById("inspectorModal");
+  if (m) m.classList.remove("open");
+}
+
+function openCompareModal() {
+  P5Audio.playSwitch();
+  const m = document.getElementById("compareModal");
+  if (m) m.classList.add("open");
+  populateCompareDropdown();
+}
+
+function closeCompareModal(e) {
+  if (e && e.target && !e.target.classList.contains("p5-modal-backdrop") && !e.target.closest("button")) return;
+  const m = document.getElementById("compareModal");
+  if (m) m.classList.remove("open");
+}
+
+function openStagedReviewModal() {
+  P5Audio.playSwitch();
+  const m = document.getElementById("stagedReviewModal");
+  if (m) m.classList.add("open");
+  renderStagedReviewTable();
+}
+
+function closeStagedReviewModal(e) {
+  if (e && e.target && !e.target.classList.contains("p5-modal-backdrop") && !e.target.closest("button")) return;
+  const m = document.getElementById("stagedReviewModal");
+  if (m) m.classList.remove("open");
+}
+
+function showConflictModal(msg) {
+  P5Audio.playMax();
+  const m = document.getElementById("conflictModal");
+  const msgEl = document.getElementById("conflictModalMessage");
+  if (msgEl) msgEl.textContent = msg;
+  if (m) m.classList.add("open");
+}
+
+function closeConflictModal(e) {
+  if (e && e.target && !e.target.classList.contains("p5-modal-backdrop") && !e.target.closest("button")) return;
+  const m = document.getElementById("conflictModal");
+  if (m) m.classList.remove("open");
+}
+
+function closeAnyOpenModal() {
+  closeFaqModal();
+  closePortraitModal();
+  closeSafetyModal();
+  closeInvContextMenu();
+  closeAddItemModal();
+  closeInspectorModal();
+  closeCompareModal();
+  closeStagedReviewModal();
+  closeConflictModal();
+}
+
+// Global Keyboard Navigation
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    closeAnyOpenModal();
+    return;
+  }
+  const tag = (e.target && e.target.tagName) ? e.target.tagName.toUpperCase() : "";
+  if (tag === "INPUT" || tag === "SELECT" || tag === "TEXTAREA" || e.target.isContentEditable) {
+    return;
+  }
+  const stageMap = {
+    "1": "daily_life",
+    "2": "velvet_room",
+    "3": "confidants",
+    "4": "inventory",
+    "5": "compendium",
+    "6": "god_presets",
+    "7": "rescue_vault"
+  };
+  if (stageMap[e.key]) {
+    switchStage(stageMap[e.key]);
+  }
+});
+
+// Save Inspector Diagnostics Runner
+async function refreshInspector() {
+  const container = document.getElementById("inspectorContent");
+  if (!container) return;
+  container.innerHTML = `<div style="text-align:center; padding:30px; color:#888;">Scanning binary save structure...</div>`;
+
+  try {
+    const headers = {};
+    if (CURRENT_SESSION_TOKEN) headers["X-Session-Token"] = CURRENT_SESSION_TOKEN;
+    const res = await fetch("/api/inspect", { headers });
+    const insp = await res.json();
+    if (insp.error) {
+      container.innerHTML = `<div class="audit-card" style="border-left-color:#FF5E5B;">
+        <strong style="color:#FF5E5B;">INSPECTOR NOTICE:</strong> ${escapeHtml(insp.error)}
+      </div>`;
+      return;
+    }
+
+    const isClean = (insp.integrity_grade === "CLEAN" || insp.status === "valid");
+    const statusBadge = isClean 
+      ? `<span class="badge-valid">INTEGRITY: GRADE A (CLEAN &amp; VERIFIED)</span>`
+      : `<span class="badge-degraded">INTEGRITY: DEGRADED</span>`;
+
+    const procAlert = insp.process_status?.p5r_running
+      ? `<div class="audit-card" style="border-left-color:#FF5E5B; margin-bottom:12px;">
+          <strong style="color:#FF5E5B;">⚠️ P5R.exe IS CURRENTLY RUNNING!</strong> Close the game before writing changes to avoid memory overwrites.
+         </div>`
+      : `<div class="audit-card" style="border-left-color:var(--p5-green); margin-bottom:12px;">
+          <strong style="color:var(--p5-yellow);">✔ GAME PROCESS CLOSED:</strong> Environment is safe for atomic disk replacement.
+         </div>`;
+
+    const containerInfo = insp.container || {};
+    const quick = insp.quick_info || {};
+    const mirror = insp.compendium_mirror || {};
+    const prog = insp.progression || {};
+
+    container.innerHTML = `
+      ${procAlert}
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        ${statusBadge}
+        <span style="font-size:12px; font-family:monospace; color:#888;">${escapeHtml(insp.file_path || "Active Session")}</span>
+      </div>
+
+      <div class="grid-2" style="gap:14px; margin-bottom:14px;">
+        <div class="audit-card">
+          <div style="font-family:var(--font-p5); font-size:16px; color:var(--p5-yellow); margin-bottom:6px;">FILE &amp; CONTAINER</div>
+          <div style="font-size:12px; line-height:1.6; color:#DDD;">
+            <strong>Size:</strong> ${(insp.file_size || 0).toLocaleString()} bytes<br>
+            <strong>Protagonist:</strong> ${escapeHtml(quick.protagonist_name || "—")}<br>
+            <strong>Group Name:</strong> ${escapeHtml(quick.group_name || "—")}<br>
+            <strong>Date / Calendar:</strong> ${escapeHtml(quick.day || "—")}<br>
+            <strong>Current Yen:</strong> ¥${(quick.money || 0).toLocaleString()}
+          </div>
+        </div>
+
+        <div class="audit-card">
+          <div style="font-family:var(--font-p5); font-size:16px; color:var(--p5-yellow); margin-bottom:6px;">CRYPTOGRAPHIC CHECKSUMS</div>
+          <div style="font-size:12px; line-height:1.6; color:#DDD;">
+            <strong>Header CRC32:</strong> ${containerInfo.file_crc_ok ? '<span style="color:var(--p5-yellow);">MATCH ✔</span>' : '<span style="color:#FF5E5B;">MISMATCH ✘</span>'} (${containerInfo.file_crc || '0x0'})<br>
+            <strong>Payload CRC32:</strong> ${containerInfo.data_crc_ok ? '<span style="color:var(--p5-yellow);">MATCH ✔</span>' : '<span style="color:#FF5E5B;">MISMATCH ✘</span>'} (${containerInfo.data_crc || '0x0'})<br>
+            <strong>Compendium Mask:</strong> ${mirror.in_sync ? '<span style="color:var(--p5-yellow);">MIRROR IN SYNC ✔</span>' : '<span style="color:#FF5E5B;">DIVERGENCE ✘</span>'}<br>
+            <strong>Registered Personas:</strong> ${mirror.primary_registered_count || 0} / 224 live bits<br>
+            <strong>Stock Personas:</strong> ${prog.personas_in_stock || 0} active slots
+          </div>
+        </div>
+      </div>
+    `;
+  } catch (err) {
+    container.innerHTML = `<div style="color:#FF5E5B; padding:20px;">Failed to fetch inspection report: ${escapeHtml(err)}</div>`;
+  }
+}
+
+// Side-by-Side Save Comparison & Semantic Transfer
+async function populateCompareDropdown() {
+  const select = document.getElementById("compareTargetSelect");
+  if (!select) return;
+  try {
+    const res = await fetch("/api/discovery");
+    const data = await res.json();
+    select.innerHTML = `<option value="">-- Select Target Save to Compare --</option>`;
+    if (data.saves && data.saves.length > 0) {
+      data.saves.forEach(s => {
+        const opt = document.createElement("option");
+        opt.value = s.path;
+        opt.textContent = `📁 ${s.name} (${s.date || 'Save'})`;
+        select.appendChild(opt);
+      });
+    }
+  } catch (err) {
+    console.error("Discovery error:", err);
+  }
+}
+
+function onCompareFileSelected(event) {
+  const file = event.target.files?.[0];
+  if (!file) return;
+  const select = document.getElementById("compareTargetSelect");
+  const opt = document.createElement("option");
+  opt.value = file.name;
+  opt.textContent = `📁 ${file.name} (Browse)`;
+  select.prepend(opt);
+  select.value = file.name;
+  COMPARE_TARGET_PATH = file.name;
+}
+
+async function runComparison() {
+  const select = document.getElementById("compareTargetSelect");
+  const targetPath = select?.value || COMPARE_TARGET_PATH;
+  if (!targetPath) {
+    alert("Please select or browse a comparison target save.");
+    return;
+  }
+  COMPARE_TARGET_PATH = targetPath;
+  const container = document.getElementById("compareContent");
+  container.innerHTML = `<div style="text-align:center; padding:30px; color:#888;">Comparing saves side-by-side...</div>`;
+
+  try {
+    const headers = { "Content-Type": "application/json" };
+    if (CURRENT_SESSION_TOKEN) headers["X-Session-Token"] = CURRENT_SESSION_TOKEN;
+    const res = await fetch("/api/compare", {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify({ target_path: targetPath })
+    });
+    const cmp = await res.json();
+    if (cmp.error) {
+      container.innerHTML = `<div class="audit-card" style="border-left-color:#FF5E5B;">
+        <strong style="color:#FF5E5B;">COMPARISON ERROR:</strong> ${escapeHtml(cmp.error)}
+      </div>`;
+      return;
+    }
+
+    const meta = cmp.metadata_diff || {};
+    const bdiff = cmp.binary_diff || {};
+    const comp = cmp.compendium_diff || {};
+    const social = cmp.social_stats_diff || {};
+    const confidants = cmp.confidants_diff || {};
+    const inv = cmp.inventory_diff || {};
+
+    const diffRow = (label, v1, v2, forceDiff = false) => {
+      const isDiff = forceDiff || (v1 !== undefined && v2 !== undefined && JSON.stringify(v1) !== JSON.stringify(v2));
+      return `<tr>
+        <td style="font-weight:700; color:#DDD;">${escapeHtml(label)}</td>
+        <td>${escapeHtml(String(v1 !== undefined ? v1 : 'Matches Target'))}</td>
+        <td style="${isDiff ? 'color:var(--p5-yellow); font-weight:800;' : ''}">${escapeHtml(String(v2 !== undefined ? v2 : 'Identical'))} ${isDiff ? '★' : ''}</td>
+      </tr>`;
+    };
+
+    let rowsHtml = "";
+    if (meta.name) rowsHtml += diffRow("Protagonist Name", meta.name.a, meta.name.b, true);
+    if (meta.group_name) rowsHtml += diffRow("Phantom Thief Group", meta.group_name.a, meta.group_name.b, true);
+    if (meta.money) rowsHtml += diffRow("Yen Balance", `¥${(meta.money.a || 0).toLocaleString()}`, `¥${(meta.money.b || 0).toLocaleString()}`, true);
+    if (meta.day) rowsHtml += diffRow("Calendar Date", meta.day.a, meta.day.b, true);
+    if (meta.level) rowsHtml += diffRow("Level", meta.level.a, meta.level.b, true);
+
+    Object.entries(social).forEach(([stat, val]) => {
+      rowsHtml += diffRow(`Social: ${stat}`, `Rank ${val.a}`, `Rank ${val.b}`, true);
+    });
+
+    Object.entries(confidants).slice(0, 4).forEach(([arc, val]) => {
+      rowsHtml += diffRow(`Confidant: ${arc}`, `Rank ${val.rank_a}`, `Rank ${val.rank_b}`, true);
+    });
+
+    if (comp.count_a !== undefined) {
+      rowsHtml += diffRow("Compendium Unlocked", `${comp.count_a} personas`, `${comp.count_b} personas`, comp.count_a !== comp.count_b);
+    }
+
+    const changedItemCount = Object.keys(inv).length;
+    if (changedItemCount > 0) {
+      rowsHtml += diffRow("Inventory Carried Items", "Baseline Stacks", `${changedItemCount} items divergent`, true);
+    }
+
+    rowsHtml += diffRow("Binary Differences", "Baseline Container", `${bdiff.total_changed_bytes || 0} bytes divergent (${(bdiff.regions || []).join(', ') || 'Exact Bitwise Match'})`, (bdiff.total_changed_bytes || 0) > 0);
+
+    if (!rowsHtml) {
+      rowsHtml = `<tr><td colspan="3" style="text-align:center; padding:15px; color:var(--p5-yellow);">★ SAVES ARE BITWISE IDENTICAL — NO DELTAS DETECTED</td></tr>`;
+    }
+
+    container.innerHTML = `
+      <table class="p5-table">
+        <thead>
+          <tr>
+            <th style="width:28%;">FIELD / STAT</th>
+            <th style="width:36%;">ACTIVE LOADED SAVE</th>
+            <th style="width:36%;">COMPARISON DONOR SAVE</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rowsHtml}
+        </tbody>
+      </table>
+    `;
+
+    const transferCtrl = document.getElementById("transferControls");
+    if (transferCtrl) transferCtrl.style.display = "flex";
+  } catch (err) {
+    container.innerHTML = `<div style="color:#FF5E5B; padding:20px;">Comparison failed: ${escapeHtml(err)}</div>`;
+  }
+}
+
+async function executeSemanticTransfer() {
+  if (!COMPARE_TARGET_PATH) {
+    alert("No comparison target save active.");
+    return;
+  }
+  const opts = {
+    money: !!document.getElementById("transferMoneyCheck")?.checked,
+    social_stats: !!document.getElementById("transferStatsCheck")?.checked,
+    compendium: !!document.getElementById("transferCompendiumCheck")?.checked,
+    inventory: !!document.getElementById("transferInventoryCheck")?.checked
+  };
+
+  if (!opts.money && !opts.social_stats && !opts.compendium && !opts.inventory) {
+    alert("Please check at least one module to transfer.");
+    return;
+  }
+
+  try {
+    const headers = { "Content-Type": "application/json" };
+    if (CURRENT_SESSION_TOKEN) headers["X-Session-Token"] = CURRENT_SESSION_TOKEN;
+    
+    // Step 1: Request authoritative server-side transfer preview & token
+    const previewRes = await fetch("/api/transfer", {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify({
+        action: "preview",
+        source_path: COMPARE_TARGET_PATH,
+        transfer_options: opts
+      })
+    });
+    const previewData = await previewRes.json();
+    if (previewData.error) {
+      alert("Transfer preview failed: " + previewData.error);
+      return;
+    }
+
+    const transferToken = previewData.transfer_token;
+    let confirmMsg = "CONFIRM DATA TRANSFER:\n";
+    if (previewData.warnings && previewData.warnings.length) {
+      confirmMsg += "WARNINGS:\n- " + previewData.warnings.join("\n- ") + "\n\n";
+    }
+    confirmMsg += `Transfer ${previewData.preview_diff ? previewData.preview_diff.length : 0} validated modules into the current active save?`;
+    if (!confirm(confirmMsg)) return;
+
+    // Step 2: Explicit confirmation with bound transfer token
+    const commitRes = await fetch("/api/transfer", {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify({
+        action: "confirm",
+        source_path: COMPARE_TARGET_PATH,
+        transfer_token: transferToken
+      })
+    });
+    const commitData = await commitRes.json();
+    if (commitData.error) {
+      alert("Transfer commit failed: " + commitData.error);
+      return;
+    }
+    alert("Transfer successful! Changes committed to disk.");
+    closeCompareModal();
+    if (CURRENT_FILE_PATH) loadSaveFile();
+  } catch (err) {
+    alert("Transfer error: " + err);
+  }
+}
+
+// Staged Changes Review Table Renderer
+async function renderStagedReviewTable() {
+  const container = document.getElementById("stagedTableContainer");
+  if (!container) return;
+  container.innerHTML = `<div style="text-align:center; padding:20px; color:#888;">Auditing staged modifications...</div>`;
+
+  try {
+    const headers = {};
+    if (CURRENT_SESSION_TOKEN) headers["X-Session-Token"] = CURRENT_SESSION_TOKEN;
+    const res = await fetch("/api/stage", { headers });
+    const data = await res.json();
+    const staged = data.staged_changes || [];
+
+    if (staged.length === 0) {
+      const normPayload = buildInventoryPayload();
+      const changeCount = Object.keys(normPayload.stacks).length + Object.keys(normPayload.owned_gear).length;
+      if (changeCount === 0 && !UNLOCK_COMPENDIUM_PENDING) {
+        container.innerHTML = `<div class="audit-card" style="text-align:center; padding:25px;">
+          <strong style="color:var(--p5-yellow);">NO CHANGES STAGED</strong><br>
+          <span style="font-size:12px; color:#888;">Active memory matches the on-disk save baseline.</span>
+        </div>`;
+        return;
+      }
+    }
+
+    let rowsHtml = "";
+    staged.forEach(ch => {
+      rowsHtml += `<tr>
+        <td style="font-weight:700; color:var(--p5-yellow);">${escapeHtml(ch.category)}</td>
+        <td>${escapeHtml(ch.field)}</td>
+        <td class="delta-old">${escapeHtml(JSON.stringify(ch.old_value))}</td>
+        <td class="delta-new">${escapeHtml(JSON.stringify(ch.new_value))}</td>
+      </tr>`;
+    });
+
+    if (UNLOCK_COMPENDIUM_PENDING) {
+      rowsHtml += `<tr>
+        <td style="font-weight:700; color:var(--p5-yellow);">Compendium</td>
+        <td>100% Full Unlock</td>
+        <td class="delta-old">Partial</td>
+        <td class="delta-new">All 224 Live Bits Armed ★</td>
+      </tr>`;
+    }
+
+    container.innerHTML = `
+      <table class="p5-table">
+        <thead>
+          <tr>
+            <th>CATEGORY</th>
+            <th>FIELD / ITEM</th>
+            <th>BASELINE VALUE</th>
+            <th>STAGED CANDIDATE</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rowsHtml}
+        </tbody>
+      </table>
+    `;
+  } catch (err) {
+    container.innerHTML = `<div style="color:#FF5E5B; padding:15px;">Failed to load staged changes: ${escapeHtml(err)}</div>`;
+  }
+}
+

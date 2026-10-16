@@ -4,10 +4,10 @@
 > Updated: 2026-09-22
 
 ## Project Identity
-- **Title:** Change of Heart — P5R Save Editor
+- **Title:** Change of Heart 2.0 — P5R Save Studio
 - **Goal:** Read and fix Persona 5 Royal (PC/Steam) save files — truthful read + safe lasting write
 - **Workspace:** `E:\ai-workspace\knowledge-base\projects\p5r-save-editor`
-- **Version:** v1.1.2 (188/188 tests passing)
+- **Version:** v2.0.0 (242/242 tests passing)
 - **Architecture:** Native PyWebView / Edge WebView2 window (`main.py`) over stdlib HTTP backend (`server.py`, binds `127.0.0.1:3000`). Frozen build: `P5R_Save_Editor.spec` (PyInstaller).
 
 ## Locked Decisions (Do Not Re-Debate Without User)
@@ -34,6 +34,12 @@
 | D018 | 2026-09-22 | Delivery order: v1.1.2 EXE rebuild + release FIRST, then next feature = confidant event-flag paired writes (SAFETY #1 undetected corruption); chosen via reflex (2/2 unanimous) over outfits unlock / redesign Stage 2 / NG+ deadline advisor | Shipped binary predates HEAD; unpaired rank writes = story-content permanent loss |
 | D019 | 2026-10-05 | Consumable item save offsets MUST route through static engine table `core/consumable_offsets.py` derived via Universal Engine Offset Formula (`save_offset = memory_address - 0x0226F024`), never piecewise linear arithmetic (`0x2530 + idx`) | Non-contiguous table gaps in `Items.txt` (Vanish Ball missing at row 23, etc.) desynchronized 309 of 338 items (>91% mismatch), causing Homunculus (`0x203F` -> `0x2570`) to write to Life Ointment (`0x256F`). Reported by u/Party-Consequence-71 |
 | D020 | 2026-10-11 | Compendium registrations MUST preserve existing player-registered 48B Velvet Room records (`existing_pid == pid and existing_lvl > 0`), `/api/save` must only apply compendium diffs (`registered_list ^ current_reg`), template `201` must be canonical Lv 1 starter Arsene, and categories with a `0x000` `BLANK` row at `idx=1` (`0x4000`, `0x5000`, `0x8000`, `0xA000`) must map to `base + idx - 1` | Fixes `u/Thelonlierface` report where saving overwrote Velvet Room Arsene with a Lv 93 Curse Build Arsene from `DATA11` and shifted Skill Cards/Armor/Treasure/Outfits by +1 |
+| D021 | 2026-10-16 | Two-Phase Transaction & Session Engine (`core/atomic_writer.py`, `core/session.py`) — candidate writes to temporary file on same volume, fsync flush, pre-replacement conflict detection against baseline sha256, atomic rename with retry loop for Windows file lock contention, readback verification | P0 Mandatory Release Gate: Eliminates in-place mutation and race condition save corruption |
+| D022 | 2026-10-16 | Local API Hardening (`server.py`) — Loopback-only Host header validation (DNS rebinding protection), 32MB request body cap, 5MB save file limit, Content-Security-Policy headers, path traversal regex validation on backup restore | Resolves high-risk local web server vulnerabilities |
+| D023 | 2026-10-16 | Compendium 2,496-byte gap zeroing eliminated — Compendium pack only mutates registered persona bitmasks and records; untouched buffer regions preserved bit-for-bit (0-byte delta on no-op re-save) | Strict binary invariant preservation |
+| D024 | 2026-10-16 | Advanced Diagnostics & Transfer Suite — Save Inspector (`/api/inspect`), Side-by-Side Comparator (`/api/compare`), Semantic Cross-Save Transfer (`/api/transfer`), and Staged Changes Review (`/api/stage`) | Comprehensive inspection, comparison, and safe state migration capabilities |
+| D025 | 2026-10-16 | Adversarial Audit Remediation — Strict CRC validation (`strict_crc=True`) on save loading; mutating endpoints enforce `X-Session-Token` capability authentication (401); Origin port filtering bound to runtime listener; authoritative staged transactions with canonical patch digest; two-phase transfer preview and confirmation; automated pre-replacement rollback; bounded ZIP extraction (50 members, 16MB/32MB limits) | Remediates all P0/P1 adversarial audit vulnerabilities (30 new tests in `tests/test_audit_remediation.py`) |
+| D026 | 2026-10-16 | OpenDesign Visual Governance & Redesign Course Correction — Autonomous visual redesign halted per owner rejection of Phase E dashboard; OpenDesign assigned visual authority with technical contract in `docs/design/OPENDESIGN_HANDOFF.md` on branch `design/p5r-native-overhaul`; PR #7 kept in Draft status awaiting owner sign-off | Enforces separation between engineering integrity and authentic Persona 5 Royal art direction |
 
 
 ## Core Domain Rules

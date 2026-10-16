@@ -49,13 +49,13 @@ ROMANCEABLE_CONFIDANTS = [2, 3, 6, 9, 10, 13, 14, 15, 17, 21]
 class SaveEditor:
     """Main high-level editor wrapper over SaveContainer and GameDataParser."""
 
-    def __init__(self, raw_buffer: Optional[bytes] = None):
+    def __init__(self, raw_buffer: Optional[bytes] = None, strict_crc: bool = False):
         self.container = SaveContainer()
         self.parser = GameDataParser()
         self.loaded = False
 
         if raw_buffer:
-            self.load_from_bytes(raw_buffer)
+            self.load_from_bytes(raw_buffer, strict_crc=strict_crc)
 
     # Staging buffer for S1 inventory edits (INVENTORY_SPEC.md S1 #2):
     # None = no staged changes; dict = staged inventory delta. Payload bytes
@@ -154,10 +154,10 @@ class SaveEditor:
     def discard_staged_inventory(self):
         self._staged_inventory = None
 
-    def load_from_bytes(self, raw_buffer: bytes):
+    def load_from_bytes(self, raw_buffer: bytes, strict_crc: bool = False):
         """Unpack raw binary save bytes."""
         self._raw_buffer = raw_buffer
-        self.container.unpack_raw(raw_buffer)
+        self.container.unpack_raw(raw_buffer, strict_crc=strict_crc)
         self.parser.unpack(self.container.header_bytes, self.container.data_bytes)
         self.loaded = True
         self._staged_inventory = None

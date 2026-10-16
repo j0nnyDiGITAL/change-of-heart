@@ -45,6 +45,15 @@ from core.environment import (
     list_backups,
     restore_backup,
 )
+from core.session import SESSION_MANAGER, SaveSession
+from core.atomic_writer import (
+    atomic_write_save,
+    atomic_restore_backup,
+    ConcurrencyConflictError,
+    SaveValidationError,
+    compute_sha256,
+)
+from core.inspector import inspect_save, compare_saves
 
 PORT = 3000
 
@@ -293,7 +302,7 @@ REFERENCE_DB = build_reference_db()
 import gzip as _gzip
 _REFERENCE_DB_JSON = json.dumps(REFERENCE_DB).encode("utf-8")
 _REFERENCE_DB_GZ = _gzip.compress(_REFERENCE_DB_JSON, mtime=0)
-BUILD_ID = "audit-2026-08-16"
+BUILD_ID = "v2.0.0-final"
 CURRENT_EDITOR = None
 CURRENT_FILE_PATH = None
 CURRENT_ORIGINAL_BYTES = None
@@ -324,10 +333,20 @@ def _build_loaded_save_payload(editor: SaveEditor, file_path: str) -> dict:
             "persona": p_info
         })
 
-    # Parse accurate playtime from authoritative quick_info seconds
-    playtime_sec = quick_info.get("playtime") or hdr.playtime or 0
-    if playtime_sec > 500000:
-        playtime_sec = quick_info.get("playtime", 0)
+    # Parse accurate playtime from authoritative quick_info seconds.
+    # quick_info["playtime"] is None when the header description text has no
+    # parseable "PLAY TIME:Xh Ym" line (e.g. localized saves); the
+    # container-header u32 fallback is a garbage value (> 500000) in genuine
+    # saves, so an undeterminable playtime degrades to "Unknown" instead of
+    # reaching // arithmetic (GitHub issue #4: NoneType // int on Load Save).
+    playtime_sec = quick_info.get("playtime")
+    if not isinstance(playtime_sec, int) or playtime_sec < 0:
+        header_pt = hdr.playtime
+        playtime_sec = header_pt if isinstance(header_pt, int) and 0 < header_pt <= 500000 else None
+    playtime_display = (
+        f"{playtime_sec // 3600}h {(playtime_sec % 3600) // 60}m"
+        if playtime_sec is not None else "Unknown"
+    )
 
     joker_stock = editor.get_persona_stock(0)
     inventory = editor.get_inventory()
@@ -344,9 +363,9 @@ def _build_loaded_save_payload(editor: SaveEditor, file_path: str) -> dict:
             "lname": hdr.lname,
             "group_name": names.group_name_utf8,
             "money": editor.get_money(),
-            "day": quick_info.get("day", str(hdr.day)),
-            "level": quick_info.get("level", "22"),
-            "playtime": f"{playtime_sec // 3600}h {(playtime_sec % 3600) // 60}m"
+            "day": quick_info.get("day") or str(hdr.day),
+            "level": quick_info.get("level") or "22",
+            "playtime": playtime_display
         },
         "social_stats": social,
         "confidants": confidants,
@@ -394,26 +413,76 @@ class P5RWebHandler(SimpleHTTPRequestHandler):
         except Exception:
             pass
 
-    def _origin_allowed(self):
-        """CSRF guard: any browser-sent Origin must be a loopback origin.
+    def _host_allowed(self):
+        """Host header check to protect against DNS rebinding attacks."""
+        host_hdr = self.headers.get("Host", "")
+        if not host_hdr:
+            return True
+        parts = host_hdr.strip().lower().split(":")
+        host_name = parts[0]
+        if host_name not in ("127.0.0.1", "localhost", "::1", "[::1]"):
+            return False
+        if len(parts) > 1:
+            try:
+                host_port = int(parts[1])
+                srv_port = getattr(self.server, "server_port", None) or self.server.server_address[1]
+                if host_port != srv_port:
+                    return False
+            except ValueError:
+                return False
+        return True
 
-        Browsers attach an Origin header to cross-site requests; a malicious
-        page must not be able to drive this local API. Requests with no
-        Origin (curl, webview navigation, same-origin GET) are allowed.
-        """
+    def _origin_allowed(self):
+        """CSRF guard: browser-sent Origin must match the exact runtime loopback listener."""
         origin = self.headers.get("Origin")
         if not origin:
+            # Native WebView2 navigation, curl, or same-origin non-CORS requests
             return True
         try:
             from urllib.parse import urlsplit
-            host = (urlsplit(origin).hostname or "").lower()
+            parsed = urlsplit(origin)
+            scheme = (parsed.scheme or "").lower()
+            hostname = (parsed.hostname or "").lower()
+            port = parsed.port
         except Exception:
             return False
-        return host in ("127.0.0.1", "localhost", "::1")
+
+        if scheme != "http":
+            return False
+        if hostname not in ("127.0.0.1", "localhost", "::1"):
+            return False
+        srv_port = getattr(self.server, "server_port", None) or self.server.server_address[1]
+        if port != srv_port:
+            return False
+        return True
+
+    def do_OPTIONS(self):
+        if not self._host_allowed():
+            self.send_response(400)
+            self.end_headers()
+            return
+        if not self._origin_allowed():
+            self.send_response(403)
+            self.end_headers()
+            return
+        self.send_response(204)
+        origin = self.headers.get("Origin")
+        if origin and self._origin_allowed():
+            self.send_header("Access-Control-Allow-Origin", origin)
+            self.send_header("Vary", "Origin")
+            self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+            self.send_header("Access-Control-Allow-Headers", "Content-Type, X-Session-Token")
+            self.send_header("Access-Control-Max-Age", "86400")
+        self.send_header("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
+        self.send_header("Pragma", "no-cache")
+        self.end_headers()
 
     def do_GET(self):
         global CURRENT_EDITOR, CURRENT_FILE_PATH, LAST_REQUEST_TS
         LAST_REQUEST_TS = time.time()
+        if not self._host_allowed():
+            self.send_json(400, {"error": "Invalid Host header."})
+            return
         if not self._origin_allowed():
             self.send_json(403, {"error": "Cross-origin requests are not allowed."})
             return
@@ -421,6 +490,12 @@ class P5RWebHandler(SimpleHTTPRequestHandler):
         if parsed.path == "/" or parsed.path == "/index.html":
             self.send_response(200)
             self.send_header("Content-type", "text/html; charset=utf-8")
+            self.send_header("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
+            self.send_header("Pragma", "no-cache")
+            self.send_header(
+                "Content-Security-Policy",
+                "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; frame-ancestors 'none'; object-src 'none';"
+            )
             self.end_headers()
             template_path = WEB_APP_DIR / "templates" / "index.html"
             with open(template_path, "rb") as f:
@@ -429,6 +504,7 @@ class P5RWebHandler(SimpleHTTPRequestHandler):
         elif parsed.path == "/game" or parsed.path == "/game/":
             self.send_response(200)
             self.send_header("Content-type", "text/html; charset=utf-8")
+            self.send_header("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
             self.end_headers()
             game_index = PROJECT_ROOT / "p5r-game-client" / "index.html"
             with open(game_index, "rb") as f:
@@ -451,6 +527,7 @@ class P5RWebHandler(SimpleHTTPRequestHandler):
                     self.send_header("Content-type", "application/javascript; charset=utf-8")
                 else:
                     self.send_header("Content-type", "application/octet-stream")
+                self.send_header("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
                 self.end_headers()
                 with open(game_file, "rb") as f:
                     self.wfile.write(f.read())
@@ -471,9 +548,38 @@ class P5RWebHandler(SimpleHTTPRequestHandler):
             self.send_json(200, {"build": BUILD_ID})
             return
         elif parsed.path == "/api/state":
+            session = SESSION_MANAGER.get_session()
             self.send_json(200, {
                 "pid": os.getpid(),
-                "save": CURRENT_FILE_PATH or "",
+                "save": (session.file_path if session else CURRENT_FILE_PATH) or "",
+                "session_id": session.session_id if session else None,
+                "revision": session.revision if session else None,
+            })
+            return
+        elif parsed.path == "/api/inspect":
+            token = self.headers.get("X-Session-Token")
+            session = SESSION_MANAGER.get_session_by_token(token) if token else None
+            if session:
+                report = inspect_save(session.editor, file_path=session.file_path)
+                self.send_json(200, report)
+            elif CURRENT_FILE_PATH and os.path.exists(CURRENT_FILE_PATH):
+                report = inspect_save(Path(CURRENT_FILE_PATH))
+                self.send_json(200, report)
+            else:
+                self.send_json(400, {"error": "No save file loaded to inspect."})
+            return
+        elif parsed.path == "/api/stage":
+            token = self.headers.get("X-Session-Token")
+            session = SESSION_MANAGER.get_session_by_token(token) if token else None
+            if not session:
+                self.send_json(401, {"error": "Authentication failed: Valid session capability token required."})
+                return
+            t = session.current_transaction
+            self.send_json(200, {
+                "staged_changes": session.get_staged_summary(),
+                "patch_digest": t.patch_digest if t else None,
+                "stage_token": t.stage_token if t else None,
+                "revision": session.revision,
             })
             return
         elif parsed.path == "/api/database":
@@ -498,10 +604,12 @@ class P5RWebHandler(SimpleHTTPRequestHandler):
             self.send_json(200, {"discovered_dirs": [str(d) for d in dirs], "saves": saves})
             return
         elif parsed.path == "/api/backups":
-            if not CURRENT_FILE_PATH or not os.path.exists(CURRENT_FILE_PATH):
+            session = SESSION_MANAGER.get_session()
+            active_path = (session.file_path if session else CURRENT_FILE_PATH)
+            if not active_path or not os.path.exists(active_path):
                 self.send_json(200, {"backups": []})
                 return
-            backups = [p.name for p in list_backups(Path(CURRENT_FILE_PATH))]
+            backups = [p.name for p in list_backups(Path(active_path))]
             self.send_json(200, {"backups": backups})
             return
 
@@ -510,11 +618,18 @@ class P5RWebHandler(SimpleHTTPRequestHandler):
     def do_POST(self):
         global CURRENT_EDITOR, CURRENT_FILE_PATH, CURRENT_ORIGINAL_BYTES, LAST_REQUEST_TS
         LAST_REQUEST_TS = time.time()
+        if not self._host_allowed():
+            self.send_json(400, {"error": "Invalid Host header."})
+            return
         if not self._origin_allowed():
             self.send_json(403, {"error": "Cross-origin requests are not allowed."})
             return
-        parsed = urlparse(self.path)
+
         content_length = int(self.headers.get("Content-Length", 0))
+        if content_length > 32 * 1024 * 1024:
+            self.send_json(413, {"error": "Request body too large (maximum 32MB)."})
+            return
+
         body = self.rfile.read(content_length)
         data = {}
         if body:
@@ -522,6 +637,9 @@ class P5RWebHandler(SimpleHTTPRequestHandler):
                 data = json.loads(body.decode("utf-8"))
             except Exception:
                 pass
+
+        token = self.headers.get("X-Session-Token") or (data.get("token") if isinstance(data, dict) else None)
+        parsed = urlparse(self.path)
 
         if parsed.path == "/api/load":
             path_str = data.get("path", "").strip()
@@ -532,17 +650,25 @@ class P5RWebHandler(SimpleHTTPRequestHandler):
             if not p.is_file():
                 self.send_json(400, {"error": "Save file not found."})
                 return
+            if p.stat().st_size > 5 * 1024 * 1024:
+                self.send_json(400, {"error": "Save file exceeds 5MB limit."})
+                return
             try:
-                with open(p, "rb") as f:
-                    raw = f.read()
-                CURRENT_EDITOR = SaveEditor(raw)
-                CURRENT_FILE_PATH = str(p)
-                CURRENT_ORIGINAL_BYTES = raw
+                raw = p.read_bytes()
+                verify_save_bytes(raw, strict_crc=True)
+                session = SESSION_MANAGER.create_session(raw, file_path=str(p), is_uploaded=False)
+                CURRENT_EDITOR = session.editor
+                CURRENT_FILE_PATH = session.file_path
+                CURRENT_ORIGINAL_BYTES = session.baseline_bytes
                 instances.update_save(CURRENT_FILE_PATH)
-                resp = _build_loaded_save_payload(CURRENT_EDITOR, CURRENT_FILE_PATH)
+                resp = _build_loaded_save_payload(session.editor, CURRENT_FILE_PATH)
+                resp["session_id"] = session.session_id
+                resp["token"] = session.capability_token
+                resp["revision"] = session.revision
+                resp["baseline_sha256"] = session.baseline_sha256
                 self.send_json(200, resp)
             except Exception as e:
-                self.send_json(500, {"error": f"Failed to load save: {str(e)}"})
+                self.send_json(400, {"error": f"Failed to load save: {str(e)}", "corrupt": True})
 
         elif parsed.path == "/api/load-upload":
             raw_b64 = data.get("data", "")
@@ -552,18 +678,28 @@ class P5RWebHandler(SimpleHTTPRequestHandler):
                 return
             try:
                 raw_bytes = base64.b64decode(raw_b64)
-                CURRENT_EDITOR = SaveEditor(raw_bytes)
-                CURRENT_FILE_PATH = f"Uploaded ({filename})"
-                CURRENT_ORIGINAL_BYTES = raw_bytes
+                if len(raw_bytes) > 5 * 1024 * 1024:
+                    self.send_json(400, {"error": "Uploaded save exceeds 5MB limit."})
+                    return
+                verify_save_bytes(raw_bytes, strict_crc=True)
+                session = SESSION_MANAGER.create_session(raw_bytes, file_path=f"Uploaded ({filename})", is_uploaded=True)
+                CURRENT_EDITOR = session.editor
+                CURRENT_FILE_PATH = session.file_path
+                CURRENT_ORIGINAL_BYTES = session.baseline_bytes
                 instances.update_save(CURRENT_FILE_PATH)
-                resp = _build_loaded_save_payload(CURRENT_EDITOR, CURRENT_FILE_PATH)
+                resp = _build_loaded_save_payload(session.editor, CURRENT_FILE_PATH)
+                resp["session_id"] = session.session_id
+                resp["token"] = session.capability_token
+                resp["revision"] = session.revision
+                resp["baseline_sha256"] = session.baseline_sha256
                 self.send_json(200, resp)
             except Exception as e:
-                self.send_json(500, {"error": f"Failed to load uploaded save: {str(e)}"})
+                self.send_json(400, {"error": f"Failed to load uploaded save: {str(e)}", "corrupt": True})
 
         elif parsed.path == "/api/save":
-            if not CURRENT_EDITOR or not CURRENT_FILE_PATH:
-                self.send_json(400, {"error": "No save file loaded."})
+            session = SESSION_MANAGER.get_session_by_token(token) if token else None
+            if not session:
+                self.send_json(401, {"error": "Authentication failed: Valid session capability token required."})
                 return
 
             p5r_run, _ = check_running_processes()
@@ -572,255 +708,145 @@ class P5RWebHandler(SimpleHTTPRequestHandler):
                 return
 
             try:
-                is_uploaded = CURRENT_FILE_PATH.startswith("Uploaded (")
-                p = None
-                backup_path_name = "N/A (Uploaded save)"
-                if not is_uploaded:
-                    # 1. Automatic Timestamped Backup
-                    p = Path(CURRENT_FILE_PATH)
-                    backup_path = create_timestamped_backup(p)
-                    backup_path_name = backup_path.name
-
-                # 2. Apply Header Edits (only rewrite name bytes if user actually changed them)
-                hdr_in = data.get("header", {})
-                in_fname = str(hdr_in.get("fname", CURRENT_EDITOR.parser.header.fname)).strip()
-                in_lname = str(hdr_in.get("lname", CURRENT_EDITOR.parser.header.lname)).strip()
-                in_group = str(hdr_in.get("group_name", CURRENT_EDITOR.parser.player_names.group_name_utf8)).strip()
-                if (
-                    in_fname != CURRENT_EDITOR.parser.header.fname
-                    or in_lname != CURRENT_EDITOR.parser.header.lname
-                    or in_group != CURRENT_EDITOR.parser.player_names.group_name_utf8
-                ):
-                    CURRENT_EDITOR.set_player_names(in_fname, in_lname, in_group)
-                if "money" in hdr_in:
-                    CURRENT_EDITOR.set_money(int(hdr_in["money"]))
-
-                # 3. Apply Social Stats
-                soc_in = data.get("social_stats", {})
-                if soc_in:
-                    def _extract_stat_rank(val):
-                        if isinstance(val, dict):
-                            return int(val.get("rank", 5))
-                        return int(val) if val is not None else 5
-
-                    CURRENT_EDITOR.set_social_stats(
-                        _extract_stat_rank(soc_in.get("Knowledge", 5)),
-                        _extract_stat_rank(soc_in.get("Charm", 5)),
-                        _extract_stat_rank(soc_in.get("Proficiency", 5)),
-                        _extract_stat_rank(soc_in.get("Kindness", 5)),
-                        _extract_stat_rank(soc_in.get("Guts", 5)),
-                    )
-
-                # 4. Apply Confidants
-                conf_in = data.get("confidants", {})
-                for cname, cdata in conf_in.items():
-                    if cname in CONFIDANT_ARCANA_MAP:
-                        arc_id = CONFIDANT_ARCANA_MAP[cname]
-                        rank = int(cdata.get("rank", 0)) if isinstance(cdata, dict) else int(cdata)
-                        romance = bool(cdata.get("romance", False)) if isinstance(cdata, dict) and "romance" in cdata else None
-                        CURRENT_EDITOR.set_confidant_rank(arc_id, rank, romance=romance, auto_unlock=True)
-
-                # 5. Apply Party & Persona
-                party_in = data.get("party", [])
-                for member in party_in:
-                    slot = member.get("slot")
-                    if slot is not None:
-                        CURRENT_EDITOR.set_party_stat(
-                            slot,
-                            level=int(member.get("level", 1)),
-                            hp=int(member.get("hp", 100)),
-                            sp=int(member.get("sp", 50))
-                        )
-                        pers = member.get("persona")
-                        if pers and "persona_id" in pers:
-                            # Safely extract skills
-                            raw_skills = pers.get("skills", [0]*8)
-                            parsed_skills = []
-                            for s in raw_skills:
-                                if isinstance(s, dict):
-                                    parsed_skills.append(int(s.get("id", 0)))
-                                else:
-                                    parsed_skills.append(int(s) if s is not None else 0)
-
-                            # Safely extract stats
-                            raw_stats = pers.get("stats", [10]*5)
-                            parsed_stats = []
-                            if isinstance(raw_stats, dict):
-                                parsed_stats = [
-                                    int(raw_stats.get("st", 10)),
-                                    int(raw_stats.get("ma", 10)),
-                                    int(raw_stats.get("en", 10)),
-                                    int(raw_stats.get("ag", 10)),
-                                    int(raw_stats.get("lu", 10))
-                                ]
-                            elif isinstance(raw_stats, list):
-                                parsed_stats = [int(st) if st is not None else 10 for st in raw_stats]
-                            else:
-                                parsed_stats = [10]*5
-
-                            CURRENT_EDITOR.set_equipped_persona(
-                                slot,
-                                persona_id=int(pers.get("persona_id", 0)),
-                                level=int(pers.get("level", 1)),
-                                trait_id=int(pers.get("trait_id", 0)),
-                                exp=int(pers.get("exp", 0)),
-                                skills=parsed_skills,
-                                stats=parsed_stats,
-                                flags=int(pers.get("flags", 1))
-                            )
-
-                # 5b. Apply Joker's 12-slot Persona Stock
-                stock_in = data.get("joker_stock", [])
-                for s_entry in stock_in:
-                    s_slot = s_entry.get("slot")
-                    if s_slot is not None and 0 <= s_slot < 12:
-                        pid = int(s_entry.get("persona_id", 0))
-
-                        # Safely extract skills
-                        raw_skills = s_entry.get("skills", [0]*8)
-                        parsed_skills = []
-                        for s in raw_skills:
-                            if isinstance(s, dict):
-                                parsed_skills.append(int(s.get("id", 0)))
-                            else:
-                                parsed_skills.append(int(s) if s is not None else 0)
-
-                        # Safely extract stats
-                        raw_stats = s_entry.get("stats", [10]*5)
-                        parsed_stats = []
-                        if isinstance(raw_stats, dict):
-                            parsed_stats = [
-                                int(raw_stats.get("st", 10)),
-                                int(raw_stats.get("ma", 10)),
-                                int(raw_stats.get("en", 10)),
-                                int(raw_stats.get("ag", 10)),
-                                int(raw_stats.get("lu", 10))
-                            ]
-                        elif isinstance(raw_stats, list):
-                            parsed_stats = [int(st) if st is not None else 10 for st in raw_stats]
-                        else:
-                            parsed_stats = [10]*5
-
-                        CURRENT_EDITOR.set_persona_stock_slot(
-                            member_slot=0,
-                            stock_k=s_slot,
-                            persona_id=pid,
-                            level=int(s_entry.get("level", 1)),
-                            trait_id=int(s_entry.get("trait_id", 0)),
-                            exp=int(s_entry.get("exp", 0)),
-                            skills=parsed_skills,
-                            stats=parsed_stats,
-                            flags=int(s_entry.get("flags", 1))
-                        )
-
-                # 5c. Apply Active Inventory Items — prefers normalized payload
-                norm_in = data.get("inventory_normalized")
-                if isinstance(norm_in, dict):
-                    # New path: stacks + owned_gear from S1 normalized model (empty dict = 0 changes, no legacy fallback)
-                    for raw_id, qty in (norm_in.get("stacks") or {}).items():
-                        try:
-                            iid = int(raw_id) if isinstance(raw_id, str) else int(raw_id)
-                        except Exception:
-                            continue
-                        CURRENT_EDITOR.set_item_quantity(iid, int(qty))
-                    for raw_id, owned in (norm_in.get("owned_gear") or {}).items():
-                        try:
-                            iid = int(raw_id) if isinstance(raw_id, str) else int(raw_id)
-                        except Exception:
-                            continue
-                        CURRENT_EDITOR.set_item_quantity(iid, 1 if owned else 0)
-                else:
-                    # Legacy path: flat inventory list
-                    inv_in = data.get("inventory", [])
-                    for entry in inv_in:
-                        iid = int(entry.get("item_id", 0))
-                        qty = int(entry.get("quantity", 0))
-                        slot = entry.get("slot")
-                        if iid > 0:
-                            if slot is not None and 0 <= slot < 30:
-                                CURRENT_EDITOR.set_inventory_slot(slot, iid, qty)
-                            else:
-                                CURRENT_EDITOR.set_item_quantity(iid, qty)
-
-                # 5d. Apply Compendium Registrations
-                if data.get("unlock_compendium"):
-                    CURRENT_EDITOR.unlock_compendium_100()
-                elif "compendium" in data and isinstance(data["compendium"], dict):
-                    comp = data["compendium"]
-                    if comp and comp.get("supported"):
-                        registered_list = set(comp.get("registered", []))
-                        current_reg = set(CURRENT_EDITOR.get_compendium().get("registered", []))
-                        changed_pids = sorted(registered_list ^ current_reg)
-                        if changed_pids:
-                            for pid in changed_pids:
-                                is_reg = pid in registered_list
-                                CURRENT_EDITOR.set_compendium_registration(pid, is_reg)
-                            # Sanitize any rogue bytes in the gap
-                            d_tmp = bytearray(CURRENT_EDITOR.parser.data_payload)
-                            for gap_start, gap_end in ((0x09460, 0x09940), (0x21970, 0x21E50)):
-                                if gap_end <= len(d_tmp):
-                                    d_tmp[gap_start:gap_end] = b"\x00" * (gap_end - gap_start)
-                            CURRENT_EDITOR.parser.data_payload = bytes(d_tmp)
-
-                # 6. Repack & Sign
-                out_bytes = CURRENT_EDITOR.save_to_bytes()
-                backup_zip_b64 = None
-                backup_zip_filename = None
-                if p:
-                    p.write_bytes(out_bytes)
-                    CURRENT_EDITOR = SaveEditor(p.read_bytes())
-                else:
-                    CURRENT_EDITOR = SaveEditor(out_bytes)
-                    # For uploaded files: generate in-memory timestamped .zip from pristine baseline
-                    orig_bytes = CURRENT_ORIGINAL_BYTES or out_bytes
-                    save_name = CURRENT_FILE_PATH.replace("Uploaded (", "").replace(")", "").strip() or "DATA.DAT"
-                    zip_bytes = create_memory_backup_zip(orig_bytes, filename=save_name)
-                    backup_zip_b64 = base64.b64encode(zip_bytes).decode("ascii")
-                    stem = Path(save_name).stem
-                    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-                    backup_zip_filename = f"{stem}_backup_{timestamp}.zip"
-                    backup_path_name = backup_zip_filename
-
-                integrity = CURRENT_EDITOR.integrity_report()
-
-                resp = {
-                    "status": "success",
-                    "backup": backup_path_name,
-                    "backup_zip_name": backup_zip_filename,
-                    "backup_zip_data": backup_zip_b64,
-                    "integrity": integrity,
-                    "download_data": base64.b64encode(out_bytes).decode("ascii") if is_uploaded else None,
-                    "message": "Save file successfully re-signed and saved!"
-                }
-                _conflicts = instances.find_conflicts(CURRENT_FILE_PATH)
+                # Session handles transaction commit, including data.get("unlock_compendium") -> unlock_compendium_100()
+                stage_token = data.get("stage_token") if isinstance(data, dict) else None
+                commit_res = session.commit_transaction(data, stage_token=stage_token, strict_verification=True)
+                CURRENT_EDITOR = session.editor
+                CURRENT_ORIGINAL_BYTES = session.baseline_bytes
+                _conflicts = instances.find_conflicts(session.file_path)
                 if _conflicts:
-                    resp["notice"] = (
-                        "This save is also open in another window — last save wins."
+                    commit_res["notice"] = (
+                        "This save is also open in another window."
                     )
-                self.send_json(200, resp)
+                self.send_json(200, commit_res)
+            except ConcurrencyConflictError as ce:
+                self.send_json(409, {"error": str(ce), "conflict": True})
+            except SaveValidationError as ve:
+                self.send_json(400, {"error": f"Save validation failed: {str(ve)}"})
             except Exception as e:
                 self.send_json(500, {"error": f"Failed to save file: {str(e)}"})
 
         elif parsed.path == "/api/restore":
-            backup_name = data.get("backup_name", "")
-            if not CURRENT_FILE_PATH or not backup_name:
-                self.send_json(400, {"error": "Missing backup file or save path."})
+            backup_name = data.get("backup_name", "") if isinstance(data, dict) else ""
+            session = SESSION_MANAGER.get_session_by_token(token) if token else None
+            if not session or not session.file_path or not backup_name:
+                self.send_json(401 if not session else 400, {"error": "Missing valid session token or backup parameter."})
                 return
             if not re.fullmatch(r"[A-Za-z0-9_.\-]+", backup_name):
                 self.send_json(400, {"error": "Invalid backup name."})
                 return
             try:
-                p = Path(CURRENT_FILE_PATH)
-                backup_zip = p.parent / "backups" / backup_name
-                safety = restore_backup(p, backup_zip)
-                CURRENT_EDITOR = SaveEditor(p.read_bytes())
-                self.send_json(200, {"status": "success", "safety_backup": safety.name})
+                p = Path(session.file_path).resolve()
+                backups_dir = (p.parent / "backups").resolve()
+                backup_zip = (backups_dir / backup_name).resolve()
+                if backup_zip.parent != backups_dir:
+                    self.send_json(400, {"error": "Path traversal attempt detected."})
+                    return
+                restore_res = atomic_restore_backup(
+                    target_path=p,
+                    backup_zip=backup_zip,
+                    expected_baseline_sha256=session.baseline_sha256,
+                )
+                restored_bytes = p.read_bytes()
+                session.baseline_bytes = restored_bytes
+                session.baseline_sha256 = compute_sha256(restored_bytes)
+                session.editor = SaveEditor(restored_bytes, strict_crc=True)
+                session.revision += 1
+                CURRENT_EDITOR = session.editor
+                CURRENT_ORIGINAL_BYTES = session.baseline_bytes
+                safety_name = Path(restore_res["backup_path"]).name if restore_res.get("backup_path") else "pre_restore_backup.zip"
+                self.send_json(200, {"status": "success", "safety_backup": safety_name})
+            except ConcurrencyConflictError as ce:
+                self.send_json(409, {"error": str(ce), "conflict": True})
             except Exception as e:
                 self.send_json(500, {"error": f"Restore failed: {str(e)}"})
+
+        elif parsed.path == "/api/compare":
+            target_path = data.get("target_path", "").strip() if isinstance(data, dict) else ""
+            session = SESSION_MANAGER.get_session_by_token(token) if token else None
+            if not session:
+                self.send_json(401, {"error": "Authentication failed: Valid session capability token required."})
+                return
+            if not target_path or not Path(target_path).is_file():
+                self.send_json(400, {"error": "Valid comparison target save path is required."})
+                return
+            try:
+                cmp_res = compare_saves(
+                    session.baseline_bytes,
+                    Path(target_path),
+                    label_a="Current Save",
+                    label_b=Path(target_path).name,
+                )
+                self.send_json(200, cmp_res)
+            except Exception as e:
+                self.send_json(500, {"error": f"Comparison failed: {str(e)}"})
+
+        elif parsed.path == "/api/stage":
+            session = SESSION_MANAGER.get_session_by_token(token) if token else None
+            if not session:
+                self.send_json(401, {"error": "Authentication failed: Valid session capability token required."})
+                return
+            action = data.get("action", "stage") if isinstance(data, dict) else "stage"
+            if action == "clear":
+                session.clear_staged_changes()
+                self.send_json(200, {"status": "success", "staged_changes": []})
+            elif action == "prepare":
+                prep_res = session.prepare_staged_transaction()
+                self.send_json(200, prep_res)
+            elif action == "confirm":
+                st_token = data.get("stage_token", "")
+                p_digest = data.get("patch_digest")
+                conf_res = session.confirm_staged_transaction(st_token, patch_digest=p_digest)
+                self.send_json(200, conf_res)
+            else:
+                cat = data.get("category", "general")
+                key = data.get("key", "unspecified")
+                val = data.get("value")
+                old_val = data.get("old_value")
+                session.stage_field_change(cat, key, val, old_val=old_val)
+                self.send_json(200, {"status": "success", "staged_changes": session.get_staged_summary()})
+
+        elif parsed.path == "/api/transfer":
+            source_path = data.get("source_path", "").strip() if isinstance(data, dict) else ""
+            session = SESSION_MANAGER.get_session_by_token(token) if token else None
+            if not session:
+                self.send_json(401, {"error": "Authentication failed: Valid session capability token required."})
+                return
+            if not source_path or not Path(source_path).is_file():
+                self.send_json(400, {"error": "Valid source save path is required for transfer."})
+                return
+            action = data.get("action", "preview") if isinstance(data, dict) else "preview"
+            try:
+                src_bytes = Path(source_path).read_bytes()
+                if action == "confirm":
+                    transfer_token = data.get("transfer_token", "")
+                    if not transfer_token:
+                        self.send_json(400, {"error": "Transfer confirmation token is required."})
+                        return
+                    res = session.confirm_and_commit_transfer(transfer_token, src_bytes)
+                    CURRENT_EDITOR = session.editor
+                    CURRENT_ORIGINAL_BYTES = session.baseline_bytes
+                    self.send_json(200, {"status": "success", "result": res})
+                else:
+                    opts = data.get("transfer_options")
+                    if isinstance(opts, dict):
+                        categories = [k for k, v in opts.items() if v]
+                    else:
+                        categories = data.get("categories", ["money", "inventory", "compendium", "personas"])
+                    preview = session.build_transfer_preview(src_bytes, categories)
+                    self.send_json(200, preview)
+            except ConcurrencyConflictError as ce:
+                self.send_json(409, {"error": str(ce), "conflict": True})
+            except SaveValidationError as ve:
+                self.send_json(400, {"error": str(ve)})
+            except Exception as e:
+                self.send_json(500, {"error": f"Transfer failed: {str(e)}"})
 
     def send_json(self, code, payload):
         self.send_response(code)
         self.send_header("Content-Type", "application/json; charset=utf-8")
+        self.send_header("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
+        self.send_header("Pragma", "no-cache")
         # Reflect only loopback Origins (see _origin_allowed) — never "*".
         origin = self.headers.get("Origin")
         if origin and self._origin_allowed():

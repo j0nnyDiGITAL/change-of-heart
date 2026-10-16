@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PERSONA 5 ROYAL — Phantom Thieves Save System</title>
+  <title>PERSONA 5 ROYAL — Change of Heart 2.0</title>
   <link rel="stylesheet" href="/app.css?v=20260816c">
   <link rel="icon" type="image/jpeg" href="/assets/joker_avatar.jpg">
 </head>
@@ -13,10 +13,12 @@
   <aside class="p5-sidebar">
     <div class="p5-sidebar-header">
       <div class="brand-badge" style="gap:12px;">
-        <img src="/assets/change_of_heart_logo.jpg" alt="Change of Heart" style="width:62px; height:62px; border:2px solid var(--p5-crimson); box-shadow:0 0 15px rgba(230,0,18,0.6); transform:rotate(-3deg); object-fit:cover;">
+        <img src="/assets/change_of_heart_logo.jpg" alt="Change of Heart 2.0" style="width:62px; height:62px; border:2px solid var(--p5-crimson); box-shadow:0 0 15px rgba(230,0,18,0.6); transform:rotate(-3deg); object-fit:cover;">
         <div class="brand-text">
           <h1 style="font-size:24px; line-height:1;">CHANGE OF</h1>
-          <h1 style="color:var(--p5-crimson); font-size:30px; line-height:0.9;">HEART</h1>
+          <h1 style="color:var(--p5-crimson); font-size:30px; line-height:0.9; display:flex; align-items:center; gap:6px;">
+            <span>HEART</span> <span style="font-family:var(--font-punk); font-size:18px; color:var(--p5-yellow); transform:skew(-10deg) rotate(-4deg); text-shadow:2px 2px 0 #000;">2.0</span>
+          </h1>
           <div style="font-size:9px; font-weight:800; color:#888; letter-spacing:1px; margin-top:4px; font-family:monospace;">
             BY <span style="color:var(--p5-white);">j0nny DiGITAL</span>
           </div>
@@ -88,15 +90,18 @@
         <button class="p5-btn-action" onclick="loadSaveFile()"><span>LOAD SAVE</span></button>
         <button class="p5-btn-action secondary" onclick="refreshDiscovery()" title="Rescan standard Steam directory"><span>REFRESH</span></button>
         <button class="p5-btn-action secondary" onclick="document.getElementById('manualFileInput').click()" title="Browse custom or GamePass save file (DATA.DAT / DATA.BIN)"><span> BROWSE...</span></button>
+        <button class="p5-btn-action secondary" onclick="openInspectorModal()" title="Deep binary integrity & diagnostic inspector"><span>🔍 INSPECT</span></button>
+        <button class="p5-btn-action secondary" onclick="openCompareModal()" title="Side-by-side save comparison & transfer"><span>⚖️ COMPARE</span></button>
         <button class="p5-btn-action secondary" onclick="openFaqModal()" title="View Frequently Asked Questions & Save Guide" style="border-color:var(--p5-gold); color:var(--p5-gold);"><span>❓ FAQ</span></button>
         <input type="file" id="manualFileInput" style="display:none;" accept=".DAT,.BIN,.dat,.bin" onchange="onManualFileSelected(event)">
       </div>
 
       <!-- Quick Calendar Info -->
-      <div style="display:flex; gap:20px; font-size:12px; font-weight:700;">
-        <div> <span id="topDayText" style="color:var(--p5-white);">—</span></div>
+      <div style="display:flex; gap:16px; font-size:12px; font-weight:700; align-items:center;">
+        <div>📅 <span id="topDayText" style="color:var(--p5-white);">—</span></div>
         <div><svg class="top-ico" viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6" fill="none" stroke="currentColor" stroke-width="2"/></svg> <span id="topPlaytimeText" style="color:var(--p5-white);">—</span></div>
-        <div> <span id="topMoneyText" style="color:var(--p5-green);">—</span></div>
+        <div>💰 <span id="topMoneyText" style="color:var(--p5-green);">—</span></div>
+        <button id="motionToggleBtn" class="p5-btn-action secondary" style="padding:4px 8px; font-size:11px;" onclick="toggleReducedMotion()" title="Toggle Reduced Motion"><span>⚡ FX: ON</span></button>
       </div>
     </header>
 
@@ -694,7 +699,7 @@
         <div id="bottomStatus" style="font-size:14px; font-weight:700; color:var(--p5-muted);">
           Ready. Load a save file to begin.
         </div>
-        <span id="stagedDirtyBadge" style="display:none; font-size:11px; font-weight:900; color:#000; background:var(--p5-gold); padding:3px 8px; border-radius:999px;">● STAGED</span>
+        <button id="stagedDirtyBadge" style="display:none; cursor:pointer; font-size:11px; font-weight:900; color:#000; background:var(--p5-gold); padding:3px 10px; border-radius:999px; border:2px solid #000; box-shadow:2px 2px 0 #000;" onclick="openStagedReviewModal()" title="Click to review pending changes">● STAGED (REVIEW)</button>
       </div>
 
       <div style="display:flex; gap:8px; align-items:center;">
@@ -837,6 +842,112 @@
       <div style="margin-top:14px; border-top:1px solid #333; padding-top:10px; display:flex; justify-content:space-between; align-items:center;">
         <span style="font-size:11px; color:#888;">For the complete technical guide, see <code style="color:var(--p5-white);">docs/FAQ.md</code></span>
         <button class="p5-btn-action" onclick="closeFaqModal()"><span>GOT IT!</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Save Inspector Modal -->
+  <div id="inspectorModal" class="p5-modal-backdrop" onclick="closeInspectorModal(event)">
+    <div class="p5-modal-content" style="max-width:760px; max-height:88vh; display:flex; flex-direction:column; overflow:hidden;" onclick="event.stopPropagation()">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:2px solid var(--p5-crimson); padding-bottom:8px;">
+        <h3 style="font-family:var(--font-p5); font-size:24px; color:var(--p5-crimson); margin:0; display:flex; align-items:center; gap:8px;">
+          <span>🔍</span> <span>SAVE INTEGRITY &amp; BINARY INSPECTOR</span>
+        </h3>
+        <button class="p5-btn-action secondary" style="padding:4px 10px; font-size:12px;" onclick="closeInspectorModal()"><span>✕ CLOSE</span></button>
+      </div>
+
+      <div id="inspectorContent" style="overflow-y:auto; padding-right:8px; display:flex; flex-direction:column; gap:16px;">
+        <div style="text-align:center; padding:30px; color:#888;">Load a save file to inspect cryptographic structure.</div>
+      </div>
+
+      <div style="margin-top:14px; border-top:1px solid #333; padding-top:10px; display:flex; justify-content:space-between; align-items:center;">
+        <button class="p5-btn-action secondary" onclick="refreshInspector()"><span>🔄 RE-RUN AUDIT</span></button>
+        <button class="p5-btn-action" onclick="closeInspectorModal()"><span>DONE</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Save Comparison & Transfer Modal -->
+  <div id="compareModal" class="p5-modal-backdrop" onclick="closeCompareModal(event)">
+    <div class="p5-modal-content" style="max-width:900px; max-height:90vh; display:flex; flex-direction:column; overflow:hidden;" onclick="event.stopPropagation()">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:2px solid var(--p5-crimson); padding-bottom:8px;">
+        <h3 style="font-family:var(--font-p5); font-size:24px; color:var(--p5-crimson); margin:0; display:flex; align-items:center; gap:8px;">
+          <span>⚖️</span> <span>SIDE-BY-SIDE SAVE COMPARATOR &amp; TRANSFER</span>
+        </h3>
+        <button class="p5-btn-action secondary" style="padding:4px 10px; font-size:12px;" onclick="closeCompareModal()"><span>✕ CLOSE</span></button>
+      </div>
+
+      <!-- Compare Target Controls -->
+      <div style="display:flex; gap:10px; margin-bottom:14px; align-items:center;">
+        <select id="compareTargetSelect" class="p5-select" style="flex:1;">
+          <option value="">-- Select Target Save to Compare --</option>
+        </select>
+        <button class="p5-btn-action secondary" onclick="document.getElementById('compareFileInput').click()"><span>📁 BROWSE...</span></button>
+        <input type="file" id="compareFileInput" style="display:none;" accept=".DAT,.BIN,.dat,.bin" onchange="onCompareFileSelected(event)">
+        <button class="p5-btn-action" onclick="runComparison()"><span>COMPARE</span></button>
+      </div>
+
+      <div id="compareContent" style="overflow-y:auto; padding-right:8px; display:flex; flex-direction:column; gap:16px;">
+        <div style="text-align:center; padding:30px; color:#888;">Select a comparison target save above to view side-by-side differences.</div>
+      </div>
+
+      <div id="transferControls" style="display:none; margin-top:14px; border-top:1px solid #333; padding-top:10px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+        <div style="display:flex; gap:14px; align-items:center; font-size:12px;">
+          <strong style="color:var(--p5-gold);">TRANSFER INTO ACTIVE:</strong>
+          <label style="cursor:pointer;"><input type="checkbox" id="transferMoneyCheck"> Money</label>
+          <label style="cursor:pointer;"><input type="checkbox" id="transferStatsCheck"> Social Stats</label>
+          <label style="cursor:pointer;"><input type="checkbox" id="transferCompendiumCheck"> Compendium</label>
+          <label style="cursor:pointer;"><input type="checkbox" id="transferInventoryCheck"> Inventory</label>
+        </div>
+        <button class="p5-btn-action" onclick="executeSemanticTransfer()"><span>TRANSFER SELECTED ★</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Staged Changes Review Modal -->
+  <div id="stagedReviewModal" class="p5-modal-backdrop" onclick="closeStagedReviewModal(event)">
+    <div class="p5-modal-content" style="max-width:740px; max-height:85vh; display:flex; flex-direction:column; overflow:hidden;" onclick="event.stopPropagation()">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:2px solid var(--p5-crimson); padding-bottom:8px;">
+        <h3 style="font-family:var(--font-p5); font-size:24px; color:var(--p5-gold); margin:0; display:flex; align-items:center; gap:8px;">
+          <span>📝</span> <span>STAGED CHANGES AUDIT LEDGER</span>
+        </h3>
+        <button class="p5-btn-action secondary" style="padding:4px 10px; font-size:12px;" onclick="closeStagedReviewModal()"><span>✕ CLOSE</span></button>
+      </div>
+
+      <p style="font-size:12px; color:#AAA; margin-bottom:10px;">
+        Review all pending modifications before committing to disk. Changes are applied atomically with automated pre-save backup.
+      </p>
+
+      <div id="stagedTableContainer" style="overflow-y:auto; padding-right:8px; max-height:420px;">
+        <!-- Populated dynamically -->
+      </div>
+
+      <div style="margin-top:14px; border-top:1px solid #333; padding-top:10px; display:flex; justify-content:space-between; align-items:center;">
+        <button class="p5-btn-action secondary" onclick="discardStagedChanges()"><span>DISCARD ALL STAGED</span></button>
+        <button class="p5-btn-action" onclick="closeStagedReviewModal(); executeSavePayload(true);"><span>PROCEED TO SAVE ★</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- External Conflict / Concurrency Modal -->
+  <div id="conflictModal" class="p5-modal-backdrop" onclick="closeConflictModal(event)">
+    <div class="p5-modal-content" style="max-width:600px;" onclick="event.stopPropagation()">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:2px solid #FF5E5B; padding-bottom:8px;">
+        <h3 style="font-family:var(--font-p5); font-size:22px; color:#FF5E5B; margin:0; display:flex; align-items:center; gap:8px;">
+          <span>⚠️</span> <span>CONCURRENCY / EXTERNAL CONFLICT</span>
+        </h3>
+        <button class="p5-btn-action secondary" style="padding:4px 10px; font-size:12px;" onclick="closeConflictModal()"><span>✕ DISMISS</span></button>
+      </div>
+
+      <p id="conflictModalMessage" style="font-size:13px; color:#DDD; line-height:1.6; margin-bottom:18px;">
+        The active save file on disk was modified by an external program, or P5R.exe is currently active. To protect against silent corruption, the transaction was refused.
+      </p>
+
+      <div style="display:flex; justify-content:flex-end; gap:10px;">
+        <button class="p5-btn-action secondary" onclick="closeConflictModal(); openCompareModal();"><span>COMPARE WITH DISK</span></button>
+        <button class="p5-btn-action" style="background:#FF5E5B; border-color:#FF5E5B; color:#000;" onclick="closeConflictModal(); loadSaveFile();">
+          <span style="font-weight:900;">RELOAD FROM DISK</span>
+        </button>
       </div>
     </div>
   </div>
