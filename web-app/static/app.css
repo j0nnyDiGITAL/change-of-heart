@@ -296,9 +296,22 @@ body {
 .save-selector-box {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   flex: 1;
-  max-width: 800px;
+  min-width: 0;
+}
+
+.save-selector-box .p5-btn-action {
+  padding: 8px 14px;
+  font-size: 15px;
+  letter-spacing: 1px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.save-selector-box .p5-btn-action:first-of-type {
+  padding: 8px 20px;
+  font-size: 17px;
 }
 
 .p5-select, .p5-input {

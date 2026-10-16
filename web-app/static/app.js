@@ -340,8 +340,8 @@ async function refreshDiscovery() {
 }
 
 // Load Active Save File
-async function loadSaveFile() {
-  const path = document.getElementById("saveFileDropdown").value;
+async function loadSaveFile(overridePath) {
+  const path = overridePath || document.getElementById("saveFileDropdown").value;
   if (!path) return;
 
   setStatus("Loading and decrypting P5R save file...");
@@ -3639,12 +3639,12 @@ async function refreshInspector() {
       return;
     }
 
-    const isValid = insp.status === "valid";
-    const statusBadge = isValid 
-      ? `<span class="badge-valid">INTEGRITY: GRADE A (VALID)</span>`
+    const isClean = (insp.integrity_grade === "CLEAN" || insp.status === "valid");
+    const statusBadge = isClean 
+      ? `<span class="badge-valid">INTEGRITY: GRADE A (CLEAN &amp; VERIFIED)</span>`
       : `<span class="badge-degraded">INTEGRITY: DEGRADED</span>`;
 
-    const procAlert = insp.process_check?.p5r_running
+    const procAlert = insp.process_status?.p5r_running
       ? `<div class="audit-card" style="border-left-color:#FF5E5B; margin-bottom:12px;">
           <strong style="color:#FF5E5B;">⚠️ P5R.exe IS CURRENTLY RUNNING!</strong> Close the game before writing changes to avoid memory overwrites.
          </div>`
@@ -3652,32 +3652,38 @@ async function refreshInspector() {
           <strong style="color:var(--p5-yellow);">✔ GAME PROCESS CLOSED:</strong> Environment is safe for atomic disk replacement.
          </div>`;
 
+    const containerInfo = insp.container || {};
+    const quick = insp.quick_info || {};
+    const mirror = insp.compendium_mirror || {};
+    const prog = insp.progression || {};
+
     container.innerHTML = `
       ${procAlert}
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
         ${statusBadge}
-        <span style="font-size:12px; font-family:monospace; color:#888;">${escapeHtml(insp.file_info?.file_path || "Active Session")}</span>
+        <span style="font-size:12px; font-family:monospace; color:#888;">${escapeHtml(insp.file_path || "Active Session")}</span>
       </div>
 
       <div class="grid-2" style="gap:14px; margin-bottom:14px;">
         <div class="audit-card">
           <div style="font-family:var(--font-p5); font-size:16px; color:var(--p5-yellow); margin-bottom:6px;">FILE &amp; CONTAINER</div>
           <div style="font-size:12px; line-height:1.6; color:#DDD;">
-            <strong>Size:</strong> ${(insp.file_info?.size_bytes || 0).toLocaleString()} bytes<br>
-            <strong>SHA-256:</strong> <code style="font-size:10px; color:#AAA;">${escapeHtml(insp.file_info?.sha256?.substring(0, 32))}...</code><br>
-            <strong>Days Elapsed:</strong> ${insp.header_data?.day_count || 0}<br>
-            <strong>Date / Calendar:</strong> ${escapeHtml(insp.header_data?.date_string || "—")}<br>
-            <strong>Current Yen:</strong> ¥${(insp.header_data?.money || 0).toLocaleString()}
+            <strong>Size:</strong> ${(insp.file_size || 0).toLocaleString()} bytes<br>
+            <strong>Protagonist:</strong> ${escapeHtml(quick.protagonist_name || "—")}<br>
+            <strong>Group Name:</strong> ${escapeHtml(quick.group_name || "—")}<br>
+            <strong>Date / Calendar:</strong> ${escapeHtml(quick.day || "—")}<br>
+            <strong>Current Yen:</strong> ¥${(quick.money || 0).toLocaleString()}
           </div>
         </div>
 
         <div class="audit-card">
           <div style="font-family:var(--font-p5); font-size:16px; color:var(--p5-yellow); margin-bottom:6px;">CRYPTOGRAPHIC CHECKSUMS</div>
           <div style="font-size:12px; line-height:1.6; color:#DDD;">
-            <strong>Header CRC32:</strong> ${insp.crc_checks?.header_crc32?.match ? '<span style="color:var(--p5-yellow);">MATCH ✔</span>' : '<span style="color:#FF5E5B;">MISMATCH ✘</span>'} (0x${(insp.crc_checks?.header_crc32?.stored || 0).toString(16).toUpperCase()})<br>
-            <strong>Payload CRC32:</strong> ${insp.crc_checks?.data_crc32?.match ? '<span style="color:var(--p5-yellow);">MATCH ✔</span>' : '<span style="color:#FF5E5B;">MISMATCH ✘</span>'} (0x${(insp.crc_checks?.data_crc32?.stored || 0).toString(16).toUpperCase()})<br>
-            <strong>Compendium Mask:</strong> ${insp.compendium_mirror?.match ? '<span style="color:var(--p5-yellow);">MIRROR IN SYNC ✔</span>' : '<span style="color:#FF5E5B;">DIVERGENCE ✘</span>'}<br>
-            <strong>Registered Personas:</strong> ${insp.compendium_mirror?.unlocked_count || 0} / 224 live bits
+            <strong>Header CRC32:</strong> ${containerInfo.file_crc_ok ? '<span style="color:var(--p5-yellow);">MATCH ✔</span>' : '<span style="color:#FF5E5B;">MISMATCH ✘</span>'} (${containerInfo.file_crc || '0x0'})<br>
+            <strong>Payload CRC32:</strong> ${containerInfo.data_crc_ok ? '<span style="color:var(--p5-yellow);">MATCH ✔</span>' : '<span style="color:#FF5E5B;">MISMATCH ✘</span>'} (${containerInfo.data_crc || '0x0'})<br>
+            <strong>Compendium Mask:</strong> ${mirror.in_sync ? '<span style="color:var(--p5-yellow);">MIRROR IN SYNC ✔</span>' : '<span style="color:#FF5E5B;">DIVERGENCE ✘</span>'}<br>
+            <strong>Registered Personas:</strong> ${mirror.primary_registered_count || 0} / 224 live bits<br>
+            <strong>Stock Personas:</strong> ${prog.personas_in_stock || 0} active slots
           </div>
         </div>
       </div>
@@ -3747,18 +3753,51 @@ async function runComparison() {
       return;
     }
 
-    const s1 = cmp.semantic_diff?.save_1 || {};
-    const s2 = cmp.semantic_diff?.save_2 || {};
+    const meta = cmp.metadata_diff || {};
     const bdiff = cmp.binary_diff || {};
+    const comp = cmp.compendium_diff || {};
+    const social = cmp.social_stats_diff || {};
+    const confidants = cmp.confidants_diff || {};
+    const inv = cmp.inventory_diff || {};
 
-    const diffRow = (label, v1, v2) => {
-      const isDiff = JSON.stringify(v1) !== JSON.stringify(v2);
+    const diffRow = (label, v1, v2, forceDiff = false) => {
+      const isDiff = forceDiff || (v1 !== undefined && v2 !== undefined && JSON.stringify(v1) !== JSON.stringify(v2));
       return `<tr>
         <td style="font-weight:700; color:#DDD;">${escapeHtml(label)}</td>
-        <td>${escapeHtml(v1)}</td>
-        <td style="${isDiff ? 'color:var(--p5-yellow); font-weight:800;' : ''}">${escapeHtml(v2)} ${isDiff ? '★' : ''}</td>
+        <td>${escapeHtml(String(v1 !== undefined ? v1 : 'Matches Target'))}</td>
+        <td style="${isDiff ? 'color:var(--p5-yellow); font-weight:800;' : ''}">${escapeHtml(String(v2 !== undefined ? v2 : 'Identical'))} ${isDiff ? '★' : ''}</td>
       </tr>`;
     };
+
+    let rowsHtml = "";
+    if (meta.name) rowsHtml += diffRow("Protagonist Name", meta.name.a, meta.name.b, true);
+    if (meta.group_name) rowsHtml += diffRow("Phantom Thief Group", meta.group_name.a, meta.group_name.b, true);
+    if (meta.money) rowsHtml += diffRow("Yen Balance", `¥${(meta.money.a || 0).toLocaleString()}`, `¥${(meta.money.b || 0).toLocaleString()}`, true);
+    if (meta.day) rowsHtml += diffRow("Calendar Date", meta.day.a, meta.day.b, true);
+    if (meta.level) rowsHtml += diffRow("Level", meta.level.a, meta.level.b, true);
+
+    Object.entries(social).forEach(([stat, val]) => {
+      rowsHtml += diffRow(`Social: ${stat}`, `Rank ${val.a}`, `Rank ${val.b}`, true);
+    });
+
+    Object.entries(confidants).slice(0, 4).forEach(([arc, val]) => {
+      rowsHtml += diffRow(`Confidant: ${arc}`, `Rank ${val.rank_a}`, `Rank ${val.rank_b}`, true);
+    });
+
+    if (comp.count_a !== undefined) {
+      rowsHtml += diffRow("Compendium Unlocked", `${comp.count_a} personas`, `${comp.count_b} personas`, comp.count_a !== comp.count_b);
+    }
+
+    const changedItemCount = Object.keys(inv).length;
+    if (changedItemCount > 0) {
+      rowsHtml += diffRow("Inventory Carried Items", "Baseline Stacks", `${changedItemCount} items divergent`, true);
+    }
+
+    rowsHtml += diffRow("Binary Differences", "Baseline Container", `${bdiff.total_changed_bytes || 0} bytes divergent (${(bdiff.regions || []).join(', ') || 'Exact Bitwise Match'})`, (bdiff.total_changed_bytes || 0) > 0);
+
+    if (!rowsHtml) {
+      rowsHtml = `<tr><td colspan="3" style="text-align:center; padding:15px; color:var(--p5-yellow);">★ SAVES ARE BITWISE IDENTICAL — NO DELTAS DETECTED</td></tr>`;
+    }
 
     container.innerHTML = `
       <table class="p5-table">
@@ -3766,19 +3805,11 @@ async function runComparison() {
           <tr>
             <th style="width:28%;">FIELD / STAT</th>
             <th style="width:36%;">ACTIVE LOADED SAVE</th>
-            <th style="width:36%;">TARGET SAVE</th>
+            <th style="width:36%;">COMPARISON DONOR SAVE</th>
           </tr>
         </thead>
         <tbody>
-          ${diffRow("First Name", s1.fname, s2.fname)}
-          ${diffRow("Last Name", s1.lname, s2.lname)}
-          ${diffRow("Group Name", s1.group_name, s2.group_name)}
-          ${diffRow("Yen Balance", `¥${(s1.money || 0).toLocaleString()}`, `¥${(s2.money || 0).toLocaleString()}`)}
-          ${diffRow("Days Elapsed", s1.days_elapsed, s2.days_elapsed)}
-          ${diffRow("Compendium Registered", `${s1.compendium_registered || 0} personas`, `${s2.compendium_registered || 0} personas`)}
-          ${diffRow("Inventory Stacks Count", Object.keys(s1.inventory_stacks || {}).length, Object.keys(s2.inventory_stacks || {}).length)}
-          ${diffRow("Owned Gear Count", Object.keys(s1.inventory_gear || {}).length, Object.keys(s2.inventory_gear || {}).length)}
-          ${diffRow("Binary Differences", "Baseline", `${bdiff.different_bytes_count || 0} bytes divergent`)}
+          ${rowsHtml}
         </tbody>
       </table>
     `;
