@@ -14,11 +14,11 @@
 
 
 ## CURRENT POSITION -- realign here, then act
-- **Milestone:** v1.1.2 released; next: resume Ground-Up Redesign on `redesign/p5r-native-menu`.
-- **You are at:** Release complete; transitioning to Phase 2 (Redesign).
+- **Milestone:** v1.1.3 released; redesign PARKED — next: functional perfection pass.
+- **You are at:** Release complete; redesign parked per user — functionality first.
 - **Last done:** GitHub issue triage complete (#1, #3 closed as already-implemented in v1.1.2; #2 needs-info; #4 ready-for-agent with agent brief) + #4 Load-Save playtime `NoneType` crash fixed (server.py None-tolerant playtime → "Unknown") with 2 regression tests. 190/190 green.
-- **Do this next:** Resume Ground-Up Redesign on `redesign/p5r-native-menu`.
-- **DONE WHEN:** Redesign Stage 1 (Full-Bleed Joker Status Canvas) captured and validated.
+- **Do this next:** Functional perfection pass (user to pick target: issue #2 close-out, NFKC name edge, D008 outfits, PR #5/#6 review, or load-path hardening).
+- **DONE WHEN:** Chosen functional target verified (tests green + ledger synced).
 - **Live caveats (trust, don't re-verify):** Full-bleed redesign preserved on branch `redesign/p5r-native-menu`; Outfits `0xA000+` wiring frozen (D008) until 2-save diff proves offsets.
 
 
@@ -51,6 +51,7 @@
 
 
 ## Progress Log
+- 2026-10-14: Redesign PARKED by user decision — functionality to be perfected first. Grill-with-docs Round 1 shelved before answers; fact-finding banked (redesign was merged then reverted by `650d3b9`; main is sidebar layout; references + capture tool ready).
 - 2026-10-14: v1.1.3 patch release cut — rebuilt EXE from main HEAD (issue #4 playtime fix included), headless smoke test PASSED (/api/build → 200), published to GitHub Releases (zip + EXE), closed issue #4 as fixed. 190/190 tests green.
 - 2026-10-14: GitHub issue triage (`/triage`): 4 open issues verified against HEAD 22818e8 via changelog cross-reference + read-only code verifier. #1 (group name overflow) and #3 (compendium pollution / Satanael) closed as already-implemented in v1.1.2 (83cefdf, 191fe0d); #2 (rank 10 romance) → needs-info (fixed-in-head, awaiting reporter confirm); #4 (Load Save `NoneType // int`) → ready-for-agent with agent brief. Shipped the #4 fix: None-tolerant playtime in `server.py` (undeterminable → "Unknown"; header-u32 fallback accepted only when 0 < v <= 500000) + `tests/test_github_issues.py` (2 regression tests). 190/190 tests green.
 - 2026-10-11: Resolved `u/Thelonlierface` report (*"added all the wrong items and also gave me curse build arsene"*): preserved existing player-registered Velvet Room Compendium builds on save/unlock, replaced template `201` with canonical Lv 1 starter Arsene, fixed `+1` BLANK-row offset shift across Skill Cards (`0x4000`), Protectors (`0x5000`), Treasure (`0x8000`), and Outfits (`0xA000`), and prevented empty normalized inventory fallback (D020); 185/185 tests passing.
